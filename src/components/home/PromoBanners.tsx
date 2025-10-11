@@ -19,7 +19,7 @@ const PromoBanners = () => {
   ];
 
   return (
-    <section className="bg-neutral-white pt-[24px] pb-[48px]">
+    <section className="bg-neutral-white pt-[120px] pb-[48px]">
       <div className="px-4">
         <div className="w-full flex flex-col md:flex-row justify-center items-center gap-[20px] md:gap-[30px]">
           {promoData.map((promo, index) => (

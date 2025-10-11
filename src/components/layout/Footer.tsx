@@ -47,7 +47,7 @@ const Footer = () => {
  ];
 
  return (
-  <footer className="bg-gray-900 text-white relative">
+  <footer className="bg-primary-dark text-white relative">
    <div className="px-4 sm:px-8 md:px-[165px] mx-auto py-12 max-w-[1440px]">
     {/* Top Footer */}
     <div className="flex flex-col lg:flex-row justify-between gap-6 lg:gap-6 mb-8">

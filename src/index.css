@@ -100,6 +100,44 @@ All colors MUST be HSL.
  }
 }
 
+/* Customize the overall position of the dots */
+.slick-dots {
+ position: absolute;
+ bottom: 20px; /* Adjust bottom position */
+ left: 50%;
+ transform: translateX(-50%);
+ display: flex;
+ gap: 8px; /* Space between the dots */
+}
+
+/* Customize individual dots */
+.slick-dots li button:before {
+ font-size: 0; /* Remove the default content */
+ color: transparent; /* No text color */
+ background-color: #c7c8d2; /* Default color of inactive dots */
+ width: 12px; /* Set the width */
+ height: 12px; /* Set the height */
+ border-radius: 50%; /* Make the dots circular */
+ opacity: 1; /* Ensure dots are visible */
+ border: none; /* Remove any border */
+ color: transparent !important;
+ opacity: 100% !important;
+}
+
+/* Customize active dots */
+.slick-dots li.slick-active button:before {
+ background-color: #a7cf38; /* Active dot color */
+ color: transparent !important;
+ opacity: 100% !important;
+}
+
+/* Customize dot hover effect */
+.slick-dots li button:hover:before {
+ background-color: #a7cf38; /* Hover color */
+ color: transparent !important;
+ opacity: 100% !important;
+}
+
 @layer base {
  * {
   @apply border-border;

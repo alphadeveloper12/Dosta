@@ -6,24 +6,25 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Catering from "./pages/Catering";
 import NotFound from "./pages/NotFound";
+import "./index.css";
 
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/catering" element={<Catering />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+ <QueryClientProvider client={queryClient}>
+  <TooltipProvider>
+   <Toaster />
+   <Sonner />
+   <BrowserRouter>
+    <Routes>
+     <Route path="/" element={<Index />} />
+     <Route path="/catering" element={<Catering />} />
+     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+     <Route path="*" element={<NotFound />} />
+    </Routes>
+   </BrowserRouter>
+  </TooltipProvider>
+ </QueryClientProvider>
 );
 
 export default App;

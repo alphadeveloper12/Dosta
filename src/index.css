@@ -7,6 +7,9 @@ All colors MUST be HSL.
 */
 
 @layer base {
+ html {
+  font-family: theme("fontFamily.sans");
+ }
  :root {
   /* Background colors */
   --background: 240 11% 97%; /* #F7F7F9 */
@@ -109,7 +112,9 @@ All colors MUST be HSL.
  display: flex;
  gap: 8px; /* Space between the dots */
 }
-
+.login-silder .slick-dots {
+ bottom: 220px; /* Adjust bottom position */
+}
 /* Customize individual dots */
 .slick-dots li button:before {
  font-size: 0; /* Remove the default content */
@@ -130,7 +135,11 @@ All colors MUST be HSL.
  color: transparent !important;
  opacity: 100% !important;
 }
-
+.login-silder .slick-dots li.slick-active button:before {
+ background-color: #ffffff; /* Active dot color */
+ color: transparent !important;
+ opacity: 100% !important;
+}
 /* Customize dot hover effect */
 .slick-dots li button:hover:before {
  background-color: #a7cf38; /* Hover color */

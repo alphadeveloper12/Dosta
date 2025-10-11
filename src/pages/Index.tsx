@@ -4,6 +4,7 @@ import HeroSection from "@/components/home/HeroSection";
 import PromoBanners from "@/components/home/PromoBanners";
 import Newsletter from "@/components/home/Newsletter";
 import ShowCase from "@/components/home/ShowCase";
+import Companies from "@/components/home/Companies";
 
 const Index = () => {
  return (
@@ -14,6 +15,7 @@ const Index = () => {
     <HeroSection />
     <ShowCase />
     <PromoBanners />
+    <Companies />
     <Newsletter />
    </main>
 

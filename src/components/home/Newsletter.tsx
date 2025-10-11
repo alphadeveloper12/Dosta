@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 
 const Newsletter = () => {
   return (
-    <section className="bg-[#F7F7F9]">
+    <section className="bg-[#EDEEF2]">
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-2xl md:text-3xl font-bold text-primary mb-3 pt-[24px]">

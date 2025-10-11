@@ -115,8 +115,8 @@ All colors MUST be HSL.
  font-size: 0; /* Remove the default content */
  color: transparent; /* No text color */
  background-color: #c7c8d2; /* Default color of inactive dots */
- width: 12px; /* Set the width */
- height: 12px; /* Set the height */
+ width: 12px !important; /* Set the width */
+ height: 12px !important; /* Set the height */
  border-radius: 50%; /* Make the dots circular */
  opacity: 1; /* Ensure dots are visible */
  border: none; /* Remove any border */

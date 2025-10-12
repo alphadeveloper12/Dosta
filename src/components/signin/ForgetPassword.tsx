@@ -1,9 +1,8 @@
-import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
 
 const ForgetPassword = ({ onBack }) => {
  return (
-  <div className="w-[45%] bg-white px-6 sm:px-10 md:px-12 lg:px-14 pt-20 pb-3 flex flex-col">
+  <div className="md:w-[45%] w-[100%] bg-white px-6 sm:px-10 md:px-12 lg:px-14 pt-20 pb-3 flex flex-col">
    <div className="max-w-sm w-full mx-auto">
     <svg
      className="mb-[50px]"

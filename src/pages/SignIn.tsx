@@ -7,7 +7,7 @@ const SignIn = () => {
   <div className="min-h-screen flex flex-col">
    <Header />
 
-   <main className="container mx-auto">
+   <main className="container px-3 mx-auto max-w-[1110px]">
     <MainSection />
    </main>
 

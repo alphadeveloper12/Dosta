@@ -102,7 +102,9 @@ All colors MUST be HSL.
   --destructive-foreground: 0 0% 100%;
  }
 }
-
+.slides_images button{
+    display: none !important;
+}
 /* Customize the overall position of the dots */
 .slick-dots {
  position: absolute;

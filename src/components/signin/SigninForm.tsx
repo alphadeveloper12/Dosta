@@ -11,8 +11,8 @@ const SignInForm = ({ onBack }) => {
  const navigate = useNavigate();
  const SignInFormComponent = () => {
   return (
-   <div className="w-[45%] bg-white px-6 sm:px-10 md:px-12 lg:px-14 pt-20  flex flex-col">
-    <div className="max-w-sm w-full mx-auto">
+   <div className="md:w-[45%] w-[100%] bg-white px-4 sm:px-10 md:px-12 lg:px-14 pt-20  flex flex-col">
+    <div className="w-full max-w-sm  mx-auto">
      <svg
       className="mb-[50px]"
       width="135"
@@ -45,7 +45,6 @@ const SignInForm = ({ onBack }) => {
        fill="#054A86"
       />
      </svg>
-
      <h1 className="text-[60px] font-bold tracking-tight text-[#2B2B43]">
       Sign in
      </h1>
@@ -140,8 +139,6 @@ const SignInForm = ({ onBack }) => {
       </button>
      </div>
     )}
-
-    
    </div>
   );
  };

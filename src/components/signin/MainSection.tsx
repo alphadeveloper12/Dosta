@@ -70,7 +70,7 @@ const MainSection = () => {
  const AuthPanel = () => {
   const navigate = useNavigate();
   return (
-   <div className="w-[45%] max-h-[800px] bg-white px-6 sm:px-10 md:px-12 lg:px-14 pt-20 pb-3 flex flex-col">
+   <div className="md:w-[45%] w-[100%] max-h-[800px] bg-white px-6 sm:px-10 md:px-12 lg:px-14 pt-20 pb-3 flex flex-col">
     <div className="max-w-sm w-full mx-auto">
      <svg
       className="mb-[50px]"
@@ -173,7 +173,7 @@ const MainSection = () => {
  return (
   <section className="w-full mx-auto px-0 md:px-4 lg:px-0 mx-w-[1110px] mb-12">
    <div className="mt-6 lg:mt-10 overflow-hidden bg-white">
-    <div className="flex flex-col lg:flex-row">
+    <div className="flex  lg:flex-row">
      {!showEmailForm ? (
       <AuthPanel />
      ) : (

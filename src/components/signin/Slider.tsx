@@ -35,7 +35,7 @@ const slides = [
 
 const PromoSlider = () => {
  return (
-  <div className="w-[55%] login-silder max-h-[800px]">
+  <div className="w-[55%] login-silder max-h-[800px] md:block hidden">
    <Slider {...sliderSettings}>
     {slides.map((s, idx) => (
      <div key={idx}>

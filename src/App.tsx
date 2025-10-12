@@ -8,6 +8,7 @@ import Catering from "./pages/Catering";
 import NotFound from "./pages/NotFound";
 import "./index.css";
 import Signup from "./pages/Signup";
+import Settings from "./pages/Settings";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ const App = () => (
    <BrowserRouter>
     <Routes>
      <Route path="/" element={<Index />} />
+     <Route path="/settings" element={<Settings />} />
      <Route path="/catering" element={<Catering />} />
      <Route path="/signup" element={<Signup />} />
      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

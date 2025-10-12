@@ -4,6 +4,7 @@ import { Menu, X } from "lucide-react";
 
 const Header = () => {
  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+ const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
  const toggleMobileMenu = () => {
   setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -58,9 +59,25 @@ const Header = () => {
       <span className="h-[32px] bg-neutral-gray-light w-[1px]"></span>
 
       {/* User Icon */}
-      <button className="w-[40px] h-[40px] lg:w-[48px] lg:h-[48px] bg-neutral-gray rounded-[12px] lg:rounded-[16px] text-white flex items-center justify-center text-[12px] lg:text-[14px] font-[600] flex-shrink-0">
+      <button
+       className="w-[40px] h-[40px] relative lg:w-[48px] lg:h-[48px] bg-neutral-gray rounded-[12px] lg:rounded-[16px] text-white flex items-center justify-center text-[12px] lg:text-[14px] font-[600] flex-shrink-0"
+       onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
        <img src="/images/nav/user.svg" alt="user" />
       </button>
+      {/* Dropdown Menu */}
+      {isDropdownOpen && (
+       <div className="top-16 transition-all duration-300 ease-in-out absolute h-[140px] w-[256px] bg-neutral-white rounded-[16px] py-[10px]">
+        <div className="hover:bg-primary-light w-full py-[8px] px-[16px] rounded-t-[4px] ">
+         <Link to={"/orders"}>My Orders </Link>
+        </div>
+        <div className="hover:bg-primary-light w-full py-[8px] px-[16px]">
+         <Link to={"/settings"}>Account Settings </Link>
+        </div>
+        <div className="hover:bg-primary-light w-full py-[8px] px-[16px] rounded-b-[4px]">
+         <Link to={"/logout"}>Logout</Link>
+        </div>
+       </div>
+      )}
      </div>
 
      {/* Mobile Menu Button */}

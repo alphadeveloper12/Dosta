@@ -26,21 +26,21 @@ const Newsletter = () => {
       </Button>
      </div>
     </div>
-    <div className="text-center w-full border-t border-t-neutral-gray-light">
-     {/* Privacy Note */}
-     <p className="text-[14px] sm:text-[16px] leading-[20px] sm:leading-[24px] font-[400] tracking-[0.1px] text-neutral-black pt-[8px] pb-[16px] px-2">
-      By providing your email you are agreeing to receive email marketing from
-      Dosta Plazi. You can opt-out at any time. See{" "}
-      <a href="/terms" className="text-[#8C3EEE] hover:underline">
-       Terms & Conditions
-      </a>{" "}
-      and{" "}
-      <a href="/privacy" className="text-[#8C3EEE] hover:underline">
-       Privacy Policy
-      </a>
-      .
-     </p>
-    </div>
+   </div>
+   <div className="text-center w-full border-t border-t-neutral-gray-light">
+    {/* Privacy Note */}
+    <p className="text-[14px] sm:text-[16px] leading-[20px] sm:leading-[24px] font-[400] tracking-[0.1px] text-neutral-black py-[16px] px-2">
+     By providing your email you are agreeing to receive email marketing from
+     Dosta Plazi. You can opt-out at any time. See{" "}
+     <a href="/terms" className="text-[#8C3EEE] hover:underline">
+      Terms & Conditions
+     </a>{" "}
+     and{" "}
+     <a href="/privacy" className="text-[#8C3EEE] hover:underline">
+      Privacy Policy
+     </a>
+     .
+    </p>
    </div>
   </section>
  );

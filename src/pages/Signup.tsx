@@ -4,10 +4,10 @@ import React from "react";
 
 const Signup = () => {
  return (
-  <section className="w-full h-screen">
-   <div className="max-w-[1440px] mx-auto flex ">
+  <section className="w-full h-screen overflow-hidden">
+   <div className="max-w-[90rem] mx-auto flex h-full">
     <LeftBar />
-    <RightBar/>
+    <RightBar />
    </div>
   </section>
  );

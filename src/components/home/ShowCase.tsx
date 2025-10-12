@@ -53,10 +53,10 @@ const steps = [
 
 const ShowCase = () => {
  return (
-  <section className="pb-[24px] pt-[48px]  relative md:h-[844px] bg-[#F7F7F9] ">
-   <div className="container mx-auto px-4">
+  <section className="pb-[24px] pt-[48px]  md:h-[844px] bg-[#F7F7F9] w-full ">
+   <div className="mx-auto max-w-[1440px] relative flex justify-center items-center">
     {/* Steps */}
-    <div className=" md:absolute -top-[92px] flex flex-wrap justify-center items-center gap-6 my-[24px]">
+    <div className="md:absolute -top-[145px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 my-[24px] justify-items-center ">
      {steps.map((step, index) => {
       return (
        <div

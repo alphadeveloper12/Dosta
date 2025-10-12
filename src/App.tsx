@@ -9,6 +9,7 @@ import VendingHome from "./pages/VendingHome"
 import NotFound from "./pages/NotFound";
 import "./index.css";
 import Signup from "./pages/Signup";
+import Settings from "./pages/Settings";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,7 @@ const App = () => (
    <BrowserRouter>
     <Routes>
      <Route path="/" element={<Index />} />
+     <Route path="/settings" element={<Settings />} />
      <Route path="/signup" element={<Signup />} />
      <Route path="/signin" element={<SignIn />} />
      <Route path="/vending-home" element={<VendingHome />} />

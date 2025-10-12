@@ -197,7 +197,7 @@ const RightBar = () => {
       {RenderStep()}
       <div className="flex flex-col gap-[0.75rem]">
        <button
-        className="w-full max-w-[21.875rem] text-[0.875rem] leading-[1.25rem] font-[700] bg-primary text-center py-[0.75rem] px-[1rem] rounded-[0.5rem] text-neutral-white hover:bg-primary/90 transition-colors"
+        className="w-full max-w-[21.875rem] text-[0.875rem] leading-[1.25rem] font-[700] bg-[#054A86s] text-center py-[0.75rem] px-[1rem] rounded-[0.5rem] text-neutral-white hover:bg-primary/90 transition-colors"
         onClick={() => handleNext()}>
         continue
        </button>

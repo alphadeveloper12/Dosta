@@ -53,15 +53,15 @@ const steps = [
 
 const ShowCase = () => {
  return (
-  <section className="pb-[24px] pt-[48px]  md:h-[844px] bg-[#F7F7F9] w-full ">
-   <div className="mx-auto max-w-[1440px] relative flex justify-center items-center">
+  <section className="pb-[24px] pt-[48px]  lg:h-[844px] bg-[#F7F7F9] w-full ">
+   <div className="main-container relative flex justify-center items-center">
     {/* Steps */}
-    <div className="md:absolute -top-[145px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 my-[24px] justify-items-center ">
+    <div className="lg:absolute lg:px-[30px] -top-[145px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 my-[24px] justify-items-center ">
      {steps.map((step, index) => {
       return (
        <div
         key={index}
-        className="relative w-full max-w-[350px] h-[478px] shadow-xl bg-neutral-white rounded-[16px]">
+        className="relative w-full max-w-[350px] h-[478px] shadow-xl bg-neutral-white rounded-[16px] flex justify-between flex-col">
         <img
          src={step.icon}
          alt="logo"
@@ -71,10 +71,10 @@ const ShowCase = () => {
          {step.tag}
         </span>
         <div className="pt-[32px] px-[24px] pb-[24px]">
-         <h3 className="text-[28px] leading-[36px] tracking-[0.1px] font-[700] text-primary mb-2">
+         <h3 className="md:text-[28px] text-[20px]  md:leading-[36px] tracking-[0.1px] font-[700] text-primary mb-2">
           {step.title}
          </h3>
-         <p className="text-neutral-gray-dark text-sm leading-relaxed pb-[24px]">
+         <p className="text-neutral-gray-dark text-[14px] leading-[20px] font-[400] pb-[24px]">
           {step.description}
          </p>
          <button className="py-3 px-4 border text-[14px] text-primary-dark leading-[20px] tracking-[0.3px] border-[#054A86] rounded-[8px]">

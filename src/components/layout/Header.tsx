@@ -12,7 +12,7 @@ const Header = () => {
 
  return (
   <header className="bg-primary-dark sticky top-0 z-50 ">
-   <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-[10.313rem]">
+   <div className="main-container">
     <div className="flex items-center justify-between h-16">
      {/* Logo and side bar links */}
      <div className="flex items-center gap-[40px]">

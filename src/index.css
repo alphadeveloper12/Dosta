@@ -81,6 +81,16 @@ All colors MUST be HSL.
 
   --radius: 0.5rem;
  }
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
 
  .dark {
   --background: 215 29% 19%;
@@ -121,7 +131,7 @@ All colors MUST be HSL.
  gap: 8px; /* Space between the dots */
 }
 .login-silder .slick-dots {
- bottom: 220px; /* Adjust bottom position */
+ bottom: 300px; /* Adjust bottom position */
 }
 /* Customize individual dots */
 .slick-dots li button:before {

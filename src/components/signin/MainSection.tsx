@@ -70,7 +70,7 @@ const MainSection = () => {
  const AuthPanel = () => {
   const navigate = useNavigate();
   return (
-   <div className="md:w-[45%] w-[100%] h-screen bg-white px-6 sm:px-10 md:px-12 lg:px-14 pt-20 pb-3 flex flex-col">
+<div className="md:w-[45%] w-full h-screen max-h-[100vh] bg-white px-6 sm:px-10 md:px-12 lg:px-14 pt-20 pb-3 flex flex-col overflow-y-auto scrollbar-hide">
     <div className="max-w-sm w-full mx-auto">
      <svg
       className="mb-[50px]"

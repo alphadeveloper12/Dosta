@@ -25,9 +25,9 @@ const HeroSection = () => {
     {/* Render the same card 4 times for now */}
     {[...Array(4)].map((_, index) => (
      <div key={index} className="relative z-10 w-full lg:mt-[52px]  sm:mt-0 ">
-      <div className="w-full flex flex-col sm:flex-row items-center justify-center gap-[80px] px-0 sm:px-0 md:px-0 py-0 sm:py-0">
-       <div className="min-w-[0] sm:min-w-[490px]">
-        <h1 className="text-[40px] sm:text-[40px] leading-[56px] font-[800] tracking-[0.1px] text-neutral-white pb-[16px]">
+      <div className="w-full flex flex-col md:flex-row items-center justify-between gap-[80px] px-0 sm:px-0 md:px-0 py-0 sm:py-0">
+       <div className="w-auto md:w-[50%] lg:max-w-[490px]">
+        <h1 className="text-[28px] pt-4 md:pt-0 leading-[34px] md:text-[40px] md:leading-[56px] font-[800] tracking-[0.1px] text-neutral-white pb-[16px]">
          Innovation Meets Nutrition!
         </h1>
         <p className="text-[16px] leading-[24px] tracking-[0.1px] font-[700] text-neutral-white pb-[32px]">
@@ -39,11 +39,11 @@ const HeroSection = () => {
         </Button>
        </div>
 
-       <div className="min-w-[0] sm:min-w-[540px]">
+       <div className="max-w-full lg:min-w-[540px] rounded-[24px] overflow-hidden">
         <img
          src="/images/header/cheff.svg"
          alt="chef image"
-         className="h-[361px] w-full sm:w-[540px] object-cover"
+         className="w-full h-auto md:h-[361px] object-cover object-top"
         />
        </div>
       </div>

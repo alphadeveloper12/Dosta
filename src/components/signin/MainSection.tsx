@@ -171,8 +171,8 @@ const MainSection = () => {
  };
  // ---------- Main section wrapper ----------
  return (
-  <section className="w-full mx-auto px-0 md:px-4 lg:px-0 mx-w-[1110px] mb-12">
-   <div className="mt-6 lg:mt-10 overflow-hidden bg-white">
+  <section className="w-full mx-auto px-0 md:px-4 lg:px-0 mx-w-[1110px] height-[100vh]">
+   <div className="overflow-hidden bg-white">
     <div className="flex  lg:flex-row">
      {!showEmailForm ? (
       <AuthPanel />

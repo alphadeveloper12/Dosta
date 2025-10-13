@@ -4,15 +4,11 @@ import MainSection from "@/components/signin/MainSection";
 
 const SignIn = () => {
  return (
-  <div className="min-h-screen flex flex-col">
-   <Header />
 
-   <main className="container px-3 mx-auto max-w-[1110px]">
+   <div >
     <MainSection />
-   </main>
+   </div>
 
-   <Footer />
-  </div>
  );
 };
 

@@ -5,6 +5,7 @@ import { Button } from "../ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import Header from "@/pages/catering/components/layout/Header";
 
 interface NavItem {
  icon: typeof User;
@@ -186,12 +187,14 @@ export default function SettingsLayout() {
        </section>
 
        <div className="flex flex-col sm:flex-row gap-4 justify-between items-center py-5 px-4">
-        <Button variant="destructive" className="w-full sm:w-auto">
+        <Button className="w-full text-[#FF5C60] sm:w-auto bg-transparent border border-[#FF5C60]">
          Log out
         </Button>
 
         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-         <Button variant="outline" className="w-full sm:w-auto">
+         <Button
+          variant="outline"
+          className="w-full sm:w-auto border border-[#545563]">
           Discard changes
          </Button>
          <Button className="w-full sm:w-auto bg-primary hover:bg-primary/90">
@@ -304,7 +307,7 @@ export default function SettingsLayout() {
            className="text-[0.75rem] text-neutral-gray-dark font-[600] leading-[1rem] mb-[0.5rem]">
            Country
           </label>
-          <select className="w-full  py-[0.625rem] px-[0.75rem] outline-none border border-[#C7C8D2] rounded-[0.5rem] text-[0.875rem] sm:text-[1rem]">
+          <select className="w-full bg-transparent py-[0.625rem] px-[0.75rem] outline-none border border-[#C7C8D2] rounded-[0.5rem] text-[0.875rem] sm:text-[1rem] appearance-none">
            <option value="">Select Country</option>
            <option value="country1">Country 1</option>
            <option value="country2">Country 2</option>
@@ -316,7 +319,7 @@ export default function SettingsLayout() {
            className="text-[0.75rem] text-neutral-gray-dark font-[600] leading-[1rem] mb-[0.5rem]">
            Zone
           </label>
-          <select className="w-full  py-[0.625rem] px-[0.75rem] outline-none border border-[#C7C8D2] rounded-[0.5rem] text-[0.875rem] sm:text-[1rem]">
+          <select className="w-full bg-transparent py-[0.625rem] px-[0.75rem] outline-none border border-[#C7C8D2] rounded-[0.5rem] text-[0.875rem] sm:text-[1rem] appearance-none">
            <option value="">Select Zone</option>
            <option value="zone 1">Zone 1</option>
            <option value="zone 2">Zone 2</option>
@@ -537,44 +540,9 @@ export default function SettingsLayout() {
  };
 
  return (
-  <div className="min-h-screen bg-neutral-white">
+  <div className="min-h-screen bg-neutral-white ">
    {/* Header */}
-   <header className="border-b border-border bg-card">
-    <div className="container mx-auto px-4 lg:px-8 h-16 flex items-center justify-between">
-     <div className="flex items-center gap-2">
-      <div className="w-8 h-8 bg-primary rounded-sm flex items-center justify-center">
-       <div className="w-5 h-5 border-2 border-primary-foreground rounded-sm" />
-      </div>
-      <span className="text-xl font-bold text-foreground">DOSTA</span>
-     </div>
-
-     <div className="flex items-center gap-4">
-      <button className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-       EN
-      </button>
-      <button className="text-sm text-foreground hover:text-muted-foreground transition-colors hidden sm:inline">
-       My Order
-      </button>
-      <button className="p-2 hover:bg-secondary rounded-md transition-colors">
-       <svg
-        className="w-5 h-5"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor">
-        <path
-         strokeLinecap="round"
-         strokeLinejoin="round"
-         strokeWidth={2}
-         d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-        />
-       </svg>
-      </button>
-      <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-primary-foreground text-sm font-semibold">
-       NS
-      </div>
-     </div>
-    </div>
-   </header>
+   <Header />
 
    <div className="main-container  !py-6">
     <div className="flex flex-col lg:flex-row gap-6">
@@ -592,7 +560,7 @@ export default function SettingsLayout() {
           className={cn(
            "w-full flex items-center gap-4 p-4 rounded-[16px] transition-all text-left",
            tab === index + 1
-            ? "bg-accent text-accent-foreground shadow-sm border-2 border-[#054A86]"
+            ? "bg-accent text-accent-foreground shadow-sm border border-[#054A86]"
             : " border border-[#EDEEF2] "
           )}
           onClick={() => setTab(index + 1)}>
@@ -627,7 +595,7 @@ export default function SettingsLayout() {
      </aside>
 
      {/* Main Content */}
-     <main className="flex-1">{renderContent()}</main>
+     <main className="flex-1 settings">{renderContent()}</main>
     </div>
    </div>
   </div>

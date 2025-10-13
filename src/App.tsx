@@ -12,6 +12,7 @@ import NotFound from "./pages/NotFound";
 import "./index.css";
 import Signup from "./pages/Signup";
 import Settings from "./pages/Settings";
+import VendingMenu from "./pages/VendingMenu";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => (
      <Route path="/catering" element={<CateringHome />} />
       <Route path="/catering/plan" element={<CateringPlan />} />
      <Route path="/vending-home" element={<VendingHome />} />
+     <Route path="/vending-home/menu" element={<VendingMenu />} />
      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
      <Route path="*" element={<NotFound />} />
     </Routes>

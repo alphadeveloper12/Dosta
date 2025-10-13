@@ -18,6 +18,7 @@ import LocationSelection from "../components/catering/LocationSelection";
 import BudgetSelection from "../components/catering/BudgetSelection";
 import BookingSummary from "../components/catering/BookingSummary"; // Import BookingSummary
 import Footer from "@/components/layout/Footer";
+import BreadCrumb from "@/components/home/BreadCrumb";
 
 const Catering = () => {
   const navigate = useNavigate();
@@ -148,14 +149,15 @@ const Catering = () => {
       <main className="flex-1 bg-background">
         <div className="bg-neutral-white">
           <div className="container py-6">
-            <div className="flex items-center gap-2 text-sm mb-6">
+            {/* <div className="flex items-center gap-2 text-sm mb-6">
               <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-neutral-gray-dark hover:text-primary transition-colors">
                 <ChevronLeft className="w-4 h-4" />
                 Breadcrumbs
               </button>
               <span className="text-neutral-gray">/</span>
               <span className="text-neutral-gray-dark">Breadcrumbs</span>
-            </div>
+            </div> */}
+            <BreadCrumb/>
 
             <h1 className="md:text-4xl font-bold text-primary text-[28px]">Catering Service</h1>
           </div>

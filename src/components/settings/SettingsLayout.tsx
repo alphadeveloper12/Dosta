@@ -187,12 +187,14 @@ export default function SettingsLayout() {
        </section>
 
        <div className="flex flex-col sm:flex-row gap-4 justify-between items-center py-5 px-4">
-        <Button variant="destructive" className="w-full sm:w-auto">
+        <Button className="w-full text-[#FF5C60] sm:w-auto bg-transparent border border-[#FF5C60]">
          Log out
         </Button>
 
         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-         <Button variant="outline" className="w-full sm:w-auto">
+         <Button
+          variant="outline"
+          className="w-full sm:w-auto border border-[#545563]">
           Discard changes
          </Button>
          <Button className="w-full sm:w-auto bg-primary hover:bg-primary/90">
@@ -305,7 +307,7 @@ export default function SettingsLayout() {
            className="text-[0.75rem] text-neutral-gray-dark font-[600] leading-[1rem] mb-[0.5rem]">
            Country
           </label>
-          <select className="w-full  py-[0.625rem] px-[0.75rem] outline-none border border-[#C7C8D2] rounded-[0.5rem] text-[0.875rem] sm:text-[1rem]">
+          <select className="w-full bg-transparent py-[0.625rem] px-[0.75rem] outline-none border border-[#C7C8D2] rounded-[0.5rem] text-[0.875rem] sm:text-[1rem] appearance-none">
            <option value="">Select Country</option>
            <option value="country1">Country 1</option>
            <option value="country2">Country 2</option>
@@ -317,7 +319,7 @@ export default function SettingsLayout() {
            className="text-[0.75rem] text-neutral-gray-dark font-[600] leading-[1rem] mb-[0.5rem]">
            Zone
           </label>
-          <select className="w-full  py-[0.625rem] px-[0.75rem] outline-none border border-[#C7C8D2] rounded-[0.5rem] text-[0.875rem] sm:text-[1rem]">
+          <select className="w-full bg-transparent py-[0.625rem] px-[0.75rem] outline-none border border-[#C7C8D2] rounded-[0.5rem] text-[0.875rem] sm:text-[1rem] appearance-none">
            <option value="">Select Zone</option>
            <option value="zone 1">Zone 1</option>
            <option value="zone 2">Zone 2</option>
@@ -538,9 +540,9 @@ export default function SettingsLayout() {
  };
 
  return (
-  <div className="min-h-screen bg-neutral-white">
+  <div className="min-h-screen bg-neutral-white ">
    {/* Header */}
-  <Header/>
+   <Header />
 
    <div className="main-container  !py-6">
     <div className="flex flex-col lg:flex-row gap-6">
@@ -558,7 +560,7 @@ export default function SettingsLayout() {
           className={cn(
            "w-full flex items-center gap-4 p-4 rounded-[16px] transition-all text-left",
            tab === index + 1
-            ? "bg-accent text-accent-foreground shadow-sm border-2 border-[#054A86]"
+            ? "bg-accent text-accent-foreground shadow-sm border border-[#054A86]"
             : " border border-[#EDEEF2] "
           )}
           onClick={() => setTab(index + 1)}>
@@ -593,7 +595,7 @@ export default function SettingsLayout() {
      </aside>
 
      {/* Main Content */}
-     <main className="flex-1">{renderContent()}</main>
+     <main className="flex-1 settings">{renderContent()}</main>
     </div>
    </div>
   </div>

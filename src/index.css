@@ -101,9 +101,15 @@ All colors MUST be HSL.
   --destructive: 5 100% 65%;
   --destructive-foreground: 0 0% 100%;
  }
+ .settings select {
+  background-image: url("/public/images/icons/down_arrow.svg"); /* Add your custom arrow icon here */
+  background-position: right 8px center;
+  background-repeat: no-repeat;
+  background-size: 1rem;
+ }
 }
-.slides_images button{
-    display: none !important;
+.slides_images button {
+ display: none !important;
 }
 /* Customize the overall position of the dots */
 .slick-dots {
@@ -148,11 +154,11 @@ All colors MUST be HSL.
  color: transparent !important;
  opacity: 100% !important;
 }
-.main-container{
-    max-width: 1170px;
-    width: 100%;
-    padding: 0px 30px;
-    margin: 0 auto;
+.main-container {
+ max-width: 1170px;
+ width: 100%;
+ padding: 0px 30px;
+ margin: 0 auto;
 }
 @layer base {
  * {

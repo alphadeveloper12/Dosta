@@ -4,8 +4,8 @@ import React from "react";
 
 const Signup = () => {
  return (
-  <section className="w-full h-screen overflow-hidden">
-   <div className="max-w-[90rem] mx-auto flex h-full">
+  <section className="w-full mx-auto h-screen overflow-hidden">
+   <div className="mx-w-[1110px] w-full mx-auto flex h-full">
     <LeftBar />
     <RightBar />
    </div>

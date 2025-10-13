@@ -1,15 +1,20 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { useLocation } from "react-router-dom";
 const Header = () => {
  const path = useLocation();
  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+   const [isLoggedIn, setIsLoggedIn] = useState(false); // Add login state
+     const navigate = useNavigate(); // Initialize navigate function
+       const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
  const toggleMobileMenu = () => {
   setIsMobileMenuOpen(!isMobileMenuOpen);
  };
-
+const handleLoginClick = () => {
+    navigate("/signin"); // Navigate to /signin when login is clicked
+  };
  return (
   <header className="bg-neutral-white border-b border-neutral-gray-lightest sticky top-0 z-50">
    <div className="main-container mx-auto ">
@@ -35,6 +40,7 @@ const Header = () => {
       )}
      </Link>
 
+
      {/* Desktop Navigation */}
      <div className="hidden md:flex items-center gap-4 lg:gap-6">
       {/* Language Selector */}
@@ -46,26 +52,22 @@ const Header = () => {
 
       <span className="h-[32px] bg-[#EDEEF2] w-[1px]"></span>
 
-      {/* My Order Link */}
-      <Link
-       to="/orders"
-       className="text-[14px] lg:text-[16px] leading-[24px] tracking-[0.1px] font-[700] text-neutral-black hover:text-primary transition-colors whitespace-nowrap">
-       My Order
-      </Link>
-
-      {/* Cart Icon with Badge */}
-      <button className="relative flex-shrink-0">
-       <img
-        src="images/nav/cart.svg"
-        alt="cart"
-        className="h-[40px] w-[40px] lg:h-[48px] lg:w-[48px]"
-       />
-      </button>
-
-      {/* User Icon */}
-      <button className="w-[40px] h-[40px] lg:w-[48px] lg:h-[48px] bg-[#054A86] rounded-[12px] lg:rounded-[16px] text-white flex items-center justify-center text-[12px] lg:text-[14px] font-[600] flex-shrink-0">
-       NS
-      </button>
+     {/* Login Button or User Icon */}
+            {isLoggedIn ? (
+              <button
+                className="w-[40px] h-[40px] relative lg:w-[48px] lg:h-[48px] bg-neutral-gray rounded-[12px] lg:rounded-[16px] text-white flex items-center justify-center text-[12px] lg:text-[14px] font-[600] flex-shrink-0"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              >
+                <img src="/images/nav/user.svg" alt="user" />
+              </button>
+            ) : (
+              <button
+                onClick={handleLoginClick} // Trigger navigation on click
+                className="text-[16px] leading-[24px] font-[700] tracking-[0.1px] text-neutral-gray-dark"
+              >
+                Login
+              </button>
+            )}
      </div>
 
      {/* Mobile Menu Button */}

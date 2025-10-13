@@ -30,20 +30,19 @@ const slides = [
   title: "Crafted Cuisine. Nourishing Intent.",
   subtitle: "We prepare elevated meals with health, care, and flavor.",
  },
-
 ];
 
 const PromoSlider = () => {
  return (
-  <div className="w-[55%] login-silder max-h-[800px] md:block hidden">
+  <div className="w-[55%] login-silder h-full md:block hidden">
    <Slider {...sliderSettings}>
     {slides.map((s, idx) => (
      <div key={idx}>
-      <div className="relative h-[800px] xl:h-[800px] overflow-hidden">
+      <div className="relative h-[100vh] xl:h-[100vh] overflow-hidden">
        <img
         src={s.img}
         alt={s.title}
-        className="absolute inset-0 h-full w-full "
+        className="absolute inset-0 h-full w-full object-cover"
        />
        <div className="absolute inset-0 bg-black/30" />
        <div className="absolute inset-0 flex items-center justify-center">
@@ -59,6 +58,7 @@ const PromoSlider = () => {
     ))}
    </Slider>
   </div>
+
  );
 };
 

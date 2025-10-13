@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import SignIn from "./pages/SignIn";
-import VendingHome from "./pages/VendingHome"
+import VendingHome from "./pages/VendingHome";
 import CateringHome from "./pages/catering/pages/Index";
 import CateringPlan from "./pages/catering/pages/Catering";
 import NotFound from "./pages/NotFound";
@@ -13,6 +13,7 @@ import "./index.css";
 import Signup from "./pages/Signup";
 import Settings from "./pages/Settings";
 import VendingMenu from "./pages/VendingMenu";
+import OrderNow from "./components/vending_home/OrderNow";
 
 const queryClient = new QueryClient();
 
@@ -28,9 +29,11 @@ const App = () => (
      <Route path="/signup" element={<Signup />} />
      <Route path="/signin" element={<SignIn />} />
      <Route path="/catering" element={<CateringHome />} />
-      <Route path="/catering/plan" element={<CateringPlan />} />
+     <Route path="/catering/plan" element={<CateringPlan />} />
      <Route path="/vending-home" element={<VendingHome />} />
      <Route path="/vending-home/menu" element={<VendingMenu />} />
+     <Route path="/vending-home/order-now" element={<OrderNow />} />
+
      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
      <Route path="*" element={<NotFound />} />
     </Routes>

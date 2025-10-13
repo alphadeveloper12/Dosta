@@ -2,6 +2,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import type { EmblaCarouselType, EmblaOptionsType } from "embla-carousel";
+import { Link, useNavigate } from "react-router-dom";
 
 type Slide = { day: string; img: string; blurb: string };
 
@@ -49,7 +50,9 @@ const Arrow: React.FC<{ dir: "left" | "right"; onClick: () => void }> = ({
   onClick={onClick}
   aria-label={dir === "left" ? "Previous" : "Next"}
   className={`absolute top-[60%] -translate-y-1/2 z-20 rounded-full p-2 border border-[#2B2B43] ${
-   dir === "left" ? "left-[7px] md:-left-4 sm:-left-2" : "right-[7px] md:right-1 sm:-right-3"
+   dir === "left"
+    ? "left-[7px] md:-left-4 sm:-left-2"
+    : "right-[7px] md:right-1 sm:-right-3"
   }`}>
   {dir === "right" ? (
    <svg
@@ -117,6 +120,7 @@ const SliderSection: React.FC = () => {
  const [emblaRef, emblaApi] = useEmblaCarousel(OPTIONS);
  const [selectedIndex, setSelectedIndex] = useState(0);
  const [snapCount, setSnapCount] = useState(0);
+ const navigate = useNavigate();
 
  // Triple the slides to guarantee continuous loop regardless of viewport
  const RENDERED_SLIDES = useMemo(
@@ -151,8 +155,10 @@ const SliderSection: React.FC = () => {
     </h2>
     <p className="text-base font-normal text[#032F55]">
      {" "}
-     Daily menu of 13 chef-prepared meals, available Monday to Friday. View our
-     complete menu
+     Daily menu of 13 chef-prepared meals, available Monday to Friday.{" "}
+     <Link className="underline text-[#056AC1]" to={"/vending-home/menu"}>
+      View our complete menu
+     </Link>
     </p>
    </div>
    {/* Always-enabled arrows */}
@@ -162,17 +168,19 @@ const SliderSection: React.FC = () => {
    {/* Viewport */}
    <div className="overflow-hidden" ref={emblaRef}>
     {/* Track: each direct child is a slide (no extra spacers!) */}
-    <div className="flex">
+    <div className="flex" onClick={() => navigate("/vending-home/menu")}>
      {RENDERED_SLIDES.map((s, idx) => (
       <div
+       
        key={`${s.day}-${idx}`}
-       className="relative shrink-0 min-w-0 basis-[100%] pr-unset sm:pr-4 sm:basis-1/2 lg:basis-1/4">
+       className="relative shrink-0 cursor-pointer min-w-0 basis-[100%] pr-unset sm:pr-4 sm:basis-1/2 lg:basis-1/4">
        <div className="group relative h-64 w-full overflow-hidden rounded-2xl shadow hover:shadow-lg transition-shadow">
         <img
          src={s.img}
          alt={s.day}
          className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
+
         <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/25 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
          <h3 className="text-xl font-semibold drop-shadow">{s.day}</h3>

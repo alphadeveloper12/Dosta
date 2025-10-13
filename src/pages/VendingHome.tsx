@@ -16,6 +16,8 @@ const VendingHome = () => {
     <SliderSection />
     <GetApp />
     <Newsletter />
+
+    
    </main>
 
    <Footer />

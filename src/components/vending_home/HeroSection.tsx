@@ -1,4 +1,12 @@
+import { motion, AnimatePresence } from "framer-motion";
+import { X } from "lucide-react";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
 const HeroSection = () => {
+ const navigate = useNavigate();
+ const [selectedItem, setSelectedItem] = useState(false);
+ const [activeView, setActiveView] = useState<"list" | "map">("list");
  return (
   <section className="relative">
    {/* Background image */}
@@ -28,6 +36,7 @@ const HeroSection = () => {
        <input
         className="w-full max-w-md rounded-xl px-5 py-3 text-sm outline-none bg-[#EDEEF2] placeholder:text-[#545563]"
         placeholder="Find nearby vending locations…"
+        onClick={() => setSelectedItem(true)}
        />
        <svg
         className="-ml-8 mt-3"
@@ -71,11 +80,154 @@ const HeroSection = () => {
        </a>
       </div>
       <div className="mt-6 flex justify-center w-full">
-      <img src="/images/vending_home/meal_browes.png" alt="Browes Meal" />
+       <img src="/images/vending_home/meal_browes.png" alt="Browes Meal" />
       </div>
      </div>
     </div>
    </div>
+
+   <AnimatePresence>
+    {selectedItem && (
+     <motion.div
+      className="fixed inset-0 z-50 flex justify-end bg-black/75"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}>
+      {/* Sidebar Panel */}
+      <motion.div
+       initial={{ x: "100%" }}
+       animate={{ x: 0 }}
+       exit={{ x: "100%" }}
+       transition={{ type: "spring", stiffness: 250, damping: 30 }}
+       className="bg-white w-full sm:max-w-[522px] h-full shadow-2xl flex flex-col overflow-hidden">
+       {/* Header */}
+       <div className="flex items-center justify-between px-8 pt-6 pb-4 border-b border-gray-200">
+        <h2 className="text-[28px] leading-[36px] font-[700] text-gray-900">
+         Vending Locator
+        </h2>
+        <button
+         onClick={() => setSelectedItem(null)}
+         className="p-2 rounded-full hover:bg-gray-100">
+         <X className="w-5 h-5 text-gray-600" />
+        </button>
+       </div>
+
+       {/* Search Input */}
+       <div className="px-8 py-4 flex items-center gap-2">
+        <div className="relative flex-1">
+         <input
+          type="text"
+          placeholder="Search by city or street name"
+          className="w-full bg-[#EDEEF2] rounded-[12px] py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#054A86]"
+         />
+         <svg
+          className="absolute left-3 top-2.5 w-5 h-5 text-gray-400"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24">
+          <path
+           strokeLinecap="round"
+           strokeLinejoin="round"
+           strokeWidth={2}
+           d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z"
+          />
+         </svg>
+        </div>
+        <button className="p-3 bg-[#EDEEF2] rounded-[12px] ">
+         <svg
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg">
+          <path
+           d="M2 7.33301L14.6667 1.33301L8.66667 13.9997L7.33333 8.66634L2 7.33301Z"
+           stroke="#2B2B43"
+           stroke-width="1.5"
+           stroke-linecap="round"
+           stroke-linejoin="round"
+          />
+         </svg>
+        </button>
+       </div>
+
+       {/* Toggle Tabs */}
+       <div className="px-8 pb-4">
+        <div className="flex bg-gray-100 rounded-xl p-1">
+         <button
+          onClick={() => setActiveView("list")}
+          className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
+            ${
+             activeView === "list"
+              ? "bg-[#054A86] text-white shadow-sm"
+              : "text-gray-600 hover:text-gray-800"
+            }`}>
+          List View
+         </button>
+         <button
+          onClick={() => setActiveView("map")}
+          className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
+            ${
+             activeView === "map"
+              ? "bg-[#054A86] text-white shadow-sm"
+              : "text-gray-600 hover:text-gray-800"
+            }`}>
+          Map View
+         </button>
+        </div>
+       </div>
+
+       {/* Scrollable List */}
+       {activeView === "list" && (
+        <div className="flex-1 overflow-y-auto px-8 space-y-4 pb-28">
+         {/* Selected Location */}
+         <div className="border border-gray-200 rounded-2xl shadow-sm p-4">
+          <span className="inline-block bg-[#A7CF38] text-[#054A86] text-[12px] font-semibold px-3 py-1 rounded-full mb-2">
+           SELECTED LOCATION
+          </span>
+          <h3 className="text-[20px] font-[700] text-gray-900">Barsha 1</h3>
+          <p className="text-[14px] text-gray-600">
+           Near Mall of the Emirates, St. 12
+          </p>
+          <p className="text-[14px] text-gray-600 mt-1">
+           Open - Closes at 10 PM
+          </p>
+         </div>
+
+         {/* Other Locations */}
+         {[2, 3].map((i) => (
+          <div
+           key={i}
+           className="border border-gray-200 rounded-2xl shadow-sm p-4">
+           <h3 className="text-[20px] font-[700] text-gray-900">
+            Location {i}
+           </h3>
+           <p className="text-[14px] text-gray-600">
+            Near Mall of the Emirates, St. 12
+           </p>
+           <p className="text-[14px] text-gray-600 mt-1">
+            Open - Closes at 10 PM
+           </p>
+           <button className="mt-3 px-4 py-1.5 text-sm border border-gray-400 rounded-md hover:bg-gray-50">
+            Select This Location
+           </button>
+          </div>
+         ))}
+        </div>
+       )}
+
+       {/* Footer */}
+       <div className=" bottom-0 left-0 right-0 bg-white  p-4">
+        <button
+         className="w-full bg-[#054A86] text-white rounded-lg py-3 font-medium hover:bg-[#063a69]"
+         onClick={() => navigate("/vending-home/order-now")}>
+         Confirm & Close
+        </button>
+       </div>
+      </motion.div>
+     </motion.div>
+    )}
+   </AnimatePresence>
   </section>
  );
 };

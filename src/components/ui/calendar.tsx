@@ -122,159 +122,160 @@ const DateTimePicker = ({ isOpen, onClose, onConfirm }) => {
   const days = getDaysInMonth(currentMonth);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-80 z-100 flex items-center justify-end h-full" style={{ zIndex: 1000 }}>
-      <div className="bg-white shadow-xl w-full max-w-md z-100 h-full" >
-        {/* Header */}
-        <div className="flex items-center justify-between " style={{margin: '16px 32px'}}>
-          <h2 className="text-lg font-semibold text-gray-800">Select Date and Time</h2>
-          <button 
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            <X size={20} />
+   <div
+  className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-end h-full"
+  style={{ zIndex: 1000 }}
+>
+  {/* Main White Panel */}
+  <div
+    className="bg-white shadow-xl w-full max-w-md h-full rounded-none overflow-y-auto"
+    style={{ scrollbarWidth: "thin", scrollbarColor: "#cbd5e0 transparent" }} // optional for better scrollbar look
+  >
+    {/* Header */}
+    <div className="flex items-center justify-between" style={{ margin: "16px 32px" }}>
+      <h2 className="text-lg font-semibold text-gray-800">Select Date and Time</h2>
+      <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+        <X size={20} />
+      </button>
+    </div>
+
+    {/* Calendar */}
+    <div>
+      <div
+        style={{
+          borderRadius: "12px",
+          boxShadow: "0px 0px 20px 4px #BFBFBF40",
+          padding: "36px 38px",
+          margin: "32px",
+        }}
+      >
+        {/* Month Navigation */}
+        <div className="flex items-center justify-between mb-6">
+          <button onClick={handlePrevMonth} className="p-1 hover:bg-gray-100 rounded">
+            <ChevronLeft size={20} />
+          </button>
+          <span className="font-medium text-gray-700">
+            {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+          </span>
+          <button onClick={handleNextMonth} className="p-1 hover:bg-gray-100 rounded">
+            <ChevronRight size={20} />
           </button>
         </div>
 
-        {/* Calendar */}
-        <div>
-          <div style={{borderRadius: '12px',boxShadow: '0px 0px 20px 4px #BFBFBF40', padding:'36px 38px',  margin: '32px'}}>
-            {/* Month Navigation */}
-            <div className="flex items-center justify-between mb-6">
-              <button 
-                onClick={handlePrevMonth}
-                className="p-1 hover:bg-gray-100 rounded"
-              >
-                <ChevronLeft size={20} />
-              </button>
-              <span className="font-medium text-gray-700">
-                {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
-              </span>
-              <button 
-                onClick={handleNextMonth}
-                className="p-1 hover:bg-gray-100 rounded"
-              >
-                <ChevronRight size={20} />
-              </button>
+        {/* Days of Week */}
+        <div className="grid grid-cols-7 gap-2 mb-2">
+          {daysOfWeek.map((day, i) => (
+            <div key={i} className="text-center text-sm font-medium text-gray-500">
+              {day}
             </div>
-
-            {/* Days of Week */}
-            <div className="grid grid-cols-7 gap-2 mb-2">
-              {daysOfWeek.map((day, i) => (
-                <div key={i} className="text-center text-sm font-medium text-gray-500">
-                  {day}
-                </div>
-              ))}
-            </div>
-
-            {/* Calendar Days */}
-            <div className="grid grid-cols-7 gap-2">
-              {days.map((dayObj, i) => (
-                <button
-                  key={i}
-                  onClick={() => dayObj.isCurrentMonth && handleDateClick(dayObj.date)}
-                  disabled={!dayObj.isCurrentMonth}
-                  className={`
-                    aspect-square flex items-center justify-center rounded-full text-sm
-                    ${!dayObj.isCurrentMonth ? 'text-gray-300' : 'text-gray-700'}
-                    ${selectedDate && isSameDay(dayObj.date, selectedDate) && dayObj.isCurrentMonth
-                      ? 'bg-[#054A86] text-white font-semibold'
-                      : 'hover:bg-gray-100'}
-                    ${!dayObj.isCurrentMonth ? 'cursor-default' : 'cursor-pointer'}
-                  `}
-                >
-                  {dayObj.day}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Time Picker */}
-          <div style={{borderRadius: '12px',boxShadow: '0px 0px 20px 4px #BFBFBF40', padding:'25px 0', margin: '32px'}}>
-            <div className="flex items-center justify-center gap-4 ">
-              {/* Hour */}
-              <div className="flex flex-col items-center">
-                <button 
-                  onClick={incrementHour}
-                  className="p-1 hover:bg-gray-100 rounded"
-                >
-                  <ChevronUp size={20} />
-                </button>
-                <div className="text-2xl font-semibold w-12 text-center">
-                  {hour.toString().padStart(2, '0')}
-                </div>
-                <button 
-                  onClick={decrementHour}
-                  className="p-1 hover:bg-gray-100 rounded"
-                >
-                  <ChevronDown size={20} />
-                </button>
-              </div>
-
-              <span className="text-2xl font-semibold">:</span>
-
-              {/* Minute */}
-              <div className="flex flex-col items-center">
-                <button 
-                  onClick={incrementMinute}
-                  className="p-1 hover:bg-gray-100 rounded"
-                >
-                  <ChevronUp size={20} />
-                </button>
-                <div className="text-2xl font-semibold w-12 text-center">
-                  {minute.toString().padStart(2, '0')}
-                </div>
-                <button 
-                  onClick={decrementMinute}
-                  className="p-1 hover:bg-gray-100 rounded"
-                >
-                  <ChevronDown size={20} />
-                </button>
-              </div>
-
-              {/* AM/PM */}
-              <div className="flex flex-col items-center">
-                <button 
-                  onClick={togglePeriod}
-                  className="p-1 hover:bg-gray-100 rounded"
-                >
-                  <ChevronUp size={20} />
-                </button>
-                <div className="text-2xl font-semibold w-12 text-center">
-                  {period}
-                </div>
-                <button 
-                  onClick={togglePeriod}
-                  className="p-1 hover:bg-gray-100 rounded"
-                >
-                  <ChevronDown size={20} />
-                </button>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
 
-        {/* Footer Buttons */}
-        <div className="flex gap-3 bg-white" style={{marginTop: '55px', boxShadow: '0px 12px 24px 0px #2B2B4329', padding: '32px'}}>
-          <Button
-            onClick={handleConfirm}
-            disabled={!selectedDate}
-            className={`flex-1 py-3 rounded-lg font-medium transition-colors ${
-              selectedDate 
-                ? 'bg-[#054A86] text-white hover:bg-[#054A86] hover:bg-opacity-70' 
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }`}
-          >
-            Confirm
-          </Button>
-          <Button
-            onClick={onClose}
-            className="flex-1 bg-white text-[#054A86] font-[14px] py-3 rounded-lg font-medium border border-[#054A86] hover:bg-gray-50 transition-colors"
-          >
-            Close
-          </Button>
+        {/* Calendar Days */}
+        <div className="grid grid-cols-7 gap-2">
+          {days.map((dayObj, i) => (
+            <button
+              key={i}
+              onClick={() => dayObj.isCurrentMonth && handleDateClick(dayObj.date)}
+              disabled={!dayObj.isCurrentMonth}
+              className={`
+                aspect-square flex items-center justify-center rounded-full text-sm
+                ${!dayObj.isCurrentMonth ? "text-gray-300" : "text-gray-700"}
+                ${
+                  selectedDate && isSameDay(dayObj.date, selectedDate) && dayObj.isCurrentMonth
+                    ? "bg-[#054A86] text-white font-semibold"
+                    : "hover:bg-gray-100"
+                }
+                ${!dayObj.isCurrentMonth ? "cursor-default" : "cursor-pointer"}
+              `}
+            >
+              {dayObj.day}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Time Picker */}
+      <div
+        style={{
+          borderRadius: "12px",
+          boxShadow: "0px 0px 20px 4px #BFBFBF40",
+          padding: "25px 0",
+          margin: "32px",
+        }}
+      >
+        <div className="flex items-center justify-center gap-4">
+          {/* Hour */}
+          <div className="flex flex-col items-center">
+            <button onClick={incrementHour} className="p-1 hover:bg-gray-100 rounded">
+              <ChevronUp size={20} />
+            </button>
+            <div className="text-2xl font-semibold w-12 text-center">
+              {hour.toString().padStart(2, "0")}
+            </div>
+            <button onClick={decrementHour} className="p-1 hover:bg-gray-100 rounded">
+              <ChevronDown size={20} />
+            </button>
+          </div>
+
+          <span className="text-2xl font-semibold">:</span>
+
+          {/* Minute */}
+          <div className="flex flex-col items-center">
+            <button onClick={incrementMinute} className="p-1 hover:bg-gray-100 rounded">
+              <ChevronUp size={20} />
+            </button>
+            <div className="text-2xl font-semibold w-12 text-center">
+              {minute.toString().padStart(2, "0")}
+            </div>
+            <button onClick={decrementMinute} className="p-1 hover:bg-gray-100 rounded">
+              <ChevronDown size={20} />
+            </button>
+          </div>
+
+          {/* AM/PM */}
+          <div className="flex flex-col items-center">
+            <button onClick={togglePeriod} className="p-1 hover:bg-gray-100 rounded">
+              <ChevronUp size={20} />
+            </button>
+            <div className="text-2xl font-semibold w-12 text-center">{period}</div>
+            <button onClick={togglePeriod} className="p-1 hover:bg-gray-100 rounded">
+              <ChevronDown size={20} />
+            </button>
+          </div>
         </div>
       </div>
     </div>
+
+    {/* Footer Buttons */}
+    <div
+      className="flex gap-3 bg-white sticky bottom-0"
+      style={{
+        boxShadow: "",
+        padding: "32px",
+      }}
+    >
+      <Button
+        onClick={handleConfirm}
+        disabled={!selectedDate}
+        className={`flex-1 py-3 rounded-lg font-medium transition-colors ${
+          selectedDate
+            ? "bg-[#054A86] text-white hover:bg-[#054A86]/70"
+            : "bg-gray-300 text-gray-500 cursor-not-allowed"
+        }`}
+      >
+        Confirm
+      </Button>
+      <Button
+        onClick={onClose}
+        className="flex-1 bg-white text-[#054A86] font-[14px] py-3 rounded-lg font-medium border border-[#054A86] hover:bg-gray-50 transition-colors"
+      >
+        Close
+      </Button>
+    </div>
+  </div>
+</div>
+
   );
 };
 

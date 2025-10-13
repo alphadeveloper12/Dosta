@@ -18,7 +18,7 @@ const images = [
 const Companies = () => {
  return (
   <section className="bg-[#F7F7F9] pt-[32px] pb-[64px]">
-   <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-[165px]">
+   <div className="main-container ">
     <h3 className="text-[28px] leading-[36px] tracking-[0.1px] font-[700] text-center text-[#054A86] pb-[8px]">
      Trusted by Leading Brands
     </h3>

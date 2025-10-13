@@ -20,25 +20,25 @@ const PromoBanners = () => {
 
  return (
   <section className="bg-neutral-white md:pt-[120px] pt-[24px] pb-[48px]">
-   <div className="px-4">
+   <div className="main-container">
     <div className="w-full flex flex-col md:flex-row justify-center items-center gap-[20px] md:gap-[30px]">
      {promoData.map((promo, index) => (
       <div
        key={index}
        className={`w-full max-w-[540px] md:h-[152px] md:w-[540px] rounded-xl overflow-hidden shadow-lg md:min-h-[180px]`}
        style={{ backgroundColor: promo.bgColor }}>
-       <div className="flex items-center h-full">
-        <div className="flex-1 p-4 md:p-6 md:w-[316px] md:py-[17px] md:pl-[32px]">
-         <h3 className="text-lg md:text-xl font-bold text-destructive-foreground mb-1">
+       <div className="flex items-center h-full ">
+        <div className="flex-1 p-4  md:w-[316px] md:pt-[17px] md:pl-[32px]">
+         <h3 className="text-lg md:text-[24px] md:leading-[32px] md:font-[800] font-bold text-neutral-white mb-1">
           {promo.title}
          </h3>
-         <p className="text-destructive-foreground/90 text-sm mb-3 md:mb-4">
+         <p className="text-destructive-foreground/90 text-sm md:text-[16px] leading-[24px] tracking-[0.1px] font-[700] mb-3 md:mb-4">
           {promo.description}
          </p>
          <Button
           variant="secondary"
           size="sm"
-          className="bg-neutral-white text-neutral-black hover:bg-neutral-white/90 font-semibold !h-[30px] rounded-[16px]">
+          className="bg-neutral-white text-neutral-gray-dark hover:bg-neutral-white/90 text-[12px] leading-[18px] tracking-[0.6px] font-[800] !h-[30px] rounded-[16px]">
           {promo.buttonText}
          </Button>
         </div>

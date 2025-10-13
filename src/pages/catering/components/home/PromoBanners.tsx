@@ -21,7 +21,7 @@ const PromoBanners = () => {
   return (
     <section className="bg-neutral-white pt-[24px] pb-[48px]">
       <div className="px-4">
-        <div className="w-full flex flex-col md:flex-row justify-center items-center gap-[20px] md:gap-[30px]">
+        <div className="main-container flex flex-col md:flex-row justify-center items-center gap-[20px] md:gap-[30px]">
           {promoData.map((promo, index) => (
             <div
               key={index}

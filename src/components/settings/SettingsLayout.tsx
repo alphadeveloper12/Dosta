@@ -210,12 +210,12 @@ export default function SettingsLayout() {
        Address
       </h1>
       <div className="border border-[#EDEEF2] p-2 md:p-0  rounded-[16px]">
-       <section className="bg-neutral-white rounded-[16px]  md:px-[16px] md:py-[24px] sm:p-8 shadow-sm ">
+       <section className="bg-neutral-white rounded-[16px] py-2 md:px-[16px] md:py-[24px] sm:p-8 shadow-sm ">
         <h2 className="text-lg font-semibold mb-6 text-foreground">
          Existing address
         </h2>
 
-        <div className="flex flex-col items-center md:flex-row gap-4">
+        <div className="flex flex-wrap items-center md:flex-row gap-4">
          <div className="h-[106px] w-[222px] border border-[#C7C8D2] rounded-[8px] p-[12px]">
           <h3 className="text-[16px] leading-[24px] font-[700] tracking-[0.1px] text-neutral-black pb-[2px]">
            Home
@@ -241,7 +241,7 @@ export default function SettingsLayout() {
         </div>
        </section>
 
-       <section className="bg-neutral-white rounded-[16px]  md:px-[16px] md:py-[24px] sm:p-8 shadow-sm ">
+       <section className="bg-neutral-white rounded-[16px] py-2  md:px-[16px] md:py-[24px] sm:p-8 shadow-sm ">
         <h2 className="text-lg font-semibold mb-6 text-foreground">
          New address
         </h2>
@@ -344,12 +344,12 @@ export default function SettingsLayout() {
        Payment method
       </h1>
       <div className="border border-[#EDEEF2] p-2 md:p-0  rounded-[16px]">
-       <section className="bg-neutral-white rounded-[16px]  md:px-[16px] md:py-[24px] sm:p-8 shadow-sm ">
+       <section className="bg-neutral-white rounded-[16px] py-2 md:px-[16px] md:py-[24px] sm:p-8 shadow-sm ">
         <h2 className="text-lg font-semibold mb-6 text-foreground">
          Connected payment methods
         </h2>
 
-        <div className="flex flex-col items-center md:flex-row gap-4">
+        <div className="flex flex-wrap items-center md:flex-row gap-4">
          {paymentData.map((card, index) => {
           return (
            <div className="h-[88px] w-[228px] border border-[#C7C8D2] rounded-[8px] p-[12px]">
@@ -371,7 +371,7 @@ export default function SettingsLayout() {
         </div>
        </section>
 
-       <section className="bg-neutral-white rounded-[16px]  md:px-[16px] md:py-[24px] sm:p-8 shadow-sm ">
+       <section className="bg-neutral-white rounded-[16px] py-2 md:px-[16px] md:py-[24px] sm:p-8 shadow-sm ">
         <h2 className="text-lg font-semibold mb-6 text-foreground">
          New payment method
         </h2>
@@ -450,12 +450,12 @@ export default function SettingsLayout() {
        Security
       </h1>
       <div className="border border-[#EDEEF2] p-2 md:p-0  rounded-[16px]">
-       <section className="bg-neutral-white rounded-[16px]  md:px-[16px] md:py-[24px] sm:p-8 shadow-sm ">
+       <section className="bg-neutral-white rounded-[16px] py-2  md:px-[16px] md:py-[24px] sm:p-8 shadow-sm ">
         <h2 className="text-lg font-semibold mb-6 text-foreground">
          2 factor authentication
         </h2>
 
-        <div className="flex flex-col items-center md:flex-row md:justify-between gap-4">
+        <div className="flex flex-col md:items-center md:flex-row md:justify-between gap-4">
          <div className="space-y-2 ">
           <label
            htmlFor=""
@@ -474,7 +474,7 @@ export default function SettingsLayout() {
         </div>
        </section>
 
-       <section className="bg-neutral-white rounded-[16px]  md:px-[16px] md:py-[24px] sm:p-8 shadow-sm ">
+       <section className="bg-neutral-white rounded-[16px] py-2 md:px-[16px] md:py-[24px] sm:p-8 shadow-sm ">
         <h2 className="text-lg font-semibold mb-6 text-foreground">
          Change password
         </h2>
@@ -576,7 +576,7 @@ export default function SettingsLayout() {
     </div>
    </header>
 
-   <div className="container mx-auto md:px-[165px] px-4  py-8">
+   <div className="main-container  !py-6">
     <div className="flex flex-col lg:flex-row gap-6">
      {/* Sidebar */}
      <aside className="w-full lg:w-80">

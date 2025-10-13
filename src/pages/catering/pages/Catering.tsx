@@ -2,7 +2,7 @@ import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Header from "../components/layout/Header";
-import Footer from "../components/layout/Footer";
+
 import EventTypeCard from "../components/catering/EventTypeCard";
 import corporateEventImage from "@/assets/corporate-event.jpg";
 import Caterers from "@/assets/Caterers.svg";
@@ -17,6 +17,7 @@ import CourseSelection from "../components/catering/CourseSelection";
 import LocationSelection from "../components/catering/LocationSelection";
 import BudgetSelection from "../components/catering/BudgetSelection";
 import BookingSummary from "../components/catering/BookingSummary"; // Import BookingSummary
+import Footer from "@/components/layout/Footer";
 
 const Catering = () => {
   const navigate = useNavigate();

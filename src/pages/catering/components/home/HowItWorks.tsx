@@ -24,7 +24,7 @@ const steps = [
 const HowItWorks = () => {
   return (
     <section className="pb-[24px] pt-[48px] bg-neutral-white">
-      <div className="container mx-auto px-4">
+      <div className="main-container mx-auto px-4">
         <h2 className="text-3xl md:text-[28px] leading-[36px] font-[700] tracking-[0.1px] text-center text-primary">
           How We Make It Happen
         </h2>

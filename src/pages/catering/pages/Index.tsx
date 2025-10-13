@@ -1,9 +1,11 @@
 import Header from "../components/layout/Header";
-import Footer from "../components/layout/Footer";
+
 import HeroSection from "../components/home/HeroSection";
 import HowItWorks from "../components/home/HowItWorks";
 import PromoBanners from "../components/home/PromoBanners";
-import Newsletter from "../components/home/Newsletter";
+
+import Footer from "@/components/layout/Footer";
+import Newsletter from "@/components/home/Newsletter";
 
 const Index = () => {
   return (

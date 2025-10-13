@@ -5,6 +5,7 @@ import { Button } from "../ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import Header from "@/pages/catering/components/layout/Header";
 
 interface NavItem {
  icon: typeof User;
@@ -539,42 +540,7 @@ export default function SettingsLayout() {
  return (
   <div className="min-h-screen bg-neutral-white">
    {/* Header */}
-   <header className="border-b border-border bg-card">
-    <div className="container mx-auto px-4 lg:px-8 h-16 flex items-center justify-between">
-     <div className="flex items-center gap-2">
-      <div className="w-8 h-8 bg-primary rounded-sm flex items-center justify-center">
-       <div className="w-5 h-5 border-2 border-primary-foreground rounded-sm" />
-      </div>
-      <span className="text-xl font-bold text-foreground">DOSTA</span>
-     </div>
-
-     <div className="flex items-center gap-4">
-      <button className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-       EN
-      </button>
-      <button className="text-sm text-foreground hover:text-muted-foreground transition-colors hidden sm:inline">
-       My Order
-      </button>
-      <button className="p-2 hover:bg-secondary rounded-md transition-colors">
-       <svg
-        className="w-5 h-5"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor">
-        <path
-         strokeLinecap="round"
-         strokeLinejoin="round"
-         strokeWidth={2}
-         d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-        />
-       </svg>
-      </button>
-      <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-primary-foreground text-sm font-semibold">
-       NS
-      </div>
-     </div>
-    </div>
-   </header>
+  <Header/>
 
    <div className="main-container  !py-6">
     <div className="flex flex-col lg:flex-row gap-6">

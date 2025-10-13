@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
-
+import { useLocation } from "react-router-dom";
 const Header = () => {
+ const path = useLocation();
  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
  const toggleMobileMenu = () => {
@@ -11,15 +12,27 @@ const Header = () => {
 
  return (
   <header className="bg-neutral-white border-b border-neutral-gray-lightest sticky top-0 z-50">
-   <div className="main-container mx-auto px-4 md:px-8">
+   <div className="main-container mx-auto ">
     <div className="flex items-center justify-between h-16">
      {/* Logo */}
      <Link to="/" className="flex-shrink-0">
-      <img
-       src="/images/nav/catering_logo.svg"
-       alt="logo"
-       className="h-[20px] w-[180px] sm:h-[24px] sm:w-[241px]"
-      />
+      {path.pathname === "/settings" ? (
+       <img
+        src={"/images/nav/dosta_blue.svg"}
+        alt="logo"
+        className="md:h-[24px] md:w-[135px] h-[24px] w-[110px]"
+       />
+      ) : (
+       <img
+        src={
+         path.pathname === "/vending-home"
+          ? "/images/nav/vending_logo.svg"
+          : "/images/nav/catering_logo.svg"
+        }
+        alt="logo"
+        className="h-[20px] w-[180px] sm:h-[24px] sm:w-[241px]"
+       />
+      )}
      </Link>
 
      {/* Desktop Navigation */}

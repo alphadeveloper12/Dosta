@@ -1,9 +1,10 @@
-import Header from "@/components/layout/Header";
+
 import Footer from "@/components/layout/Footer";
 import HeroSection from "@/components/vending_home/HeroSection";
 import SliderSection from "@/components/vending_home/SliderSection";
 import GetApp from "@/components/vending_home/GetApp";
 import Newsletter from "@/components/home/Newsletter";
+import Header from "./catering/components/layout/Header";
 
 const VendingHome = () => {
  return (

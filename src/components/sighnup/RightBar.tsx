@@ -151,8 +151,6 @@ const RightBar = () => {
   <section className="bg-neutral-white w-full lg:w-[57.64%] h-screen overflow-y-auto overflow-x-hidden">
    <div className="min-h-full px-[1.25rem] sm:px-[2rem] md:px-[3rem] lg:pl-[7.8125rem] pt-[1rem] sm:pt-[3rem] lg:pt-[4rem] pb-[2rem] lg:pb-[2.375rem] flex items-center justify-center lg:items-stretch lg:justify-start">
     <div className="flex flex-col justify-between w-full max-w-[25rem] lg:max-w-none lg:min-h-full py-[1rem] lg:py-0">
-    
-
      {/* top steps bar */}
      <div className="flex items-center justify-center lg:justify-start max-w-[33.75rem] gap-[0.75rem] mb-[2rem] lg:mb-[2rem]">
       {steps.map((step, index) => {
@@ -197,7 +195,7 @@ const RightBar = () => {
       {RenderStep()}
       <div className="flex flex-col gap-[0.75rem]">
        <button
-        className="w-full max-w-[21.875rem] text-[0.875rem] leading-[1.25rem] font-[700] bg-[#054A86s] text-center py-[0.75rem] px-[1rem] rounded-[0.5rem] text-neutral-white hover:bg-primary/90 transition-colors"
+        className="w-full max-w-[21.875rem] text-[0.875rem] leading-[1.25rem] font-[700] bg-[#054A86] text-center py-[0.75rem] px-[1rem] rounded-[0.5rem] text-neutral-white transition-colors"
         onClick={() => handleNext()}>
         continue
        </button>

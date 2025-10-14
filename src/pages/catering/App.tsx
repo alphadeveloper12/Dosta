@@ -9,6 +9,7 @@ import CateringConfirmation from "./pages/CateringConfirmation";
 import RequestCustomQuote from "./pages/RequestCustomQuote";
 import NotFound from "./pages/NotFound";
 
+
 const queryClient = new QueryClient();
 
 const App = () => (

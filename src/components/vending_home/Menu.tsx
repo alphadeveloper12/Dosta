@@ -1,10 +1,8 @@
-import BreadCrumb from "@/components/home/BreadCrumb";
-import Footer from "@/components/layout/Footer";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import VendingHeader from "@/components/vending_home/VendingHeader";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
 import { X } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -17,7 +15,7 @@ interface FoodItem {
  price: string;
 }
 
-const VendingMenu = () => {
+const Menu = () => {
  const [scrolled, setScrolled] = useState(false);
  const [selectedItem, setSelectedItem] = useState<FoodItem | null>(null);
  const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -171,58 +169,9 @@ const VendingMenu = () => {
   { day: "Thursday" },
   { day: "Friday" },
  ];
-
  return (
   <div className="min-h-screen">
-   <VendingHeader />
-   <main className="flex-1 bg-[#F7F7F9]">
-    {/* bread crumb and title (this will hide on scroll ) */}
-    <div
-     className={`w-full bg-neutral-white pt-2 pb-6 ${
-      scrolled ? "hidden" : ""
-     }`}>
-     <div className="main-container">
-      <BreadCrumb />
-      <h2 className="text-[28px] text-[#054A86] leading-[36px] font-[700] tracking-[0.1px]">
-       Vending Menu
-      </h2>
-     </div>
-    </div>
-
-    {/* this will show when user scrolls and this will become sticky */}
-    <div
-     className={`w-full bg-neutral-white pt-2 pb-6 shadow-lg ${
-      scrolled ? "sticky top-[64px] block" : "hidden"
-     }`}>
-     <div className="main-container">
-      {/* title and button */}
-      <div className="flex justify-between items-center py-4">
-       <h2 className="text-[24px] text-[#2B2B43] leading-[32px] font-[700] tracking-[0.1px]">
-        Browse our daily menu of 13 chef-prepared meals
-       </h2>
-       <Button className="bg-[#054A86]">Start Your Order</Button>
-      </div>
-      {/* weekly tabs  */}
-      <div className="flex gap-3 flex-wrap pt-[8px]">
-       {/* tabs */}
-       {days.map((week, index) => {
-        return (
-         <div
-          key={index}
-          onClick={() => setTab(index)}
-          className={`h-[56px] ${
-           tab === index ? "bg-[#EAF5FF]" : "hover:bg-[#EAF5FF]"
-          } bg-neutral-white cursor-pointer text-center inline-flex items-center w-full justify-center max-w-[212px] rounded-[16px] border-2 border-[#054A86]`}>
-          <span>{week?.day}</span>
-         </div>
-        );
-       })}
-      </div>
-     </div>
-    </div>
-
-
-
+   <main className="flex-1 bg-neutral-white">
     {/* fixed menu weekly tabs section this will also hide when user scrolls */}
     <div className="w-full bg-transparent pt-2 pb-6">
      <div className="main-container">
@@ -259,7 +208,7 @@ const VendingMenu = () => {
         <div
          key={index}
          onClick={() => handleCardClick(data)}
-         className="w-full border border-[#EDEEF2] max-w-[354px] bg-neutral-white rounded-[16px] px-3 pt-3 pb-5 sm:px-4 sm:pt-4 sm:pb-6 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow">
+         className="w-full border border-[#EDEEF2] max-w-[306px] bg-neutral-white rounded-[16px] px-3 pt-3 pb-5 sm:px-4 sm:pt-4 sm:pb-6 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow">
          <img
           src={data.imgSrc}
           alt={data.imgAlt}
@@ -350,9 +299,8 @@ const VendingMenu = () => {
      )}
     </AnimatePresence>
    </main>
-   <Footer />
   </div>
  );
 };
 
-export default VendingMenu;
+export default Menu;

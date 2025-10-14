@@ -28,21 +28,23 @@ const VendingMenu = () => {
   setIsSheetOpen(true);
  };
 
- useEffect(() => {
-  let ticking = false;
+useEffect(() => {
   const onScroll = () => {
-   if (!ticking) {
-    window.requestAnimationFrame(() => {
-     setScrolled(window.scrollY > 120);
-     ticking = false;
-    });
-    ticking = true;
-   }
+    // Set the scroll state only when scroll position is greater than 220
+    if (window.scrollY >= 220) {
+      setScrolled(true);
+    } else {
+      setScrolled(false);
+    }
   };
-  onScroll();
+
+  // Attach the scroll event listener
   window.addEventListener("scroll", onScroll, { passive: true });
+
+  // Clean up the event listener on component unmount
   return () => window.removeEventListener("scroll", onScroll);
- }, []);
+}, []);
+
 
  const foodData: FoodItem[] = [
   {
@@ -196,11 +198,11 @@ const VendingMenu = () => {
      }`}>
      <div className="main-container">
       {/* title and button */}
-      <div className="flex justify-between items-center py-4">
-       <h2 className="text-[24px] text-[#2B2B43] leading-[32px] font-[700] tracking-[0.1px]">
+      <div className="md:flex hidden justify-between items-center py-4 md:flex-row flex-col gap-2">
+       <h2 className="md:text-[24px] text-[18px] leading-[24px] text-[#2B2B43] md:leading-[32px] font-[700] tracking-[0.1px]">
         Browse our daily menu of 13 chef-prepared meals
        </h2>
-       <Button className="bg-[#054A86]">Start Your Order</Button>
+       <Button className="bg-[#054A86] max-md:w-full ">Start Your Order</Button>
       </div>
       {/* weekly tabs  */}
       <div className="flex gap-3 flex-wrap pt-[8px]">
@@ -210,10 +212,10 @@ const VendingMenu = () => {
          <div
           key={index}
           onClick={() => setTab(index)}
-          className={`h-[56px] ${
+          className={`md:h-[56px] h-[26px] ${
            tab === index ? "bg-[#EAF5FF]" : "hover:bg-[#EAF5FF]"
-          } bg-neutral-white cursor-pointer text-center inline-flex items-center w-full justify-center max-w-[212px] rounded-[16px] border-2 border-[#054A86]`}>
-          <span>{week?.day}</span>
+          } bg-neutral-white cursor-pointer text-center inline-flex items-center w-full justify-center md:max-w-[212px] max-w-[80px] rounded-[16px] border-2 border-[#054A86]`}>
+          <span className="md:text-[16px] text-[12px] leading-[18px]  md:leading-[24px] font-[400]">{week?.day}</span>
          </div>
         );
        })}
@@ -224,14 +226,14 @@ const VendingMenu = () => {
 
 
     {/* fixed menu weekly tabs section this will also hide when user scrolls */}
-    <div className="w-full bg-transparent pt-2 pb-6">
+    <div className={`w-full ${scrolled ? "hidden" : "block"} bg-transparent pt-2 pb-6`}>
      <div className="main-container">
-      {/* title and button */}
-      <div className="flex justify-between items-center py-4">
-       <h2 className="text-[24px] text-[#2B2B43] leading-[32px] font-[700] tracking-[0.1px]">
+       {/* title and button */}
+      <div className="flex justify-between items-center py-4 md:flex-row flex-col gap-2">
+       <h2 className="md:text-[24px] text-[18px] leading-[24px] text-[#2B2B43] md:leading-[32px] font-[700] tracking-[0.1px]">
         Browse our daily menu of 13 chef-prepared meals
        </h2>
-       <Button className="bg-[#054A86]">Start Your Order</Button>
+       <Button className="bg-[#054A86] max-md:w-full ">Start Your Order</Button>
       </div>
       {/* weekly tabs  */}
       <div className="flex gap-3 flex-wrap pt-[8px]">
@@ -241,10 +243,10 @@ const VendingMenu = () => {
          <div
           key={index}
           onClick={() => setTab(index)}
-          className={`h-[56px] ${
+          className={`md:h-[56px] h-[26px] ${
            tab === index ? "bg-[#EAF5FF]" : "hover:bg-[#EAF5FF]"
-          } bg-neutral-white text-center inline-flex items-center w-full justify-center max-w-[212px] hover:bg-[#EAF5FF] cursor-pointer rounded-[16px] border-2 border-[#054A86]`}>
-          <span>{week?.day}</span>
+          } bg-neutral-white cursor-pointer text-center inline-flex items-center w-full justify-center md:max-w-[212px] max-w-[80px] rounded-[16px] border-2 border-[#054A86]`}>
+          <span className="md:text-[16px] text-[12px] leading-[18px]  md:leading-[24px] font-[400]">{week?.day}</span>
          </div>
         );
        })}

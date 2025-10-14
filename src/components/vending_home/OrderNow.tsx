@@ -5,7 +5,8 @@ import { Button } from "../ui/button";
 import VendingHeader from "./VendingHeader";
 import BreadCrumb from "../home/BreadCrumb";
 import Footer from "../layout/Footer";
-import { Link } from "react-router-dom";
+import GrabMenu from "./GrabMenu";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -23,15 +24,16 @@ interface Step {
 }
 
 const OrderNow = () => {
+ const navigate = useNavigate();
  const [currentStep, setCurrentStep] = useState(2);
  const [pickupLocation, setPickupLocation] = useState(
   "Barsha 1, Near Mall of the Emirates, St. 12."
  );
  const [time, setTime] = useState("");
  const [isOpen, setIsOpen] = useState<Boolean>(false);
- const [pickOrder, SetPickOrder] = useState("");
- const [orderType, setOrderType] = useState<string>("");
- const [planType, setPlanType] = useState<string>("");
+ const [pickOrder, SetPickOrder] = useState("Pickup Today");
+ const [orderType, setOrderType] = useState<string>("Order Now");
+ const [planType, setPlanType] = useState<string>("weekly");
 
  const getStepStatus = (stepId: number): StepStatus => {
   if (stepId < currentStep) return "completed";
@@ -78,20 +80,29 @@ const OrderNow = () => {
      <div className="flex gap-4 md:flex-row flex-col">
       <Button
        onClick={() => handleOrderTypeSelect("Order Now")}
-       variant={orderType === "Order Now" ? "default" : "outline"}
-       className="px-6 py-3 rounded-lg font-bold">
+       className={` ${
+        orderType === "Order Now"
+         ? "bg-[#EAF5FF] hover:bg-[#EAF5FF] border border-[#054A86] text-[#2B2B43]"
+         : "bg-neutral-white hover:bg-neutral-white border border-[#C7C8D2] text-[#2B2B43]"
+       } px-6 py-3  rounded-[16px] font-bold`}>
        Order Now
       </Button>
       <Button
        onClick={() => handleOrderTypeSelect("Start a Plan")}
-       variant={orderType === "Start a Plan" ? "default" : "outline"}
-       className="px-6 py-3 rounded-lg font-bold">
+       className={` ${
+        orderType === "Start a Plan"
+         ? "bg-[#EAF5FF] hover:bg-[#EAF5FF] border border-[#054A86] text-[#2B2B43]"
+         : "bg-neutral-white hover:bg-neutral-white border border-[#C7C8D2] text-[#2B2B43]"
+       } px-6 py-3  rounded-[16px] font-bold`}>
        Start a Plan
       </Button>
       <Button
        onClick={() => handleOrderTypeSelect("Smart Grab")}
-       variant={orderType === "Smart Grab" ? "default" : "outline"}
-       className="px-6 py-3 rounded-lg font-bold">
+       className={` ${
+        orderType === "Smart Grab"
+         ? "bg-[#EAF5FF] hover:bg-[#EAF5FF] border border-[#054A86] text-[#2B2B43]"
+         : "bg-neutral-white hover:bg-neutral-white border border-[#C7C8D2] text-[#2B2B43]"
+       } px-6 py-3  rounded-[16px] font-bold`}>
        Smart Grab
       </Button>
      </div>
@@ -118,14 +129,20 @@ const OrderNow = () => {
          <div className="flex gap-4 pb-6">
           <Button
            onClick={() => setPlanType("weekly")}
-           variant={planType === "weekly" ? "default" : "outline"}
-           className="px-6 py-3 rounded-lg font-bold">
+           className={` ${
+            planType === "weekly"
+             ? "bg-[#EAF5FF] hover:bg-[#EAF5FF] border border-[#054A86] text-[#2B2B43]"
+             : "bg-neutral-white hover:bg-neutral-white border border-[#C7C8D2] text-[#2B2B43]"
+           } px-6 py-3  rounded-[16px] font-bold`}>
            Weekly
           </Button>
           <Button
            onClick={() => setPlanType("monthly")}
-           variant={planType === "monthly" ? "default" : "outline"}
-           className="px-6 py-3 rounded-lg font-bold">
+           className={` ${
+            planType === "monthly"
+             ? "bg-[#EAF5FF] hover:bg-[#EAF5FF] border border-[#054A86] text-[#2B2B43]"
+             : "bg-neutral-white hover:bg-neutral-white border border-[#C7C8D2] text-[#2B2B43]"
+           } px-6 py-3  rounded-[16px] font-bold`}>
            Monthly
           </Button>
          </div>
@@ -167,14 +184,20 @@ const OrderNow = () => {
      <div className="flex gap-4 md:flex-row flex-col">
       <Button
        onClick={() => SetPickOrder("Pickup Today")}
-       variant={pickOrder === "Pickup Today" ? "default" : "outline"}
-       className="px-6 py-3 rounded-lg font-bold">
+       className={` ${
+        pickOrder === "Pickup Today"
+         ? "bg-[#EAF5FF] hover:bg-[#EAF5FF] border border-[#054A86] text-[#2B2B43]"
+         : "bg-neutral-white hover:bg-neutral-white border border-[#C7C8D2] text-[#2B2B43]"
+       } px-6 py-3  rounded-[16px] font-bold`}>
        Pickup Today
       </Button>
       <Button
        onClick={() => SetPickOrder("Pickup in 24")}
-       variant={pickOrder === "Pickup in 24" ? "default" : "outline"}
-       className="px-6 py-3 rounded-lg font-bold">
+       className={` ${
+        pickOrder === "Pickup in 24"
+         ? "bg-[#EAF5FF] hover:bg-[#EAF5FF] border border-[#054A86] text-[#2B2B43]"
+         : "bg-neutral-white hover:bg-neutral-white border border-[#C7C8D2] text-[#2B2B43]"
+       } px-6 py-3  rounded-[16px] font-bold`}>
        Pickup in 24
       </Button>
      </div>
@@ -203,10 +226,15 @@ const OrderNow = () => {
   },
   {
    id: 4,
-   title: "Select Pickup Location",
+   title: "Choose Your Meal",
    status: getStepStatus(4),
-   content: <Menu />,
-   subtitle: pickupLocation,
+   content:
+    orderType === "Smart Grab" ? (
+     <GrabMenu handleConfirmStep={handleConfirmStep} />
+    ) : (
+     <Menu handleConfirmStep={handleConfirmStep} />
+    ),
+   subtitle: orderType === "Smart Grab" ? "Soft Drink" : "Angus Burger",
   },
  ];
 
@@ -285,6 +313,16 @@ const OrderNow = () => {
        </div>
       ))}
      </div>
+     <div className="w-full">
+      <div className="main-container flex md:flex-row flex-col gap-4 !py-10">
+       <Button
+        className="md:min-w-[200px] bg-neutral-white text-[#545563] hover:bg-neutral-white border border-[#545563]"
+        onClick={() => navigate("/vending-home")}>
+        Continue Shopping
+       </Button>
+       <Button className="md:min-w-[200px]">Continue to Cart</Button>
+      </div>
+     </div>
     </div>
 
     {/* side bar sheet  */}
@@ -321,10 +359,15 @@ const OrderNow = () => {
           industry. Lorem Ipsum has been the industry's standard dummy text ever
           since:
          </p>
+
          {timeFrame.map((frame, index) => {
           return (
            <div
-            className="py-[10px] cursor-pointer  px-4 my-8 border border-[#EDEEF2] rounded-[8px]"
+            className={` ${
+             time === frame.time
+              ? "bg-[#EAF5FF]  border border-[#054A86]"
+              : "border border-[#EDEEF2]"
+            } py-[10px] cursor-pointer  px-4 my-8  rounded-[8px]`}
             onClick={() => setTime(frame.time)}>
             <p className="text-[#2B2B43] text-[16px] leading-[24px] font-[700]">
              {frame.time}

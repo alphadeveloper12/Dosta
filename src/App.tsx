@@ -34,6 +34,7 @@ const App = () => (
      <Route path="/catering/plan" element={<CateringPlan />} />
      <Route path="/vending-home" element={<VendingHome />} />
      <Route path="/vending-home/menu" element={<VendingMenu />} />
+     <Route path="/vending-home/order-now" element={<OrderNow></OrderNow>} />
      <Route path="/catering/confirmation" element={<CateringConfirmation />} />
      <Route path="/catering/request-custom-quote" element={<RequestCustomQuote />} />
      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

@@ -12,11 +12,11 @@ interface FoodItem {
  description: string;
  price: string;
 }
-interface MenuProps {
+interface CrabMenuProps {
  handleConfirmStep: () => void;
 }
 
-const Menu: React.FC<MenuProps> = ({ handleConfirmStep }) => {
+const GrabMenu: React.FC<CrabMenuProps> = ({ handleConfirmStep }) => {
  const [openDialouge, setOpenDialouge] = useState(false);
  const [scrolled, setScrolled] = useState(false);
  const [selectedItem, setSelectedItem] = useState<FoodItem | null>(null);
@@ -50,104 +50,104 @@ const Menu: React.FC<MenuProps> = ({ handleConfirmStep }) => {
 
  const foodData: FoodItem[] = [
   {
-   imgSrc: "/images/vending_home/food.svg",
-   heading: "Angus Burger",
+   imgSrc: "/images/vending_home/soft_drink.svg",
+   heading: "Soft Drink",
    imgAlt: "food",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
   },
   {
-   imgSrc: "/images/vending_home/food.svg",
-   heading: "Angus Burger",
+   imgSrc: "/images/vending_home/soft_drink.svg",
+   heading: "Soft Drink",
    imgAlt: "food",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
   },
   {
-   imgSrc: "/images/vending_home/food.svg",
-   heading: "Angus Burger",
+   imgSrc: "/images/vending_home/soft_drink.svg",
+   heading: "Soft Drink",
    imgAlt: "food",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
   },
   {
-   imgSrc: "/images/vending_home/food.svg",
-   heading: "Angus Burger",
+   imgSrc: "/images/vending_home/soft_drink.svg",
+   heading: "Soft Drink",
    imgAlt: "food",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
   },
   {
-   imgSrc: "/images/vending_home/food.svg",
-   heading: "Angus Burger",
+   imgSrc: "/images/vending_home/soft_drink.svg",
+   heading: "Soft Drink",
    imgAlt: "food",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
   },
   {
-   imgSrc: "/images/vending_home/food.svg",
-   heading: "Angus Burger",
+   imgSrc: "/images/vending_home/soft_drink.svg",
+   heading: "Soft Drink",
    imgAlt: "food",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
   },
   {
-   imgSrc: "/images/vending_home/food.svg",
-   heading: "Angus Burger",
+   imgSrc: "/images/vending_home/soft_drink.svg",
+   heading: "Soft Drink",
    imgAlt: "food",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
   },
   {
-   imgSrc: "/images/vending_home/food.svg",
-   heading: "Angus Burger",
+   imgSrc: "/images/vending_home/soft_drink.svg",
+   heading: "Soft Drink",
    imgAlt: "food",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
   },
   {
-   imgSrc: "/images/vending_home/food.svg",
-   heading: "Angus Burger",
+   imgSrc: "/images/vending_home/soft_drink.svg",
+   heading: "Soft Drink",
    imgAlt: "food",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
   },
   {
-   imgSrc: "/images/vending_home/food.svg",
-   heading: "Angus Burger",
+   imgSrc: "/images/vending_home/soft_drink.svg",
+   heading: "Soft Drink",
    imgAlt: "food",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
   },
   {
-   imgSrc: "/images/vending_home/food.svg",
-   heading: "Angus Burger",
+   imgSrc: "/images/vending_home/soft_drink.svg",
+   heading: "Soft Drink",
    imgAlt: "food",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
   },
   {
-   imgSrc: "/images/vending_home/food.svg",
-   heading: "Angus Burger",
+   imgSrc: "/images/vending_home/soft_drink.svg",
+   heading: "Soft Drink",
    imgAlt: "food",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
   },
   {
-   imgSrc: "/images/vending_home/food.svg",
-   heading: "Angus Burger",
+   imgSrc: "/images/vending_home/soft_drink.svg",
+   heading: "Soft Drink",
    imgAlt: "food",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
@@ -369,4 +369,4 @@ const Menu: React.FC<MenuProps> = ({ handleConfirmStep }) => {
  );
 };
 
-export default Menu;
+export default GrabMenu;

@@ -17,7 +17,7 @@ const steps = [
    "Plan your week with nutritious meals placed in vending stations near you",
   tag: "DOSTA VENDING",
   button: "Start Planning",
-  link: "/planning", // Link for this button
+  link: "/vending-home", // Link for this button
  },
  {
   icon: "images/header/card3.svg", // Replace with your actual image path

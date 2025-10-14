@@ -1,6 +1,6 @@
 import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import Header from "@/components/layout/Header";
+import Header from "../../../components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import locationimg from "@/assets/../../public/images/icons/locaion-icon.svg";
 import calendar from "@/assets/../../public/images/icons/calendar.svg";
@@ -137,7 +137,7 @@ const CateringConfirmation = () => {
          <button className="inline-flex items-center justify-center rounded-lg border border-[#545563] bg-white px-3 py-3 leading-[17px] text-sm font-bold text-[#545563] hover:bg-gray-50" >
           Cancel Booking
          </button>
-         <Button onClick={() => navigate("/request-custom-quote") }variant="default" size="lg" >
+         <Button onClick={() => navigate("/catering/request-custom-quote") }variant="default" size="lg" >
           Reschedule Booking
          </Button>
         </div>

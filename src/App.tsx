@@ -8,6 +8,8 @@ import SignIn from "./pages/SignIn";
 import VendingHome from "./pages/VendingHome"
 import CateringHome from "./pages/catering/pages/Index";
 import CateringPlan from "./pages/catering/pages/Catering";
+import CateringConfirmation from "./pages/catering/pages/CateringConfirmation";
+import RequestCustomQuote from "./pages/catering/pages//RequestCustomQuote";
 import NotFound from "./pages/NotFound";
 import "./index.css";
 import Signup from "./pages/Signup";
@@ -31,6 +33,8 @@ const App = () => (
       <Route path="/catering/plan" element={<CateringPlan />} />
      <Route path="/vending-home" element={<VendingHome />} />
      <Route path="/vending-home/menu" element={<VendingMenu />} />
+     <Route path="/catering/confirmation" element={<CateringConfirmation />} />
+     <Route path="/catering/request-custom-quote" element={<RequestCustomQuote />} />
      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
      <Route path="*" element={<NotFound />} />
     </Routes>

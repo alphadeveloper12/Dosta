@@ -41,7 +41,7 @@ const BookingSummary: React.FC<BookingSummaryProps> = ({
 
   // Handle button clicks for navigation
   const handleConfirmAndPay = () => {
-    navigate("/catering-confirmation");  // Navigate to catering confirmation
+    navigate("/catering/confirmation");  // Navigate to catering confirmation
   };
 
   const handleRequestCustomQuote = () => {

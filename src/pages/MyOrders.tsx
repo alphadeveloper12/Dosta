@@ -91,8 +91,21 @@ const MyOrders = () => {
           </div>
           <div className="flex items-center justify-between gap-3 w-full">
            <div className="mt-1 flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#054A86]" />
-            <span className="text-sm font-semibold leading-5">In progress</span>
+            {step === 1 && (
+             <span className="h-1.5 w-1.5 rounded-full bg-[#054A86]" />
+            )}
+            {step === 2 && (
+             <span className="h-1.5 w-1.5 rounded-full bg-[#1ABF70]" />
+            )}
+
+            {step === 1 && (
+             <span className="text-sm font-semibold leading-5">
+              In progress
+             </span>
+            )}
+            {step === 2 && (
+             <span className="text-sm font-semibold leading-5">Completed</span>
+            )}
            </div>
            <div className="flex gap-2 items-center">
             <p className="text-xs font-semibold leading-[16px] text-[#83859C]">

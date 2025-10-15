@@ -110,7 +110,7 @@ const Footer = () => {
      </div>
 
      {/* Chat Button */}
-     <button className="absolute bottom-0 md:right-[165px] right-[16px] h-[44px] w-[88px] rounded-t-[8px]  bg-[#EE3123]  flex items-center justify-center shadow-lg hover:bg-red-600 transition-colors z-50 gap-[8px]">
+     <button className="absolute bottom-0 md:right-[165px] right-[16px] h-[44px] w-[88px] rounded-t-[8px]  bg-[#EE3123]  flex items-center justify-center shadow-lg hover:bg-red-600 transition-colors z-20 gap-[8px]">
       <MessageCircle className="h-[16px] w-[16px] text-white" />
       <span>Chat</span>
      </button>

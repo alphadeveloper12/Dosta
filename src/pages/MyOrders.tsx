@@ -197,7 +197,15 @@ const MyOrders = () => {
          </div>
          <p>09:51</p>
 
-         {/* Button to simulate step change */}
+         {/* Actions */}
+         <div className="flex items-center gap-3 py-4">
+          <Button
+           onClick={() => navigate("/catering/request-custom-quote")}
+           variant="default"
+           size="lg">
+           Reschedule Booking
+          </Button>
+         </div>
         </div>
 
         {/* Info note */}

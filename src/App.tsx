@@ -16,6 +16,8 @@ import Signup from "./pages/Signup";
 import Settings from "./pages/Settings";
 import VendingMenu from "./pages/VendingMenu";
 import OrderNow from "./components/vending_home/OrderNow";
+import CartPage from "./pages/CartPage";
+import MyOrders from "./pages/MyOrders";
 
 const queryClient = new QueryClient();
 
@@ -35,8 +37,13 @@ const App = () => (
      <Route path="/vending-home" element={<VendingHome />} />
      <Route path="/vending-home/menu" element={<VendingMenu />} />
      <Route path="/vending-home/order-now" element={<OrderNow></OrderNow>} />
+     <Route path="/vending-home/cart" element={<CartPage></CartPage>} />
+     <Route path="/vending-home/my-orders" element={<MyOrders></MyOrders>} />
      <Route path="/catering/confirmation" element={<CateringConfirmation />} />
-     <Route path="/catering/request-custom-quote" element={<RequestCustomQuote />} />
+     <Route
+      path="/catering/request-custom-quote"
+      element={<RequestCustomQuote />}
+     />
      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
      <Route path="*" element={<NotFound />} />
     </Routes>

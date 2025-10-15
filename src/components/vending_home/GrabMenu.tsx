@@ -22,6 +22,7 @@ const GrabMenu: React.FC<CrabMenuProps> = ({ handleConfirmStep }) => {
  const [selectedItem, setSelectedItem] = useState<FoodItem | null>(null);
  const [isSheetOpen, setIsSheetOpen] = useState(false);
  const [selectedItems, setSelectedItems] = useState<FoodItem[]>([]);
+ const [toaster, setToaster] = useState<boolean>(false);
 
  const handleCardClick = (item: FoodItem) => {
   setSelectedItem(item);
@@ -30,6 +31,10 @@ const GrabMenu: React.FC<CrabMenuProps> = ({ handleConfirmStep }) => {
  const confirmFunc = () => {
   setOpenDialouge(false);
   setSelectedItems([]);
+  setToaster(true);
+  setTimeout(() => {
+   setToaster(false);
+  }, 2000);
  };
 
  useEffect(() => {
@@ -154,7 +159,6 @@ const GrabMenu: React.FC<CrabMenuProps> = ({ handleConfirmStep }) => {
    price: "AED 47.25",
   },
  ];
-
 
  return (
   <div className="min-h-screen">
@@ -329,7 +333,7 @@ const GrabMenu: React.FC<CrabMenuProps> = ({ handleConfirmStep }) => {
     </AnimatePresence>
 
     {/* menu */}
-    
+
     {openDialouge && (
      <motion.div
       className="fixed inset-0 bg-black/75 flex items-center justify-center z-50"
@@ -363,6 +367,51 @@ const GrabMenu: React.FC<CrabMenuProps> = ({ handleConfirmStep }) => {
        </div>
       </motion.div>
      </motion.div>
+    )}
+
+    {/* toaster  */}
+    {toaster && (
+     <div className="fixed md:top-[104px] left-1/2 transform -translate-x-1/2 max-w-[540px] w-full h-[52px] bg-[#E8F9F1] rounded-[16px] shadow-[0px_4px_10px_rgba(232,249,241,0.6)] flex items-center px-4 gap-3 z-50">
+      <svg
+       width="20"
+       height="20"
+       viewBox="0 0 20 20"
+       fill="none"
+       xmlns="http://www.w3.org/2000/svg"
+       className="flex-shrink-0">
+       <g clipPath="url(#clip0_1_9188)">
+        <path
+         d="M10.0013 18.3334C14.6037 18.3334 18.3346 14.6025 18.3346 10.0001C18.3346 5.39771 14.6037 1.66675 10.0013 1.66675C5.39893 1.66675 1.66797 5.39771 1.66797 10.0001C1.66797 14.6025 5.39893 18.3334 10.0013 18.3334Z"
+         stroke="#2B2B43"
+         strokeWidth="2"
+         strokeLinecap="round"
+         strokeLinejoin="round"
+        />
+        <path
+         d="M10 13.3333V10"
+         stroke="#2B2B43"
+         strokeWidth="2"
+         strokeLinecap="round"
+         strokeLinejoin="round"
+        />
+        <path
+         d="M10 6.66675H10.0083"
+         stroke="#2B2B43"
+         strokeWidth="2"
+         strokeLinecap="round"
+         strokeLinejoin="round"
+        />
+       </g>
+       <defs>
+        <clipPath id="clip0_1_9188">
+         <rect width="20" height="20" fill="white" />
+        </clipPath>
+       </defs>
+      </svg>
+      <span className="flex-grow whitespace-nowrap text-[#2B2B43] font-medium text-sm">
+       Menu selections have been successfully reset.
+      </span>
+     </div>
     )}
    </main>
   </div>

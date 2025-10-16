@@ -5,6 +5,7 @@ import Footer from "@/components/layout/Footer";
 import locationimg from "@/assets/../../public/images/icons/locaion-icon.svg";
 import calendar from "@/assets/../../public/images/icons/calendar.svg";
 import { Button } from "@/components/ui/button"; // Import the Button component
+import BreadCrumb from "@/components/home/BreadCrumb";
 
 function Row({ label, value }) {
  return (
@@ -33,16 +34,7 @@ const CateringConfirmation = () => {
    <main className="flex-1 bg-background">
     <div className="bg-neutral-white">
      <div className="container py-6">
-      <div className="flex items-center gap-2 text-sm mb-6">
-       <button
-        onClick={() => navigate(-1)}
-        className="flex items-center gap-1 text-neutral-gray-dark hover:text-primary transition-colors">
-        <ChevronLeft className="w-4 h-4" />
-        Breadcrumbs
-       </button>
-       <span className="text-neutral-gray">/</span>
-       <span className="text-neutral-gray-dark">Breadcrumbs</span>
-      </div>
+      <BreadCrumb/>
 
       <h1 className="md:text-4xl font-bold text-primary text-[28px]">
        Catering Service Confirmation
@@ -118,7 +110,7 @@ const CateringConfirmation = () => {
             aria-hidden
            />
           </div>
-          <span className="inline-flex h-[32px] w-[32px] items-center justify-center rounded-full bg-white text-[#2B2B43] ring-1 ring-[#EDEEF2]">
+          <span className="inline-flex flex-shrink-0 h-[32px] w-[32px] items-center justify-center rounded-full bg-white text-[#2B2B43] ring-1 ring-[#EDEEF2]">
            3
           </span>
          </div>

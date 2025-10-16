@@ -313,19 +313,25 @@ const OrderNow = () => {
        </div>
       ))}
      </div>
-     <div className="w-full">
-      <div className="main-container flex md:flex-row flex-col gap-4 !py-10">
-       <Button
-        className="md:min-w-[200px] bg-neutral-white text-[#545563] hover:bg-neutral-white border border-[#545563]"
-        onClick={() => navigate("/vending-home")}>
-        Continue Shopping
-       </Button>
-       <Button className="md:min-w-[200px]">Continue to Cart</Button>
+     {currentStep > 4 && (
+      <div className="w-full">
+       <div className="main-container flex md:flex-row flex-col gap-4 !py-10">
+        <Button
+         className="md:min-w-[200px] bg-neutral-white text-[#545563] hover:bg-neutral-white border border-[#545563]"
+         onClick={() => navigate("/vending-home")}>
+         Continue Shopping
+        </Button>
+        <Button
+         className="md:min-w-[200px]"
+         onClick={() => navigate("/vending-home/cart")}>
+         Continue to Cart
+        </Button>
+       </div>
       </div>
-     </div>
+     )}
     </div>
 
-    {/* side bar sheet  */}
+    {/* side bar sheet for timeframe */}
     <AnimatePresence>
      {isOpen && (
       <motion.div
@@ -395,6 +401,7 @@ const OrderNow = () => {
      )}
     </AnimatePresence>
    </main>
+
    <Footer />
   </div>
  );

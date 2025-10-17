@@ -148,7 +148,7 @@ const Catering = () => {
 
       <main className="flex-1 bg-background">
         <div className="bg-neutral-white">
-          <div className="container py-6">
+          <div className="main-container !py-6">
             {/* <div className="flex items-center gap-2 text-sm mb-6">
               <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-neutral-gray-dark hover:text-primary transition-colors">
                 <ChevronLeft className="w-4 h-4" />
@@ -163,7 +163,7 @@ const Catering = () => {
           </div>
         </div>
 
-        <div className="container mx-auto px-1 py-6 pb-24">
+        <div className="main-container !py-6 !pb-24">
           {/* Show the steps */}
           {step === 1 && <EventTypeSelection selectedEvent={selectedEvent} setSelectedEvent={setSelectedEvent} guestCount={guestCount} setGuestCount={setGuestCount} selectedDateTime={selectedDateTime} setIsDateTimePickerVisible={setIsDateTimePickerVisible} handleSelectDateTime={handleSelectDateTime} handleContinue={handleContinue} handleGuestCountChange={handleGuestCountChange} />}
           {step === 2 && <ProviderTypeSelection selectedProvider={selectedProvider} setSelectedProvider={setSelectedProvider} providerTypes={providerTypes} toggleServiceStyle={toggleServiceStyle} handleGoBack={handleGoBack} handleContinue={handleContinue} selectedServiceStyles={selectedServiceStyles} />}

@@ -4,11 +4,9 @@ import MainSection from "@/components/signin/MainSection";
 
 const SignIn = () => {
  return (
-
-   <div >
-    <MainSection />
-   </div>
-
+  <div>
+   <MainSection />
+  </div>
  );
 };
 

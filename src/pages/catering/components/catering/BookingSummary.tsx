@@ -49,12 +49,12 @@ const BookingSummary: React.FC<BookingSummaryProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
+    <div className="min-h-screen  py-8 ">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Left side: Event details */}
           <div className="lg:w-2/3">
-            <div className="bg-white rounded-lg shadow-sm" style={{ border: "1px solid #EDEEF2", borderRadius: "16px", padding: "20px 24px" }}>
+            <div className="bg-neutral-white rounded-lg shadow-sm" style={{ border: "1px solid #EDEEF2", borderRadius: "16px", padding: "20px 24px" }}>
               {/* Event Type Section */}
               <div className="mb-6 pb-6">
                 <h2 style={{fontSize: '24px', fontWeight:'700', color: '#545563'}}>Event Type:</h2>

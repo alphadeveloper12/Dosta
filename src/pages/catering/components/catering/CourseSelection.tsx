@@ -20,7 +20,7 @@ const CourseSelection: React.FC<CourseSelectionProps> = ({
   toggleCourse,
 }) => {
   return (
-    <div className="bg-neutral-white border rounded-2xl p-6 md:p-8" style={{ border: "1px solid #EDEEF2" }}>
+    <div className="bg-neutral-white border rounded-2xl p-6 md:px-6 md:py-5" style={{ border: "1px solid #EDEEF2" }}>
       <div className="flex items-center mb-6 gap-4">
         <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: "hsl(var(--primary))" }}>
           <span className="text-primary-foreground font-bold">4</span>

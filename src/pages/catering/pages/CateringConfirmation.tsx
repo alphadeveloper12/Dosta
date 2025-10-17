@@ -1,6 +1,7 @@
 import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import Header from "../../../components/layout/Header";
+import Header from "../components/layout/Header";
+
 import Footer from "@/components/layout/Footer";
 import locationimg from "@/assets/../../public/images/icons/locaion-icon.svg";
 import calendar from "@/assets/../../public/images/icons/calendar.svg";
@@ -33,8 +34,8 @@ const CateringConfirmation = () => {
 
    <main className="flex-1 bg-background">
     <div className="bg-neutral-white">
-     <div className="container py-6">
-      <BreadCrumb/>
+     <div className="main-container !py-6">
+      <BreadCrumb />
 
       <h1 className="md:text-4xl font-bold text-primary text-[28px]">
        Catering Service Confirmation
@@ -42,7 +43,7 @@ const CateringConfirmation = () => {
      </div>
     </div>
 
-    <div className="container mx-auto px-12 py-6 pb-24">
+    <div className="main-container !py-6 !pb-24">
      <div className="grid gap-4 md:grid-cols-[1fr_320px]">
       {/* LEFT: Booking Card + Details */}
       <div className="space-y-4">
@@ -126,10 +127,13 @@ const CateringConfirmation = () => {
 
         {/* Actions */}
         <div className="flex items-center gap-3 p-4">
-         <button className="inline-flex items-center justify-center rounded-lg border border-[#545563] bg-white px-3 py-3 leading-[17px] text-sm font-bold text-[#545563] hover:bg-gray-50" >
+         <button className="inline-flex items-center justify-center rounded-lg border border-[#545563] bg-white px-3 py-3 leading-[17px] text-sm font-bold text-[#545563] hover:bg-gray-50">
           Cancel Booking
          </button>
-         <Button onClick={() => navigate("/catering/request-custom-quote") }variant="default" size="lg" >
+         <Button
+          onClick={() => navigate("/catering/request-custom-quote")}
+          variant="default"
+          size="lg">
           Reschedule Booking
          </Button>
         </div>
@@ -186,8 +190,8 @@ const CateringConfirmation = () => {
       </div>
 
       {/* RIGHT: Summary */}
-      <aside className="rounded-2xl border border-[#EDEEF2] bg-white h-fit p-4" >
-       <div >
+      <aside className="rounded-2xl border border-[#EDEEF2] bg-white h-fit p-4">
+       <div>
         <h3 className="text-[28PX] Font-bold leading-9 text-[#2B2B43]">
          Booking Summary
         </h3>
@@ -195,15 +199,21 @@ const CateringConfirmation = () => {
 
        <div className="space-y-3 text-sm">
         <div className="flex items-center justify-between">
-         <span className="text-sm fot-noraml leading-5 text[#545563]">Guest ×20</span>
-         <span className="text-sm font-semibold text-[#2B2B43]">AED1400.00</span>
+         <span className="text-sm fot-noraml leading-5 text[#545563]">
+          Guest ×20
+         </span>
+         <span className="text-sm font-semibold text-[#2B2B43]">
+          AED1400.00
+         </span>
         </div>
         <div className="flex items-center justify-between">
          <span className="text-sm fot-noraml leading-5 text[#545563]">VAT</span>
          <span className="text-sm font-semibold text-[#2B2B43]">AED150.00</span>
         </div>
         <div className="flex items-center justify-between">
-         <span className="text-fot-noraml leading-5 text[#545563]">Total (VAT incl.)</span>
+         <span className="text-fot-noraml leading-5 text[#545563]">
+          Total (VAT incl.)
+         </span>
          <span className="text-base font-bold text-[#054A86]">AED1550.50</span>
         </div>
        </div>

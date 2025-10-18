@@ -2,9 +2,9 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Divide, X } from "lucide-react";
+import { X } from "lucide-react";
 import { Link } from "react-router-dom";
-import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, MinusIcon } from "@heroicons/react/24/outline";
 
 interface FoodItem {
  imgSrc: string;
@@ -13,17 +13,21 @@ interface FoodItem {
  description: string;
  price: string;
 }
-interface CrabMenuProps {
+interface MenuProps {
  handleConfirmStep: () => void;
 }
 
-const GrabMenu: React.FC<CrabMenuProps> = ({ handleConfirmStep }) => {
+const PlanWeekly: React.FC<MenuProps> = ({ handleConfirmStep }) => {
  const [openDialouge, setOpenDialouge] = useState(false);
  const [scrolled, setScrolled] = useState(false);
  const [selectedItem, setSelectedItem] = useState<FoodItem | null>(null);
  const [isSheetOpen, setIsSheetOpen] = useState(false);
  const [selectedItems, setSelectedItems] = useState<FoodItem[]>([]);
  const [toaster, setToaster] = useState<boolean>(false);
+ const [tab, setTab] = useState(null);
+ const [tab1, setTab1] = useState(null);
+ const [savedPlans, setSavedPlans] = useState(false);
+ const [selectedPlan, setSelectedPlan] = useState(null);
  const [quantity, setQuantity] = useState(1);
 
  const handleCardClick = (item: FoodItem) => {
@@ -57,120 +61,137 @@ const GrabMenu: React.FC<CrabMenuProps> = ({ handleConfirmStep }) => {
 
  const foodData: FoodItem[] = [
   {
-   imgSrc: "/images/vending_home/soft_drink.svg",
-   heading: "Soft Drink",
+   imgSrc: "/images/vending_home/food.svg",
+   heading: "Angus Burger",
    imgAlt: "food1",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
   },
   {
-   imgSrc: "/images/vending_home/soft_drink.svg",
-   heading: "Soft Drink",
+   imgSrc: "/images/vending_home/food.svg",
+   heading: "Angus Burger",
    imgAlt: "food2",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
   },
   {
-   imgSrc: "/images/vending_home/soft_drink.svg",
-   heading: "Soft Drink",
+   imgSrc: "/images/vending_home/food.svg",
+   heading: "Angus Burger",
    imgAlt: "food3",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
   },
   {
-   imgSrc: "/images/vending_home/soft_drink.svg",
-   heading: "Soft Drink",
+   imgSrc: "/images/vending_home/food.svg",
+   heading: "Angus Burger",
    imgAlt: "food4",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
   },
   {
-   imgSrc: "/images/vending_home/soft_drink.svg",
-   heading: "Soft Drink",
+   imgSrc: "/images/vending_home/food.svg",
+   heading: "Angus Burger",
    imgAlt: "food5",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
   },
   {
-   imgSrc: "/images/vending_home/soft_drink.svg",
-   heading: "Soft Drink",
+   imgSrc: "/images/vending_home/food.svg",
+   heading: "Angus Burger",
    imgAlt: "food6",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
   },
   {
-   imgSrc: "/images/vending_home/soft_drink.svg",
-   heading: "Soft Drink",
+   imgSrc: "/images/vending_home/food.svg",
+   heading: "Angus Burger",
    imgAlt: "food7",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
   },
   {
-   imgSrc: "/images/vending_home/soft_drink.svg",
-   heading: "Soft Drink",
+   imgSrc: "/images/vending_home/food.svg",
+   heading: "Angus Burger",
    imgAlt: "food8",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
   },
   {
-   imgSrc: "/images/vending_home/soft_drink.svg",
-   heading: "Soft Drink",
+   imgSrc: "/images/vending_home/food.svg",
+   heading: "Angus Burger",
    imgAlt: "food9",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
   },
   {
-   imgSrc: "/images/vending_home/soft_drink.svg",
-   heading: "Soft Drink",
+   imgSrc: "/images/vending_home/food.svg",
+   heading: "Angus Burger",
    imgAlt: "food10",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
   },
   {
-   imgSrc: "/images/vending_home/soft_drink.svg",
-   heading: "Soft Drink",
+   imgSrc: "/images/vending_home/food.svg",
+   heading: "Angus Burger",
    imgAlt: "food11",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
   },
   {
-   imgSrc: "/images/vending_home/soft_drink.svg",
-   heading: "Soft Drink",
+   imgSrc: "/images/vending_home/food.svg",
+   heading: "Angus Burger",
    imgAlt: "food12",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
   },
   {
-   imgSrc: "/images/vending_home/soft_drink.svg",
-   heading: "Soft Drink",
+   imgSrc: "/images/vending_home/food.svg",
+   heading: "Angus Burger",
    imgAlt: "food13",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
   },
  ];
+ const savedPlansData = [
+  { name: "My plan 01" },
+  { name: "Low Carbs" },
+  { name: "High Protein" },
+  { name: "my plan 2" },
+ ];
+ const days = [
+  { day: "Monday" },
+  { day: "Tuesday" },
+  { day: "Wednesday" },
+  { day: "Thursday" },
+  { day: "Friday" },
+ ];
+ const features = [
+  { feature: "  Select your favorite" },
+  { feature: "  Preselected For You" },
+ ];
 
  return (
   <div className="min-h-screen">
-   <main className="flex-1 bg-neutral-white">
+   <main className="flex-1 bg-neutral-white relative">
     <div className="w-full bg-transparent pt-2 pb-6">
      <div className="md:px-[30px]">
       {/* title and button */}
-      <div className="flex md:flex-row flex-col justify-between items-center py-4">
+      <div className="flex md:flex-row gap-2 flex-col justify-between items-center pb-2 md:py-4">
        <h2 className="text-[16px] text-[#2B2B43] leading-[24px] font-[700] tracking-[0.1px]">
-        Choose your meal from our daily menu of 13 chef-prepared meals
+        Choose meals for each weekday :
        </h2>
        <div className="flex gap-4 md:flex-row flex-col">
         {selectedItems.length > 0 && (
@@ -193,11 +214,61 @@ const GrabMenu: React.FC<CrabMenuProps> = ({ handleConfirmStep }) => {
         )}
        </div>
       </div>
-      <div className="flex md:flex-row justify-between flex-col py-2">
+
+      {/* select your favourite buttons */}
+      <div className="flex md:flex-row flex-col md:justify-between items-center gap-3  py-[8px] w-full">
+       {features.map((data, index) => {
+        return (
+         <div
+          onClick={() => setTab1(index)}
+          className={` ${
+           tab1 === index
+            ? "bg-[#EAF5FF]  border-[#054A86]"
+            : "bg-neutral-white border-[#C7C8D2]"
+          } md:h-[56px] w-full md:w-[50%] h-[26px]  cursor-pointer text-center inline-flex items-center  justify-center rounded-[8px]  md:rounded-[16px] border-2 `}>
+          <span className="md:text-[16px] text-[12px] leading-[18px]  md:leading-[24px] font-[400]">
+           {data.feature}
+          </span>
+         </div>
+        );
+       })}
+      </div>
+
+      {/* weekly tabs and saved button */}
+      <div className="flex items-center gap-3 flex-wrap pt-[8px]">
+       {/* tabs */}
+       {days.map((week, index) => {
+        return (
+         <div
+          key={index}
+          onClick={() => setTab(index)}
+          className={` ${
+           tab === index
+            ? "bg-[#EAF5FF]  border-[#054A86]"
+            : "bg-neutral-white border-[#C7C8D2]"
+          } md:h-[56px] h-[26px]   cursor-pointer text-center inline-flex items-center w-full justify-center md:max-w-[153px] max-w-[80px] rounded-[8px] md:rounded-[16px] border-2 `}>
+          <span className="md:text-[16px] text-[12px] leading-[18px]  md:leading-[24px] font-[400]">
+           {week?.day}
+          </span>
+         </div>
+        );
+       })}
+       {/* saved plans  */}
+       <div
+        onClick={() => setSavedPlans(true)}
+        className={`md:h-[44px] h-[26px] gap-2 bg-neutral-white cursor-pointer text-center inline-flex items-center w-full justify-center md:max-w-[153px] max-w-[120px] rounded-[8px] border md:border-2 border-[#054A86]`}>
+        <img src="/images/icons/hamburger.svg" alt="menu icon" />
+        <span className="md:text-[16px] text-[#545563] font-[700] text-[12px] leading-[18px]  md:leading-[24px] ">
+         Saved Plans
+        </span>
+       </div>
+      </div>
+
+      <div className="flex md:flex-row justify-between flex-col gap-2 md:py-2 pt-4">
        <p className="text-[14px] font-[400] leading-[20px] tracking-[0.2px] text-[#545563]">
         {selectedItems.length === 0
          ? "No selected meals"
-         : `Selected meals: ${selectedItems
+         : `Selected for ${days[tab].day} : ${selectedItems
             .map((item) => item.heading)
             .join(", ")}`}
        </p>
@@ -209,7 +280,7 @@ const GrabMenu: React.FC<CrabMenuProps> = ({ handleConfirmStep }) => {
     </div>
 
     <div className="w-full h-full pb-4">
-     <div className="md:px-[30px]  flex gap-[24px] flex-wrap">
+     <div className="md:px-[30px]   flex gap-[24px] flex-wrap">
       {foodData.map((data, index) => {
        return (
         <div
@@ -238,6 +309,7 @@ const GrabMenu: React.FC<CrabMenuProps> = ({ handleConfirmStep }) => {
 
           {selectedItems.find((item) => item.imgAlt === data.imgAlt) ? (
            <>
+            {/* Quantity Stepper */}
             <div className="flex items-center  ">
              <button
               onClick={() => setQuantity(quantity + 1)}
@@ -421,9 +493,78 @@ const GrabMenu: React.FC<CrabMenuProps> = ({ handleConfirmStep }) => {
       </span>
      </div>
     )}
+    {/* saved plans sidebar */}
+    <AnimatePresence>
+     {savedPlans && (
+      <motion.div
+       className="fixed inset-0 z-50 flex justify-end bg-black/75 "
+       initial={{ opacity: 0 }}
+       animate={{ opacity: 1 }}
+       exit={{ opacity: 0 }}>
+       {/* Sidebar Panel */}
+       <motion.div
+        initial={{ x: "100%" }}
+        animate={{ x: 0 }}
+        exit={{ x: "100%" }}
+        transition={{ type: "spring", stiffness: 250, damping: 30 }}
+        className="bg-white w-full px-8 py-4 max-w-[522px] h-full shadow-2xl flex flex-col overflow-y-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between pb-[16px] ">
+         <h2 className="text-[28px] leading-[36px] font-[700] ">
+          Saved Plans
+         </h2>
+         <button
+          onClick={() => setSavedPlans(false)}
+          className="p-2 rounded-full hover:bg-gray-100">
+          <X className="w-5 h-5" />
+         </button>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 py-4 space-y-4">
+         <p className="text-gray-600 text-[16px] leading-[24px] font-[400]">
+          Lorem Ipsum is simply dummy text of the printing and typesetting
+          industry. Lorem Ipsum has been the industry's standard dummy text ever
+          since:
+         </p>
+
+         {savedPlansData.map((data, index) => {
+          return (
+           <div
+            className={` ${
+             selectedPlan === data.name
+              ? "bg-[#EAF5FF]  border border-[#054A86]"
+              : "border border-[#EDEEF2]"
+            } py-[10px] cursor-pointer  px-4 my-8  rounded-[8px]`}
+            onClick={() => setSelectedPlan(data.name)}>
+            <p className="text-[#2B2B43] text-[16px] leading-[24px] font-[700]">
+             {data.name}
+            </p>
+           </div>
+          );
+         })}
+        </div>
+
+        {/* Footer Buttons */}
+        <div className="p-4  flex flex-col sm:flex-row gap-3">
+         <button
+          onClick={() => setSavedPlans(false)}
+          className="w-full border border-[#054A86] rounded-lg py-2 font-medium text-[#054A86]">
+          Close
+         </button>
+         <button
+          className="w-full bg-[#054A86]  text-white rounded-lg py-2 font-medium "
+          onClick={handleConfirmStep}>
+          Confirm
+         </button>
+        </div>
+       </motion.div>
+      </motion.div>
+     )}
+    </AnimatePresence>
    </main>
   </div>
  );
 };
 
-export default GrabMenu;
+export default PlanWeekly;

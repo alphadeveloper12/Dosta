@@ -30,7 +30,7 @@ const CartItem: React.FC<CartItemProps> = ({
 
    <div className="flex items-center gap-4">
     {/* Quantity Stepper */}
-    <div className="flex items-center  rounded-md">
+    <div className="flex items-center  ">
      <button
       onClick={() => onQuantityChange(item.id, -1)}
       className="p-1 text-black bg-[#EDEEF2] rounded-[8px]">

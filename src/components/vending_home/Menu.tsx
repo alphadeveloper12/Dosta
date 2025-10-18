@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Divide, X } from "lucide-react";
 import { Link } from "react-router-dom";
+import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 
 interface FoodItem {
  imgSrc: string;
@@ -23,6 +24,7 @@ const Menu: React.FC<MenuProps> = ({ handleConfirmStep }) => {
  const [isSheetOpen, setIsSheetOpen] = useState(false);
  const [selectedItems, setSelectedItems] = useState<FoodItem[]>([]);
  const [toaster, setToaster] = useState<boolean>(false);
+  const [quantity, setQuantity] = useState(1);
 
  const handleCardClick = (item: FoodItem) => {
   setSelectedItem(item);
@@ -57,7 +59,7 @@ const Menu: React.FC<MenuProps> = ({ handleConfirmStep }) => {
   {
    imgSrc: "/images/vending_home/food.svg",
    heading: "Angus Burger",
-   imgAlt: "food",
+   imgAlt: "food1",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
@@ -65,7 +67,7 @@ const Menu: React.FC<MenuProps> = ({ handleConfirmStep }) => {
   {
    imgSrc: "/images/vending_home/food.svg",
    heading: "Angus Burger",
-   imgAlt: "food",
+   imgAlt: "food2",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
@@ -73,7 +75,7 @@ const Menu: React.FC<MenuProps> = ({ handleConfirmStep }) => {
   {
    imgSrc: "/images/vending_home/food.svg",
    heading: "Angus Burger",
-   imgAlt: "food",
+   imgAlt: "food3",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
@@ -81,7 +83,7 @@ const Menu: React.FC<MenuProps> = ({ handleConfirmStep }) => {
   {
    imgSrc: "/images/vending_home/food.svg",
    heading: "Angus Burger",
-   imgAlt: "food",
+   imgAlt: "food4",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
@@ -89,7 +91,7 @@ const Menu: React.FC<MenuProps> = ({ handleConfirmStep }) => {
   {
    imgSrc: "/images/vending_home/food.svg",
    heading: "Angus Burger",
-   imgAlt: "food",
+   imgAlt: "food5",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
@@ -97,7 +99,7 @@ const Menu: React.FC<MenuProps> = ({ handleConfirmStep }) => {
   {
    imgSrc: "/images/vending_home/food.svg",
    heading: "Angus Burger",
-   imgAlt: "food",
+   imgAlt: "food6",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
@@ -105,7 +107,7 @@ const Menu: React.FC<MenuProps> = ({ handleConfirmStep }) => {
   {
    imgSrc: "/images/vending_home/food.svg",
    heading: "Angus Burger",
-   imgAlt: "food",
+   imgAlt: "food7",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
@@ -113,7 +115,7 @@ const Menu: React.FC<MenuProps> = ({ handleConfirmStep }) => {
   {
    imgSrc: "/images/vending_home/food.svg",
    heading: "Angus Burger",
-   imgAlt: "food",
+   imgAlt: "food8",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
@@ -121,7 +123,7 @@ const Menu: React.FC<MenuProps> = ({ handleConfirmStep }) => {
   {
    imgSrc: "/images/vending_home/food.svg",
    heading: "Angus Burger",
-   imgAlt: "food",
+   imgAlt: "food9",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
@@ -129,7 +131,7 @@ const Menu: React.FC<MenuProps> = ({ handleConfirmStep }) => {
   {
    imgSrc: "/images/vending_home/food.svg",
    heading: "Angus Burger",
-   imgAlt: "food",
+   imgAlt: "food10",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
@@ -137,7 +139,7 @@ const Menu: React.FC<MenuProps> = ({ handleConfirmStep }) => {
   {
    imgSrc: "/images/vending_home/food.svg",
    heading: "Angus Burger",
-   imgAlt: "food",
+   imgAlt: "food11",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
@@ -145,7 +147,7 @@ const Menu: React.FC<MenuProps> = ({ handleConfirmStep }) => {
   {
    imgSrc: "/images/vending_home/food.svg",
    heading: "Angus Burger",
-   imgAlt: "food",
+   imgAlt: "food12",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
@@ -153,7 +155,7 @@ const Menu: React.FC<MenuProps> = ({ handleConfirmStep }) => {
   {
    imgSrc: "/images/vending_home/food.svg",
    heading: "Angus Burger",
-   imgAlt: "food",
+   imgAlt: "food13",
    description:
     "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
    price: "AED 47.25",
@@ -164,16 +166,16 @@ const Menu: React.FC<MenuProps> = ({ handleConfirmStep }) => {
   <div className="min-h-screen">
    <main className="flex-1 bg-neutral-white relative">
     <div className="w-full bg-transparent pt-2 pb-6">
-     <div className="main-container">
+     <div className="md:px-[30px]">
       {/* title and button */}
-      <div className="flex md:flex-row flex-col justify-between items-center py-4">
+      <div className="flex md:flex-row flex-col justify-between items-center py-4 ">
        <h2 className="text-[16px] text-[#2B2B43] leading-[24px] font-[700] tracking-[0.1px]">
         Choose your meal from our daily menu of 13 chef-prepared meals
        </h2>
-       <div className="flex gap-4 md:flex-row flex-col">
+       <div className="flex gap-4 md:flex-row flex-col py-2">
         {selectedItems.length > 0 && (
          <Button
-          className="bg-transparent hover:bg-transparent text-[#545563] border border-[#545563]"
+          className="bg-transparent w-full hover:bg-transparent text-[#545563] border border-[#545563]"
           onClick={() => setOpenDialouge(true)}>
           Reset
          </Button>
@@ -207,14 +209,16 @@ const Menu: React.FC<MenuProps> = ({ handleConfirmStep }) => {
     </div>
 
     <div className="w-full h-full pb-4">
-     <div className="main-container  flex gap-[24px] flex-wrap">
+     <div className="md:px-[30px] flex gap-[24px] flex-wrap">
       {foodData.map((data, index) => {
        return (
         <div
          key={index}
          onClick={() => handleCardClick(data)}
          className={`w-full border ${
-          selectedItems.includes(data) ? "border-[#054A86]" : "border-[#EDEEF2]"
+          selectedItems.find((item) => item.imgAlt === data.imgAlt)
+           ? "border-[#054A86]"
+           : "border-[#EDEEF2]"
          } max-w-[306px] bg-neutral-white rounded-[16px] px-3 pt-3 pb-5 sm:px-4 sm:pt-4 sm:pb-6 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow`}>
          <img
           src={data.imgSrc}
@@ -232,16 +236,21 @@ const Menu: React.FC<MenuProps> = ({ handleConfirmStep }) => {
            {data.price}
           </h4>
 
-          {selectedItems.includes(data) ? (
+          {selectedItems.find((item) => item.imgAlt === data.imgAlt) ? (
            <>
-            <div className="flex items-center gap-2">
-             <span className="h-[20px] w-[20px] bg-[#EDEEF2] flex items-center justify-center rounded-[8px] text-[#2B2B43]">
-              -
-             </span>
-             <span>1</span>
-             <span className="h-[20px] w-[20px] bg-[#EDEEF2] flex items-center justify-center rounded-[8px] text-[#2B2B43]">
-              +
-             </span>
+            {/* Quantity Stepper */}
+            <div className="flex items-center  ">
+             <button
+              onClick={() => setQuantity(quantity + 1)}
+              className="p-1 text-black bg-[#EDEEF2] rounded-[8px]">
+              <MinusIcon className="w-3 h-3" />
+             </button>
+             <span className="px-3 text-lg font-medium">{quantity}</span>
+             <button
+              onClick={() => setQuantity(quantity + 1)}
+              className="p-1 text-black bg-[#EDEEF2] rounded-[8px]">
+              <PlusIcon className="w-3 h-3" />
+             </button>
             </div>
            </>
           ) : (

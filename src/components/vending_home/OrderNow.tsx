@@ -12,6 +12,8 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { X } from "lucide-react";
 import Menu from "./Menu";
+import PlanWeekly from "./PlanWeekly";
+import { Input } from "../ui/input";
 
 type StepStatus = "completed" | "active" | "pending";
 
@@ -34,6 +36,7 @@ const OrderNow = () => {
  const [pickOrder, SetPickOrder] = useState("Pickup Today");
  const [orderType, setOrderType] = useState<string>("Order Now");
  const [planType, setPlanType] = useState<string>("weekly");
+ const [savePlanMenu, setSavePlanMenu] = useState<boolean>(false);
 
  const getStepStatus = (stepId: number): StepStatus => {
   if (stepId < currentStep) return "completed";
@@ -43,6 +46,9 @@ const OrderNow = () => {
 
  const handleEditLocation = () => {
   setCurrentStep(1);
+ };
+ const savedMenu = () => {
+  setSavePlanMenu(!savePlanMenu);
  };
 
  const handleOrderTypeSelect = (type: string) => {
@@ -226,13 +232,15 @@ const OrderNow = () => {
   },
   {
    id: 4,
-   title: "Choose Your Meal",
+   title: (planType === "weekly" && orderType === "Start a Plan") ? "Plan Your Week Menu" : "Choose Your Meal",
    status: getStepStatus(4),
    content:
     orderType === "Smart Grab" ? (
      <GrabMenu handleConfirmStep={handleConfirmStep} />
-    ) : (
+    ) : orderType === "Order Now" ? (
      <Menu handleConfirmStep={handleConfirmStep} />
+    ) : (
+     <PlanWeekly handleConfirmStep={handleConfirmStep} />
     ),
    subtitle: orderType === "Smart Grab" ? "Soft Drink" : "Angus Burger",
   },
@@ -265,7 +273,7 @@ const OrderNow = () => {
           ? "border-[#EDEEF2] bg-white"
           : "hidden"
         }`}>
-        <div className="py-[20px] px-[24px]">
+        <div className="py-[20px] md:px-[24px] px-3">
          <div className="flex md:flex-row flex-col justify-between">
           <div className="flex gap-4">
            <div
@@ -296,10 +304,19 @@ const OrderNow = () => {
             )}
            </div>
           </div>
+          {/* save plan button */}
+          {orderType === "Start a Plan" && step.id === 4 && currentStep > 4 && (
+           <Button
+            onClick={() => savedMenu()}
+            className="border text-[14px] hover:bg-[#054A86] hover:text-white leading-[20px] font-[700] tracking-[0.3px] border-[#545563] rounded-[8px] bg-transparent text-[#545563] mt-4 md:mt-0">
+            Save Plan
+           </Button>
+          )}
+          {/* edit button */}
           {step.status === "completed" && (
            <Button
             onClick={() => setCurrentStep(index + 1)}
-            className="border text-[14px] hover:bg-[#545563] hover:text-white leading-[20px] font-[700] tracking-[0.3px] border-[#545563] rounded-[8px] bg-transparent text-[#545563] mt-4 md:mt-0">
+            className="border text-[14px] hover:bg-[#054A86] hover:text-white leading-[20px] font-[700] tracking-[0.3px] border-[#545563] rounded-[8px] bg-transparent text-[#545563] mt-4 md:mt-0">
             Edit
            </Button>
           )}
@@ -386,7 +403,71 @@ const OrderNow = () => {
         {/* Footer Buttons */}
         <div className="p-4  flex flex-col sm:flex-row gap-3">
          <button
-          //   onClick={() => setIsOpen(false)}
+          onClick={() => setIsOpen(false)}
+          className="w-full border border-[#054A86] rounded-lg py-2 font-medium text-[#054A86]">
+          Close
+         </button>
+         <button
+          className="w-full bg-[#054A86]  text-white rounded-lg py-2 font-medium "
+          onClick={handleConfirmStep}>
+          Confirm
+         </button>
+        </div>
+       </motion.div>
+      </motion.div>
+     )}
+    </AnimatePresence>
+
+    {/* save new plan menu sidebar */}
+    <AnimatePresence>
+     {savePlanMenu && (
+      <motion.div
+       className="fixed inset-0 z-50 flex justify-end bg-black/75 "
+       initial={{ opacity: 0 }}
+       animate={{ opacity: 1 }}
+       exit={{ opacity: 0 }}>
+       {/* Sidebar Panel */}
+       <motion.div
+        initial={{ x: "100%" }}
+        animate={{ x: 0 }}
+        exit={{ x: "100%" }}
+        transition={{ type: "spring", stiffness: 250, damping: 30 }}
+        className="bg-white w-full px-8 py-4 max-w-[522px] h-full shadow-2xl flex flex-col overflow-y-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between pb-[16px] ">
+         <h2 className="text-[28px] leading-[36px] font-[700] ">
+          Save Week Plan
+         </h2>
+         <button
+          onClick={() => savedMenu()}
+          className="p-2 rounded-full hover:bg-gray-100">
+          <X className="w-5 h-5" />
+         </button>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 py-4 space-y-4">
+         <p className="text-gray-600 text-[16px] leading-[24px] font-[400]">
+          Lorem Ipsum is simply dummy text of the printing and typesetting
+          industry. Lorem Ipsum has been the industry's standard dummy text ever
+          since:
+         </p>
+         <div>
+          <label className="text-[12px] leading-[16px] font-[600] text-[#545563]">Enter Plan Name</label>
+          <Input type="text" placeholder="Example: Low Carbs" className="md:max-w-[350px] w-full bg-neutral-white"/>
+         </div>
+         <div className="flex gap-3">
+          <input type="checkbox" className="h-5 w-5"/>
+          <span>Set as default</span>
+        </div>
+        </div>
+
+        
+
+        {/* Footer Buttons */}
+        <div className="p-4  flex flex-col sm:flex-row gap-3">
+         <button
+          onClick={() => savedMenu()}
           className="w-full border border-[#054A86] rounded-lg py-2 font-medium text-[#054A86]">
           Close
          </button>

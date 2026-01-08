@@ -1,6 +1,3 @@
-import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from "@react-google-maps/api";
-import { useState, useCallback, useEffect } from "react";
-
 import {
  GoogleMap,
  useJsApiLoader,
@@ -15,35 +12,12 @@ import {
  getLocationsStatus,
 } from "../../redux/slices/vendingLocationsSlice";
 
-
 const containerStyle = {
  width: "100%",
  height: "100%",
 };
 
 const vendingLocations = [
-    {
-      id: 1,
-      name: "Barsha 1",
-      position: { lat: 25.118, lng: 55.201 },
-      info: "Near Mall of the Emirates, St. 12",
-      hours: "Open - Closes at 10 PM",
-    },
-    {
-      id: 2,
-      name: "JLT Cluster D",
-      position: { lat: 25.073, lng: 55.141 },
-      info: "Beside Carrefour Market",
-      hours: "Open 24 Hours",
-    },
-    {
-      id: 3,
-      name: "Business Bay",
-      position: { lat: 25.189, lng: 55.273 },
-      info: "Close to Bay Avenue Mall",
-      hours: "Open - Closes at 9 PM",
-    },
-
  {
   id: 1,
   name: "Barsha 1",
@@ -65,50 +39,9 @@ const vendingLocations = [
   info: "Close to Bay Avenue Mall",
   hours: "Open - Closes at 9 PM",
  },
-
 ];
 
 const center = { lat: 25.118, lng: 55.201 };
-
-const VendingMap = () => {
-  const { isLoaded, loadError } = useJsApiLoader({
-    id: "google-map-script",
-    googleMapsApiKey: "AIzaSyCYAsBPyik1DZcOH3jcR-awecFjyYXr5Qw", // 🟥 Replace with your valid key
-  });
-
-  const [selected, setSelected] = useState<any>(null);
-  const [map, setMap] = useState<google.maps.Map | null>(null);
-
-  const onLoad = useCallback((mapInstance: google.maps.Map) => {
-    setMap(mapInstance);
-  }, []);
-
-  const onUnmount = useCallback(() => {
-    setMap(null);
-  }, []);
-
-  // Hide default close button
-  useEffect(() => {
-    const hideCloseButton = () => {
-      const closeBtn = document.querySelector(".gm-ui-hover-effect") as HTMLElement;
-      if (closeBtn) closeBtn.style.display = "none";
-    };
-
-    const observer = new MutationObserver(hideCloseButton);
-    observer.observe(document.body, { childList: true, subtree: true });
-    hideCloseButton();
-    return () => observer.disconnect();
-  }, [selected]);
-
-  if (loadError)
-    return <div className="p-6 text-center text-red-500">Error loading map</div>;
-
-  if (!isLoaded)
-    return (
-      <div className="flex items-center justify-center h-full text-gray-500">
-        Loading map...
-      </div>
-    );
 
 const VendingMap = ({
  readOnlyLocation,
@@ -189,7 +122,6 @@ const VendingMap = ({
   return () => observer.disconnect();
  }, [selected]);
 
-
  const handleLocationSelect = async (location: any) => {
   if (readOnlyLocation) return; // Disable selection in read-only mode
 
@@ -227,17 +159,49 @@ const VendingMap = ({
 
  if (!isLoaded)
   return (
-    <GoogleMap
-      mapContainerStyle={containerStyle}
-      center={center}
-      zoom={13}
-      onLoad={onLoad}
-      onUnmount={onUnmount}
-      onClick={() => setSelected(null)}
-      options={{
-        disableDefaultUI: true,
-        zoomControl: true,
-        fullscreenControl: false,
+   <div className="flex items-center justify-center h-full text-gray-500">
+    Loading map...
+   </div>
+  );
+
+ return (
+  <GoogleMap
+   mapContainerStyle={containerStyle}
+   center={
+    readOnlyLocation
+     ? { lat: readOnlyLocation.lat, lng: readOnlyLocation.lng }
+     : center
+   }
+   zoom={13}
+   onLoad={onLoad}
+   onUnmount={onUnmount}
+   onClick={() => !readOnlyLocation && setSelected(null)}
+   options={{
+    disableDefaultUI: true,
+    zoomControl: true,
+    fullscreenControl: false,
+   }}>
+   {/* Render Markers : If read-only, show single marker. Else show all vending locations */}
+   {readOnlyLocation ? (
+    <Marker
+     position={{ lat: readOnlyLocation.lat, lng: readOnlyLocation.lng }}
+     icon={{
+      url: "/images/icons/red-marker.svg",
+      scaledSize: new window.google.maps.Size(42, 42),
+     }}
+    />
+   ) : (
+    vendingLocations.map((loc) => (
+     <Marker
+      key={loc.id}
+      position={loc.position}
+      onClick={() => handleLocationSelect(loc)}
+      icon={{
+       url:
+        selected?.id === loc.id
+         ? "/images/icons/red-marker.svg"
+         : "/images/icons/blue-marker.svg",
+       scaledSize: new window.google.maps.Size(42, 42),
       }}
      />
     ))
@@ -269,15 +233,11 @@ const VendingMap = ({
       {selected.hours && (
        <p className="text-[14px] text-[#4B5563] mt-1">{selected.hours}</p>
       )}
-    </GoogleMap>
-  );
-
      </div>
     </InfoWindow>
    )}
   </GoogleMap>
  );
-
 };
 
 export default VendingMap;

@@ -1,17 +1,63 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import VendingMap from "./VendingMap"; // 👈 Import the Google Map component
-<<<<<<< Updated upstream
 
 const HeroSection = () => {
+ const dispatch = useDispatch();
  const navigate = useNavigate();
  const [selectedItem, setSelectedItem] = useState(false);
  const [activeView, setActiveView] = useState<"list" | "map">("list");
+ const [selectedLocation, setSelectedLocation] = useState<any>(null);
+ const [searchQuery, setSearchQuery] = useState(""); // Added state for search query
+
+ const vendingLocations = useSelector(selectAllLocations);
+ const status = useSelector(getLocationsStatus);
+
+ useEffect(() => {
+  // Only fetch if the status is 'idle' (to prevent re-fetching)
+  if (status === "idle") {
+   dispatch(fetchLocations());
+  }
+ }, [status, dispatch]);
+
+ const userData = useSelector((state: any) => state?.user?.user); // Get user data
+ useEffect(() => {
+  const storedLocation = localStorage.getItem("selectedLocation");
+  if (storedLocation) {
+   setSelectedLocation(JSON.parse(storedLocation).location);
+  }
+ }, []);
+
+ const handleLocationSelect = async (location: any) => {
+  // 1. External Login for Token (Same as Map View)
+  try {
+   const response = await fetch(
+    `http://www.hnzczy.cn:8087/apiusers/checkusername?userName=C202405128888&password=8888`
+   );
+   const data = await response.json();
+   const token = data.token || data.data || JSON.stringify(data);
+   sessionStorage.setItem("vendingToken", token);
+   console.log("Vending Token stored (List View):", token);
+  } catch (error) {
+   console.error("Failed to fetch vending token (List View):", error);
+  }
+
+  setSelectedLocation(location);
+  // Safely save user ID (if available) and selected location to localStorage
+  try {
+   const userId = userData?.id || null;
+   localStorage.setItem(
+    "selectedLocation",
+    JSON.stringify({ userId, location })
+   );
+  } catch (error) {
+   console.error("Failed to save location to localStorage:", error);
+  }
+ };
 
  const handleNavigate = () => {
-  
   navigate("/vending-home/order-now");
  };
  return (
@@ -25,7 +71,7 @@ const HeroSection = () => {
    />
    {/* Dark overlay */}
    <div className="absolute inset-0 h-[512px] md:bg-black/30" />
-=======
+
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchLocations,
@@ -100,7 +146,7 @@ const HeroSection = () => {
             <p className="mt-6 text-[20px] leading-[28px]  font-semibold text-center text-[#545563]">
               Plan and reserve your meal and pick it up from a vending location nearby.
             </p>
->>>>>>> Stashed changes
+
 
             {/* Search input mock (opens sidebar) */}
             <div className="mt-6 flex justify-center w-full sm:w-[80%] mx-auto">
@@ -145,16 +191,15 @@ const HeroSection = () => {
               </svg>
             </div>
 
-<<<<<<< Updated upstream
       {/* Search input mock (opens sidebar) */}
       <div className="mt-6 flex justify-center w-full sm:w-[80%] mx-auto">
        <input
-        className="w-full max-w-md rounded-xl px-5 py-3 text-sm outline-none bg-[#EDEEF2] placeholder:text-[#545563]"
+        className="w-full max-w-md rounded-xl px-5 py-3 md:px-3 md:py-[10px] text-[16px] leading-[24px] font-[400] outline-none bg-[#EDEEF2] placeholder:text-[#545563]"
         placeholder="Find nearby vending locations…"
         onClick={() => setSelectedItem(true)}
        />
        <svg
-        className="-ml-8 mt-3"
+        className="md:-ml-7 -ml-8 md:mt-[13px] mt-4 "
         width="17"
         height="16"
         viewBox="0 0 17 16"
@@ -234,6 +279,8 @@ const HeroSection = () => {
          <input
           type="text"
           placeholder="Search by city or street name"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full bg-[#EDEEF2] rounded-[12px] py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#054A86]"
          />
          <svg
@@ -248,17 +295,6 @@ const HeroSection = () => {
            d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z"
           />
          </svg>
-=======
-            <div className="mt-6 text-center">
-              <a href="#" className="text-sm text-[#056AC1] font-bold hover:underline">
-                Or browse our vending meals
-              </a>
-            </div>
-            <div className="mt-6 flex justify-center w-full">
-              <img src="/images/vending_home/meal_browes.png" alt="Browse Meal" />
-            </div>
-          </div>
->>>>>>> Stashed changes
         </div>
       </div>
 
@@ -354,88 +390,44 @@ const HeroSection = () => {
                 </div>
               </div>
 
-<<<<<<< Updated upstream
        {/* List View */}
+
        {activeView === "list" && (
         <div className="flex-1 overflow-y-auto px-8 space-y-4 py-8">
-         <div className="border border-gray-200 rounded-2xl shadow-md p-4">
-          <span className="inline-block bg-[#A7CF38] text-[#054A86] text-[12px] font-semibold px-3 py-1 rounded-full mb-2">
-           SELECTED LOCATION
-          </span>
-          <h3 className="text-[20px] font-[700] text-gray-900">Barsha 1</h3>
-          <p className="text-[14px] text-gray-600">
-           Near Mall of the Emirates, St. 12
-          </p>
-          <p className="text-[14px] text-gray-600 mt-1">
-           Open - Closes at 10 PM
-          </p>
-         </div>
+         {vendingLocations
+          .filter(
+           (loc: any) =>
+            loc.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            loc.info.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+          .map((location) => (
+           <div
+            key={location.id}
+            className={`border border-gray-200 rounded-2xl shadow-md p-4 `}>
+            {selectedLocation?.id === location.id ? (
+             <span className="inline-block bg-[#A7CF38] text-[#054A86] text-[12px] font-semibold px-3 py-1 rounded-full mb-2">
+              Selected Location
+             </span>
+            ) : (
+             ""
+            )}
 
-         {[2, 3].map((i) => (
-          <div
-           key={i}
-           className="border border-gray-200 rounded-2xl  shadow-md p-4">
-           <h3 className="text-[20px] font-[700] text-gray-900">
-            Location {i}
-           </h3>
-           <p className="text-[14px] text-gray-600">
-            Near Mall of the Emirates, St. 12
-           </p>
-           <p className="text-[14px] text-gray-600 mt-1">
-            Open - Closes at 10 PM
-           </p>
-           <button className="mt-3 px-4 py-1.5 text-sm border border-gray-400 rounded-md hover:bg-gray-50">
-            Select This Location
-           </button>
-          </div>
-         ))}
+            <h3 className="text-[20px] font-[700] text-gray-900">
+             {location.name}
+            </h3>
+            <p className="text-[14px] text-gray-600">{location.info}</p>
+            <p className="text-[14px] text-gray-600 mt-1">{location.hours}</p>
+            <button
+             onClick={() => handleLocationSelect(location)}
+             className="mt-3 px-4 py-1.5 text-sm border border-gray-400 rounded-md hover:bg-gray-50">
+             {selectedLocation?.id === location.id
+              ? "Selected"
+              : "Select This Location"}
+            </button>
+           </div>
+          ))}
         </div>
        )}
-=======
-              {/* List View */}
-
-              {activeView === "list" && (
-                <div className="flex-1 overflow-y-auto px-8 space-y-4 py-8">
-                  {[...vendingLocations]
-                    .filter(
-                      (loc: any) =>
-                        loc.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        loc.info.toLowerCase().includes(searchQuery.toLowerCase())
-                    )
-                    .sort((a: any, b: any) => {
-                      if (selectedLocation?.id === a.id) return -1;
-                      if (selectedLocation?.id === b.id) return 1;
-                      return 0;
-                    })
-                    .map((location) => (
-                      <div
-                        key={location.id}
-                        className={`border border-gray-200 rounded-2xl shadow-md p-4 `}>
-                        {selectedLocation?.id === location.id ? (
-                          <span className="inline-block bg-[#A7CF38] text-[#054A86] text-[12px] font-semibold px-3 py-1 rounded-full mb-2">
-                            Selected Location
-                          </span>
-                        ) : (
-                          ""
-                        )}
-
-                        <h3 className="text-[20px] font-[700] text-gray-900">
-                          {location.name}
-                        </h3>
-                        <p className="text-[14px] text-gray-600">{location.info}</p>
-                        <p className="text-[14px] text-gray-600 mt-1">{location.hours}</p>
-                        <button
-                          onClick={() => handleLocationSelect(location)}
-                          className="mt-3 px-4 py-1.5 text-sm border border-gray-400 rounded-md hover:bg-gray-50">
-                          {selectedLocation?.id === location.id
-                            ? "Selected"
-                            : "Select This Location"}
-                        </button>
-                      </div>
-                    ))}
-                </div>
-              )}
->>>>>>> Stashed changes
 
               {/* Map View 👇 */}
               {activeView === "map" && (
@@ -449,11 +441,15 @@ const HeroSection = () => {
                 </div>
               )}
 
-<<<<<<< Updated upstream
        {/* Footer */}
        <div className="bg-white p-4">
         <button
-         className="w-full bg-[#054A86] text-white rounded-lg py-3 font-medium hover:bg-[#063a69]"
+         disabled={!selectedLocation}
+         className={`w-full text-white rounded-lg py-3 font-medium ${
+          selectedLocation
+           ? "bg-[#054A86] hover:bg-[#063a69]"
+           : "bg-gray-400 cursor-not-allowed"
+         }`}
          onClick={() => handleNavigate()}>
          Confirm & Close
         </button>
@@ -464,26 +460,6 @@ const HeroSection = () => {
    </AnimatePresence>
   </section>
  );
-=======
-              {/* Footer */}
-              <div className="bg-white p-4">
-                <button
-                  disabled={!selectedLocation}
-                  className={`w-full text-white rounded-lg py-3 font-medium ${selectedLocation
-                    ? "bg-[#054A86] hover:bg-[#063a69]"
-                    : "bg-gray-400 cursor-not-allowed"
-                    }`}
-                  onClick={() => handleNavigate()}>
-                  Confirm & Close
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </section>
-  );
->>>>>>> Stashed changes
 };
 
 export default HeroSection;

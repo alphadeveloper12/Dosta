@@ -5,13 +5,13 @@ import { Button } from "@/pages/catering/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
 interface OrderSummaryProps {
-<<<<<<< Updated upstream
  subtotal: number;
  vat: number;
  discount: number;
  total: number;
- coupon: string;
- setCoupon: (coupon: string) => void;
+ coupon?: string; // Optional if not always passed
+ setCoupon?: (coupon: string) => void;
+ onCheckout?: () => void; // New prop
 }
 
 const OrderSummary: React.FC<OrderSummaryProps> = ({
@@ -21,27 +21,9 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
  total,
  coupon,
  setCoupon,
-=======
-    subtotal: number;
-    vat: number;
-    discount: number;
-    total: number;
-    coupon?: string;
-    setCoupon?: (coupon: string) => void;
-    onCheckout?: () => void;
-    loading?: boolean; // NEW: Loading state
-}
 
-const OrderSummary: React.FC<OrderSummaryProps> = ({
-    subtotal,
-    vat,
-    discount,
-    total,
-    coupon = "",
-    setCoupon,
-    onCheckout,
-    loading,
->>>>>>> Stashed changes
+ onCheckout,
+
 }) => {
     const navigate = useNavigate();
     const isCouponApplied = coupon.toUpperCase() === "DOSTA25";
@@ -52,7 +34,6 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
                 Order Summary
             </h2>
 
-<<<<<<< Updated upstream
    {/* Coupon Code */}
    <div className="mb-6">
     <label
@@ -70,7 +51,6 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
       className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
      />
      {isCouponApplied && (
-      // <CheckCircleIcon className="w-6 h-6 text-blue-600 absolute right-3 top-1/2 -translate-y-1/2" />
       <img
        src="/images/icons/round_tick.svg"
        alt="tick"
@@ -79,7 +59,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
      )}
     </div>
    </div>
-=======
+
             {/* Coupon Code */}
             <div className="mb-6">
                 <label
@@ -123,7 +103,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
                     </div>
                 )}
             </div>
->>>>>>> Stashed changes
+
 
             {/* Total */}
             <div className="flex justify-between items-center text-lg font-bold text-gray-900 pt-2">
@@ -133,7 +113,6 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
                 <span className="text-[#054A86]">AED{total.toFixed(2)}</span>
             </div>
 
-<<<<<<< Updated upstream
    {/* Total */}
    <div className="flex justify-between items-center text-lg font-bold text-gray-900 pt-2">
     <span className="text-[16px] leading-[24px] text-[#2B2B43] font-[400]">
@@ -144,29 +123,12 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
 
    <Button
     className="w-full bg-[#054A86] hover:bg-[#054A86] text-neutral-white font-bold py-3 rounded-md mt-5 "
-    onClick={() => navigate("/vending-home/my-orders")}>
+    onClick={onCheckout} /* Use the prop */
+   >
     Proceed to checkout
    </Button>
   </div>
  );
-=======
-            <Button
-                className="w-full bg-[#054A86] hover:bg-[#054A86] text-neutral-white font-bold py-3 rounded-md mt-5 flex items-center justify-center gap-2"
-                onClick={onCheckout}
-                disabled={loading}
-            >
-                {loading ? (
-                    <>
-                        <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
-                        Processing...
-                    </>
-                ) : (
-                    "Proceed to checkout"
-                )}
-            </Button>
-        </div>
-    );
->>>>>>> Stashed changes
 };
 
 export default OrderSummary;

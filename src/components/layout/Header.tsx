@@ -31,6 +31,8 @@ const Header = () => {
   sessionStorage.removeItem("authToken");
   localStorage.removeItem("user");
   sessionStorage.removeItem("user");
+  localStorage.removeItem("orderProgress");
+  localStorage.removeItem("selectedLocation"); // Clear selected location
   setIsLoggedIn(false);
   navigate("/signin");
  };
@@ -50,16 +52,18 @@ const Header = () => {
       </Link>
 
       <div className="hidden lg:flex items-center text-neutral-gray-lightest gap-[24px]">
-       <Link to="/" className="text-[16px] font-[700]">
+       <Link to="/services" className="text-[16px] font-[700]">
         Services
        </Link>
-       <Link to="/" className="text-[16px] font-[700]">
+       <Link to="/portfolio" className="text-[16px] font-[700]">
         Portfolio
        </Link>
-       <Link to="/" className="text-[16px] font-[700]">
+       <Link to="/about-us" className="text-[16px] font-[700]">
         About us
        </Link>
-       <Link to="/" className="text-[16px] font-[700]">
+       <Link
+        to="/catering/request-custom-quote"
+        className="text-[16px] font-[700]">
         Request a quote
        </Link>
       </div>
@@ -93,7 +97,7 @@ const Header = () => {
       {isDropdownOpen && isLoggedIn && (
        <div className="absolute top-16 right-0 w-[256px] bg-white rounded-[16px] shadow-lg py-[10px]">
         <div className="hover:bg-primary-light py-[8px] px-[16px] rounded-t-[4px]">
-         <Link to="/orders">My Orders</Link>
+         <Link to="/vending-home/my-orders">My Orders</Link>
         </div>
         <div className="hover:bg-primary-light py-[8px] px-[16px]">
          <Link to="/settings">Account Settings</Link>

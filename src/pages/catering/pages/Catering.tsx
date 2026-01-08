@@ -4,10 +4,7 @@ import { useState } from "react";
 import Header from "../components/layout/Header";
 
 import EventTypeCard from "../components/catering/EventTypeCard";
-import corporateEventImage from "@/assets/corporate-event.jpg";
-import Caterers from "@/assets/Caterers.svg";
-import privateChef from "@/assets/Private_Chefs.svg";
-import privateEventImage from "@/assets/private-event.jpg";
+
 import { Button } from "../components/ui/button";
 import DateTimePicker from "@/components/ui/calendar";
 import EventTypeSelection from "../components/catering/EventTypeSelection";
@@ -20,93 +17,63 @@ import BookingSummary from "../components/catering/BookingSummary"; // Import Bo
 import Footer from "@/components/layout/Footer";
 import BreadCrumb from "@/components/home/BreadCrumb";
 import LazyLoad from "@/components/ui/LazyLoad";
+import MobileFooterNav from "@/components/home/MobileFooterNav";
+import CoursesMenu from "../components/catering/CoursesMenu";
+import CoffeeBreakMenu from "../components/catering/CoffeeBreakMenu";
+import PlatterMenu from "../components/catering/PlatterMenu";
+import BoxedMealMenu from "../components/catering/BoxedMealMenu";
+import LiveStationMenu from "../components/catering/LiveStationMenu";
 
 const Catering = () => {
  const navigate = useNavigate();
- const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
+ const [selectedEvent, setSelectedEvent] = useState<{
+  id: string | null;
+  name: string | null;
+ } | null>(null);
+ const [selectedDetailedEventName, setSelectedDetailedEventName] = useState<{
+  id: string | null;
+  name: string | null;
+ } | null>(null);
  const [guestCount, setGuestCount] = useState<number>(1);
  const [isDateTimePickerVisible, setIsDateTimePickerVisible] = useState(false);
  const [selectedDateTime, setSelectedDateTime] = useState<string | null>(null);
  const [step, setStep] = useState<number>(1); // Step states to manage visibility
- const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
- const [selectedServiceStyles, setSelectedServiceStyles] = useState<string[]>(
-  []
- );
- const [selectedCuisines, setSelectedCuisines] = useState<string[]>([]);
- const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
- const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
- const [selectedBudget, setSelectedBudget] = useState<string | null>(null);
+ const [selectedProvider, setSelectedProvider] = useState<{
+  id: string | null;
+  name: string | null;
+ } | null>(null);
+ const [selectedServiceStyles, setSelectedServiceStyles] = useState<{
+  id: number;
+  name: string;
+ } | null>(null);
+ const [selectedCuisines, setSelectedCuisines] = useState<
+  { id: number; name: string }[]
+ >([]);
+ const [selectedCourses, setSelectedCourses] = useState<
+  { id: number; name: string }[]
+ >([]);
+ const [selectedLocation, setSelectedLocation] = useState<{
+  id: number | null;
+  name: string | null;
+ } | null>(null);
+ const [selectedBudget, setSelectedBudget] = useState<{
+  id: string | null;
+  label: string | null;
+  price_range: string | null;
+ }>({ id: null, label: null, price_range: null });
 
- // Event and provider data
- const eventTypes = [
-  { id: "corporate", title: "Corporate Event", image: corporateEventImage },
-  { id: "private", title: "Private Event", image: privateEventImage },
- ];
-
- const providerTypes = [
-  {
-   id: "caterer",
-   title: "Caterer",
-   image: Caterers,
-   description:
-    "Enjoy a traditional catering experience with flexible service options tailored to your needs.",
-   serviceStyles: [
-    "Boxed Meal",
-    "Pass-Around",
-    "Sharing Table",
-    "Buffet",
-    "Plated Meal",
-   ],
-  },
-  {
-   id: "Private_Chefs",
-   title: "Private Chefs",
-   image: privateChef,
-   description:
-    "Experience a personalized fine-dining meal prepared and served by a professional chef.",
-   serviceStyles: [
-    "Boxed Meal",
-    "Pass-Around",
-    "Sharing Table",
-    "Buffet",
-    "Plated Meal",
-   ],
-  },
- ];
-
- const cuisineTypes = [
-  { name: "American", image: "/images/icons/american.svg" },
-  { name: "Asian", image: "/images/icons/asian.svg" },
-  { name: "Dessert", image: "/images/icons/dessert.svg" },
-  { name: "French", image: "/images/icons/french.svg" },
-  { name: "Indian", image: "/images/icons/indian.svg" },
-  { name: "Italian", image: "/images/icons/italian.svg" },
-  { name: "Mediterranean", image: "/images/icons/Mediterranean.svg" },
-  { name: "Middle-Eastern", image: "/images/icons/Middle-Eastern.svg" },
-  { name: "Japanese", image: "/images/icons/japanese.svg" },
-  { name: "Latin American", image: "/images/icons/latin-american.png" },
- ];
-
- const courseTypes = [
-  { name: "Canapes", image: "/images/icons/Canapes.svg" },
-  { name: "Starters", image: "/images/icons/Starters.svg" },
-  { name: "Mains", image: "/images/icons/mains.svg" },
-  { name: "Sides", image: "/images/icons/sides.svg" },
-  { name: "Desserts", image: "/images/icons/dessert.svg" },
-  { name: "Cold Beverages", image: "/images/icons/Cold_Beverages.svg" },
-  { name: "Hot Beverages", image: "/images/icons/Hot_Beverages.svg" },
-  { name: "Snacks", image: "/images/icons/snacks.svg" },
-  { name: "Ice Cream Station", image: "/images/icons/ice_cream_station.svg" },
-  { name: "Coffee Station", image: "/images/icons/coffee_station.svg" },
- ];
-
- const locations = ["Ajman", "Dubai", "Sharjah"];
- const budgetOptions = [
-  { id: "basic", title: "Basic", price: "AED70" },
-  { id: "premium", title: "Premium", price: "AED350" },
-  { id: "luxury", title: "Luxury", price: "AED550" },
-  { id: "elite", title: "Elite", price: "AED700" },
- ];
+ const [selectedPax, setSelectedPax] = useState<{
+  id: string | null;
+  label: string | null;
+  number: string | null;
+ }>({
+  id: null,
+  label: null,
+  number: null,
+ });
+ const [selectedMenuItems, setSelectedMenuItems] = useState<
+  { id: string; name: string; course: string }[]
+ >([]);
 
  // Handler functions
  const handleGuestCountChange = (amount: number) => {
@@ -123,49 +90,124 @@ const Catering = () => {
  };
 
  const handleContinue = () => {
-  if (step === 1 && selectedEvent) setStep(2); // Move to provider selection
-  else if (step === 2 && selectedProvider)
-   setStep(3); // Move to cuisines selection
-  else if (step === 3 && selectedCuisines.length > 0)
-   setStep(4); // Move to courses selection
-  else if (step === 4 && selectedCourses.length > 0)
-   setStep(5); // Move to location selection
-  else if (step === 5 && selectedLocation)
-   setStep(6); // Move to budget selection
-  else if (step === 6 && selectedBudget) setStep(7); // Move to booking summary
- };
+  const isBuffetOrSetMenu =
+   selectedServiceStyles?.name &&
+   (selectedServiceStyles.name.toLowerCase().includes("buffet") ||
+    selectedServiceStyles.name.toLowerCase().includes("set menu"));
 
+  const isPlatters = selectedServiceStyles?.name
+   ?.toLowerCase()
+   .includes("platter");
+
+  const isBoxedMeal = selectedServiceStyles?.name
+   ?.toLowerCase()
+   .includes("boxed");
+
+  const isLiveStation = selectedServiceStyles?.name
+   ?.toLowerCase()
+   .includes("live station");
+
+  if (step === 1 && selectedEvent)
+   setStep(2); // Budget (Step 1) -> Event (Step 2)
+  else if (step === 2 && selectedLocation?.id)
+   setStep(3); // Event (Step 2) -> Provider (Step 3)
+  else if (step === 3 && selectedServiceStyles)
+   setStep(4); // Provider (Step 3) -> Cuisine (Step 4)
+  else if (step === 4 && selectedBudget.id) {
+   if (isBuffetOrSetMenu) {
+    setStep(5); // Cuisine (Step 5)
+   } else if (isPlatters) {
+    setStep(10); // Platter Menu (Step 10)
+   } else if (isBoxedMeal) {
+    setStep(11); // Boxed Meal Menu (Step 11)
+   } else if (isLiveStation) {
+    setStep(12); // Live Station Menu (Step 12)
+   } else {
+    setStep(9); // Coffee Break Menu (Step 9)
+   }
+  } else if (step === 5 && selectedCuisines.length > 0) {
+   setStep(6); // Go to Course Selection (Step 6)
+  } else if (step === 6 && selectedCourses.length > 0)
+   setStep(7); // Location (Step 6) -> Menu (Step 7)
+  else if (step === 7) setStep(8); // Menu (Step 7) -> Summary (Step 8)
+  else if (step === 9)
+   setStep(8); // Coffee Break Menu (Step 9) -> Summary (Step 8)
+  else if (step === 10)
+   setStep(8); // Platter Menu (Step 10) -> Summary (Step 8)
+  else if (step === 11)
+   setStep(8); // Boxed Meal Menu (Step 11) -> Summary (Step 8)
+  else if (step === 12) setStep(8); // Live Station Menu (Step 12) -> Summary (Step 8)
+ };
  const handleGoBack = () => {
-  if (step === 2) setStep(1);
-  else if (step === 3) setStep(2);
-  else if (step === 4) setStep(3);
-  else if (step === 5) setStep(4);
-  else if (step === 6) setStep(5);
-  else if (step === 7) setStep(6); // Go back to budget selection
+  const isBuffetOrSetMenu =
+   selectedServiceStyles?.name &&
+   (selectedServiceStyles.name.toLowerCase().includes("buffet") ||
+    selectedServiceStyles.name.toLowerCase().includes("set menu"));
+  const isPlatters = selectedServiceStyles?.name
+   ?.toLowerCase()
+   .includes("platter");
+  const isBoxedMeal = selectedServiceStyles?.name
+   ?.toLowerCase()
+   .includes("boxed");
+  const isLiveStation = selectedServiceStyles?.name
+   ?.toLowerCase()
+   .includes("live station");
+
+  if (step === 2) setStep(1); // Go back to Budget
+  else if (step === 3) setStep(2); // Go back to Event
+  else if (step === 4) setStep(3); // Go back to Provider
+  else if (step === 5) setStep(4); // Go back to Cuisine
+  else if (step === 6) setStep(5); // Go back to Course
+  else if (step === 7) {
+   setStep(6); // Go back to Course Selection (Step 6)
+  } else if (step === 8) {
+   if (isBuffetOrSetMenu) {
+    setStep(7); // Go back to Menu
+   } else if (isPlatters) {
+    setStep(10); // Go back to Platter Menu
+   } else if (isBoxedMeal) {
+    setStep(11); // Go back to Boxed Meal
+   } else if (isLiveStation) {
+    setStep(12); // Go back to Live Station
+   } else {
+    setStep(9); // Go back to Coffee Break Menu
+   }
+  } else if (step === 9) setStep(4); // Coffee Break Menu -> Budget
+  else if (step === 10) setStep(4); // Platter Menu -> Budget
+  else if (step === 11) setStep(4); // Boxed Meal Menu -> Budget
+  else if (step === 12) setStep(4); // Live Station Menu -> Budget
  };
 
  // Toggle selection functions
- const toggleServiceStyle = (style: string) => {
-  setSelectedServiceStyles((prevState) =>
-   prevState.includes(style)
-    ? prevState.filter((item) => item !== style)
-    : [...prevState, style]
-  );
+ const toggleServiceStyle = (style: { id: number; name: string }) => {
+  setSelectedServiceStyles(style);
  };
 
- const toggleCuisine = (cuisine: string) => {
+ const toggleCuisine = (cuisine: { id: number; name: string }) => {
   setSelectedCuisines((prevState) =>
-   prevState.includes(cuisine)
-    ? prevState.filter((item) => item !== cuisine)
+   prevState.some((item) => item.id === cuisine.id)
+    ? prevState.filter((item) => item.id !== cuisine.id)
     : [...prevState, cuisine]
   );
  };
 
- const toggleCourse = (course: string) => {
+ const toggleCourse = (course: { id: number; name: string }) => {
   setSelectedCourses((prevState) =>
-   prevState.includes(course)
-    ? prevState.filter((item) => item !== course)
+   prevState.some((item) => item.id === course.id)
+    ? prevState.filter((item) => item.id !== course.id)
     : [...prevState, course]
+  );
+ };
+
+ const toggleMenuItem = (item: {
+  id: string;
+  name: string;
+  course: string;
+ }) => {
+  setSelectedMenuItems((prevState) =>
+   prevState.some((i) => i.id === item.id)
+    ? prevState.filter((i) => i.id !== item.id)
+    : [...prevState, item]
   );
  };
 
@@ -196,82 +238,143 @@ const Catering = () => {
       {/* Show the steps */}
 
       {step === 1 && (
- 
-        <EventTypeSelection
-         selectedEvent={selectedEvent}
-         setSelectedEvent={setSelectedEvent}
-         guestCount={guestCount}
-         setGuestCount={setGuestCount}
-         selectedDateTime={selectedDateTime}
-         setIsDateTimePickerVisible={setIsDateTimePickerVisible}
-         handleSelectDateTime={handleSelectDateTime}
-         handleContinue={handleContinue}
-         handleGuestCountChange={handleGuestCountChange}
-        />
-    
+       <EventTypeSelection
+        selectedEvent={selectedEvent}
+        setSelectedEvent={setSelectedEvent}
+        guestCount={guestCount}
+        setGuestCount={setGuestCount}
+        selectedDateTime={selectedDateTime}
+        setIsDateTimePickerVisible={setIsDateTimePickerVisible}
+        handleSelectDateTime={handleSelectDateTime}
+        handleContinue={handleContinue}
+        handleGuestCountChange={handleGuestCountChange}
+        handleGoBack={handleGoBack}
+       />
       )}
       {step === 2 && (
+       <LocationSelection
+        selectedLocation={selectedLocation}
+        setSelectedLocation={setSelectedLocation}
+        handleGoBack={handleGoBack}
+        handleContinue={handleContinue}
+       />
+      )}
+      {step === 3 && (
        <LazyLoad>
         <ProviderTypeSelection
          selectedProvider={selectedProvider}
          setSelectedProvider={setSelectedProvider}
-         providerTypes={providerTypes}
          toggleServiceStyle={toggleServiceStyle}
          handleGoBack={handleGoBack}
          handleContinue={handleContinue}
          selectedServiceStyles={selectedServiceStyles}
-        />
-       </LazyLoad>
-      )}
-      {step === 3 && (
-       <LazyLoad>
-        <CuisineSelection
-         selectedCuisines={selectedCuisines}
-         setSelectedCuisines={setSelectedCuisines}
-         cuisineTypes={cuisineTypes}
-         handleGoBack={handleGoBack}
-         handleContinue={handleContinue}
-         toggleCuisine={toggleCuisine}
+         selectedEvent={selectedEvent}
+         selectedDetailedEventName={selectedDetailedEventName}
+         setSelectedDetailedEventName={setSelectedDetailedEventName}
         />
        </LazyLoad>
       )}
       {step === 4 && (
        <LazyLoad>
-        <CourseSelection
-         selectedCourses={selectedCourses}
-         setSelectedCourses={setSelectedCourses}
-         courseTypes={courseTypes}
+        <BudgetSelection
+         selectedBudget={selectedBudget}
+         setSelectedBudget={setSelectedBudget}
          handleGoBack={handleGoBack}
          handleContinue={handleContinue}
-         toggleCourse={toggleCourse}
+         selectedEvent={selectedEvent}
+         selectedPax={selectedPax}
+         setSelectedPax={setSelectedPax}
+         selectedServiceStyles={selectedServiceStyles}
         />
        </LazyLoad>
       )}
       {step === 5 && (
        <LazyLoad>
-        <LocationSelection
-         selectedLocation={selectedLocation}
-         setSelectedLocation={setSelectedLocation}
-         locations={locations}
+        <CuisineSelection
+         selectedCuisines={selectedCuisines}
+         setSelectedCuisines={setSelectedCuisines}
          handleGoBack={handleGoBack}
          handleContinue={handleContinue}
+         toggleCuisine={toggleCuisine}
+         selectedBudget={selectedBudget}
+         selectedEvent={selectedEvent}
+         selectedServiceStyles={selectedServiceStyles}
         />
        </LazyLoad>
       )}
       {step === 6 && (
        <LazyLoad>
-        <BudgetSelection
+        <CourseSelection
+         selectedCourses={selectedCourses}
+         setSelectedCourses={setSelectedCourses}
+         handleGoBack={handleGoBack}
+         handleContinue={handleContinue}
+         selectedCuisines={selectedCuisines}
+         toggleCourse={toggleCourse}
          selectedBudget={selectedBudget}
-         setSelectedBudget={setSelectedBudget}
-         budgetOptions={budgetOptions}
+         selectedEvent={selectedEvent}
+        />
+       </LazyLoad>
+      )}
+      {step === 7 && (
+       <LazyLoad>
+        <CoursesMenu
+         selectedMenuItems={selectedMenuItems}
+         toggleMenuItem={toggleMenuItem}
+         handleGoBack={handleGoBack}
+         handleContinue={handleContinue}
+         selectedCourses={selectedCourses}
+         selectedCuisines={selectedCuisines}
+         selectedBudget={selectedBudget}
+         selectedEvent={selectedEvent}
+        />
+       </LazyLoad>
+      )}
+      {step === 9 && (
+       <LazyLoad>
+        <CoffeeBreakMenu
+         selectedMenuItems={selectedMenuItems}
+         toggleMenuItem={toggleMenuItem}
+         handleGoBack={handleGoBack}
+         handleContinue={handleContinue}
+         selectedBudget={selectedBudget}
+         selectedEvent={selectedEvent}
+         setSelectedMenuItems={setSelectedMenuItems}
+        />
+       </LazyLoad>
+      )}
+      {step === 10 && (
+       <LazyLoad>
+        <PlatterMenu
+         selectedMenuItems={selectedMenuItems}
+         toggleMenuItem={toggleMenuItem}
          handleGoBack={handleGoBack}
          handleContinue={handleContinue}
         />
        </LazyLoad>
       )}
-
+      {step === 11 && (
+       <LazyLoad>
+        <BoxedMealMenu
+         selectedMenuItems={selectedMenuItems}
+         toggleMenuItem={toggleMenuItem}
+         handleGoBack={handleGoBack}
+         handleContinue={handleContinue}
+        />
+       </LazyLoad>
+      )}
+      {step === 12 && (
+       <LazyLoad>
+        <LiveStationMenu
+         selectedMenuItems={selectedMenuItems}
+         toggleMenuItem={toggleMenuItem}
+         handleGoBack={handleGoBack}
+         handleContinue={handleContinue}
+        />
+       </LazyLoad>
+      )}
       {/* Show the Booking Summary after step 6 */}
-      {step === 7 && (
+      {step === 8 && (
        <LazyLoad>
         <BookingSummary
          eventType={selectedEvent}
@@ -283,15 +386,17 @@ const Catering = () => {
          selectedCourses={selectedCourses}
          selectedLocation={selectedLocation}
          selectedBudget={selectedBudget}
+         selectedMenuItems={selectedMenuItems}
          handleGoBack={handleGoBack} // Pass the handleGoBack function
         />
        </LazyLoad>
       )}
+  
      </div>
     </LazyLoad>
    </main>
-
-   <Footer />
+   <MobileFooterNav />
+   {/* <Footer /> */}
 
    {isDateTimePickerVisible && (
     <DateTimePicker

@@ -2,13 +2,53 @@ import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectTotalCartItems } from "@/redux/slices/cartSlice";
+
 const Header = () => {
+ const totalCartItems = useSelector(selectTotalCartItems);
+ console.log("total cart items ; ", totalCartItems);
+
  const path = useLocation();
+ const [profile, setProfile] = useState<any>(null);
  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
  const [isLoggedIn, setIsLoggedIn] = useState(false); // Add login state
  const navigate = useNavigate(); // Initialize navigate function
  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
  const slug = "/" + path.pathname.split("/")[1]; // → "/vending-home"
+ // ✅ Base API URL
+ const baseUrl = import.meta.env.VITE_API_URL;
+
+ // ✅ Get Auth Token (checks both storages)
+ const getAuthToken = () =>
+  sessionStorage.getItem("authToken") || localStorage.getItem("authToken");
+ useEffect(() => {
+  const token = getAuthToken();
+  if (!token) {
+   navigate("/signin");
+   return;
+  }
+
+  const fetchProfile = async () => {
+   try {
+    const response = await fetch(`${baseUrl}/api/profile/`, {
+     headers: {
+      Authorization: `Token ${token}`,
+     },
+    });
+
+    if (!response.ok) throw new Error("Failed to fetch profile");
+    const data = await response.json();
+    setProfile(data);
+   } catch (error) {
+    console.error("Error fetching profile:", error);
+   } finally {
+   }
+  };
+
+  fetchProfile();
+ }, [navigate, baseUrl]);
+
  {
   /* authentication user login or not  */
  }
@@ -29,6 +69,7 @@ const Header = () => {
   localStorage.removeItem("authToken");
   sessionStorage.removeItem("authToken");
   localStorage.removeItem("user");
+  localStorage.removeItem("selectedLocation"); // Clear selected location
   sessionStorage.removeItem("user");
   setIsLoggedIn(false);
   navigate("/signin");
@@ -39,6 +80,13 @@ const Header = () => {
  const handleLoginClick = () => {
   navigate("/signin"); // Navigate to /signin when login is clicked
  };
+ const capitalizeName = (name: string | null | undefined) => {
+  if (!name || typeof name !== "string") return "";
+  return name.split(" ").map(
+   (part) => part.charAt(0).toUpperCase() // Capitalize the first letter and make the rest lowercase
+  );
+ };
+
  return (
   <header className="bg-neutral-white border-b border-neutral-gray-lightest sticky top-0 z-50">
    <div className="main-container mx-auto ">
@@ -77,11 +125,40 @@ const Header = () => {
 
       {/* Login Button or User Icon */}
       {isLoggedIn ? (
-       <button
-        className="w-[40px] h-[40px] relative lg:w-[48px] lg:h-[48px] bg-neutral-gray rounded-[12px] lg:rounded-[16px] text-white flex items-center justify-center text-[12px] lg:text-[14px] font-[600] flex-shrink-0"
-        onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
-        <img src="/images/nav/user.svg" alt="user" />
-       </button>
+       <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
+         <Link
+          to="/vending-home/my-orders"
+          className="text-neutral-black font-bold">
+          My Order
+         </Link>
+         <Link
+          to="/vending-home/cart"
+          className="w-[40px] h-[40px] relative lg:w-[48px] lg:h-[48px]   rounded-[12px] lg:rounded-[16px] text-white flex items-center justify-center text-[12px] lg:text-[14px] font-[600] flex-shrink-0">
+          <img
+           src="/images/icons/inbox.svg"
+           className="bg-neutral-gray-lightest p-3 rounded-xl w-12 h-12"
+           alt="inbox"
+          />
+          {totalCartItems > 0 && (
+           <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+            {totalCartItems}
+           </span>
+          )}
+         </Link>
+        </div>
+        <span className="p-[0.7px] border-neutral-gray-lightest border-2 rounded-[12px] lg:rounded-[16px]">
+         <button
+          className="w-[40px] h-[40px] relative lg:w-[48px] lg:h-[48px] bg-primary  rounded-[12px] lg:rounded-[16px] text-white flex items-center justify-center text-[12px] lg:text-[14px] font-[600] flex-shrink-0"
+          onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+          {profile?.full_name ? (
+           capitalizeName(profile.full_name)
+          ) : (
+           <img src="/images/nav/user.svg" alt="user" />
+          )}
+         </button>
+        </span>
+       </div>
       ) : (
        <button
         onClick={handleLoginClick} // Trigger navigation on click
@@ -92,7 +169,7 @@ const Header = () => {
       {isDropdownOpen && isLoggedIn && (
        <div className="absolute top-16 right-0 w-[256px] bg-white rounded-[16px] shadow-lg py-[10px]">
         <div className="hover:bg-primary-light py-[8px] px-[16px] rounded-t-[4px]">
-         <Link to="/orders">My Orders</Link>
+         <Link to="/vending-home/my-orders">My Orders</Link>
         </div>
         <div className="hover:bg-primary-light py-[8px] px-[16px]">
          <Link to="/settings">Account Settings</Link>
@@ -115,9 +192,11 @@ const Header = () => {
         className="bg-neutral-gray-lightest p-3 rounded-xl w-12 h-12"
         alt="inbox"
        />
-       <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
-        4
-       </span>
+       {totalCartItems > 0 && (
+        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+         {totalCartItems}
+        </span>
+       )}
       </div>
       <span className="h-8 md:hidden w-[1px] bg-neutral-gray-lightest"></span>
       <button

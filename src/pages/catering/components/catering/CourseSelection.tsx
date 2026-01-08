@@ -18,6 +18,13 @@ interface CourseSelectionProps {
  handleGoBack: () => void;
  handleContinue: () => void;
  toggleCourse: (course: { id: number; name: string }) => void;
+ selectedCuisines: { id: number; name: string }[];
+ selectedBudget: {
+  id: string | null;
+  label: string | null;
+  price_range: string | null;
+ };
+ selectedEvent: { id: string | null; name: string | null } | null;
 }
 
 const CourseSelection: React.FC<CourseSelectionProps> = ({
@@ -26,6 +33,9 @@ const CourseSelection: React.FC<CourseSelectionProps> = ({
  handleGoBack,
  handleContinue,
  toggleCourse,
+ selectedCuisines,
+ selectedBudget,
+ selectedEvent,
 }) => {
  const [courseTypes, setCourseTypes] = useState<Course[]>([]);
  const [loading, setLoading] = useState<boolean>(true);
@@ -37,7 +47,16 @@ const CourseSelection: React.FC<CourseSelectionProps> = ({
  useEffect(() => {
   const fetchCourses = async () => {
    try {
+    const cuisineIds = selectedCuisines.map((c) => c.id).join(",");
+    const budgetId = selectedBudget.id;
+    const isPrivate = !selectedEvent?.name?.toLowerCase().includes("corporate");
+
     const response = await axios.get(`${baseUrl}/api/catering/courses/`, {
+     params: {
+      cuisine_ids: cuisineIds,
+      budget_id: budgetId,
+      is_private: isPrivate,
+     },
      headers: {
       Authorization: `Token ${authToken}`,
      },
@@ -57,11 +76,15 @@ const CourseSelection: React.FC<CourseSelectionProps> = ({
   }, 1000); // ⏱️ 2-second delay
 
   return () => clearTimeout(timer); // cleanup
- }, [baseUrl, authToken]);
+ }, [baseUrl, authToken, selectedCuisines, selectedBudget, selectedEvent]);
 
  // Render loading and error states
  if (loading) {
-  return <Shrimmer></Shrimmer>;
+  return (
+   <div className="w-full h-[50vh] rounded-2xl overflow-hidden">
+    <Shrimmer />
+   </div>
+  );
  }
 
  if (error) {
@@ -86,20 +109,20 @@ const CourseSelection: React.FC<CourseSelectionProps> = ({
  return (
   <LazyLoad>
    <div
-    className="bg-neutral-white border rounded-2xl p-6 md:px-6 md:py-5"
+    className="bg-neutral-white border rounded-2xl md:p-6 p-4 md:px-6 md:py-5"
     style={{ border: "1px solid #EDEEF2" }}>
-    <div className="flex items-center mb-6 gap-4">
+    <div className="flex items-center mb-6  gap-4">
      <div
-      className="w-10 h-10 rounded-full flex items-center justify-center"
+      className="md:w-8 md:h-8 w-6 h-6 rounded-full flex items-center flex-shrink-0 justify-center"
       style={{ backgroundColor: "hsl(var(--primary))" }}>
-      <span className="text-primary-foreground font-bold">4</span>
+      <span className="text-primary-foreground font-bold">5</span>
      </div>
-     <h2 className="text-primary-text text-2xl font-bold">
+     <h2 className="text-primary-text md:text-2xl text-xl font-bold">
       What Courses Would You Like?
      </h2>
     </div>
 
-    <div className="ml-12">
+    <div className="md:ml-12">
      <p
       style={{
        color: "#545563",
@@ -176,7 +199,7 @@ const CourseSelection: React.FC<CourseSelectionProps> = ({
        selectedCourses.length === 0 ? "cursor-not-allowed" : ""
       }`}
       style={{
-       padding: "12px 24px",
+       padding: "12px 16px",
        borderRadius: "8px",
        fontSize: "16px",
        fontWeight: "600",

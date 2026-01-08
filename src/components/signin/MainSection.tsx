@@ -121,7 +121,7 @@ const MainSection = () => {
        <Button
         variant="whitebg"
         size="xlg"
-        className={`w-full justify-start gap-3 max-md:px-[16px] ${
+        className={`w-full justify-start gap-3 max-md:px-[16px] md:py-5 ${
          selectedMethod === "email"
           ? "border border-blue-400 "
           : "border border-neutral-gray-lightest"
@@ -139,7 +139,7 @@ const MainSection = () => {
        <Button
         variant="whitebg"
         size="xlg"
-        className={`w-full justify-start gap-3 max-md:px-[16px] ${
+        className={`w-full justify-start gap-3 max-md:px-[16px] md:py-5 ${
          window.innerWidth <= 768 && selectedMethod === "apple"
           ? "border border-blue-400"
           : "border border-neutral-gray-lightest"
@@ -157,7 +157,7 @@ const MainSection = () => {
        <Button
         variant="whitebg"
         size="xlg"
-        className={`w-full justify-start gap-3 max-md:px-[16px] ${
+        className={`w-full justify-start gap-3 max-md:px-[16px] md:py-5 ${
          window.innerWidth <= 768 && selectedMethod === "google"
           ? "border border-blue-400"
           : "border border-neutral-gray-lightest"

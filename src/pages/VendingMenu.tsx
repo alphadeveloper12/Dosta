@@ -11,6 +11,8 @@ import LazyLoad from "@/components/ui/LazyLoad";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMenuByDay } from "../redux/slices/menuSlice";
 import MobileFooterNav from "@/components/home/MobileFooterNav";
+import { fetchCartData } from "../redux/slices/cartSlice";
+
 // Define the interface for the food item
 interface FoodItem {
  name: string;
@@ -23,16 +25,80 @@ interface FoodItem {
  //  title: string;
 }
 
+const MenuItemCard = ({
+ data,
+ onClick,
+}: {
+ data: FoodItem;
+ onClick: () => void;
+}) => {
+ const [imageLoaded, setImageLoaded] = useState(false);
+
+ return (
+  <div
+   onClick={onClick}
+   className="w-full border border-[#EDEEF2] max-w-[354px] bg-neutral-white rounded-[16px] px-3 pt-3 pb-5 sm:px-4 sm:pt-4 sm:pb-6 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow">
+   {/* Image Container with Shimmer */}
+   <div className="relative w-full md:h-[180px] h-[180px] rounded-[12px] sm:rounded-[16px] overflow-hidden z-[1]">
+    {!imageLoaded && (
+     <div className="absolute inset-0">
+      <Shrimmer />
+     </div>
+    )}
+    <img
+     src={data.image_url}
+     alt={data?.imgAlt || "Food Item"}
+     onLoad={() => setImageLoaded(true)}
+     className={`block w-full h-full object-cover transition-opacity duration-500 ${
+      imageLoaded ? "opacity-100" : "opacity-0"
+     }`}
+    />
+   </div>
+
+   <h3 className="text-[24px] pt-3 pb-1 leading-[32px] font-[700] tracking-[0.1px] text-[#2B2B43]">
+    {data.name}
+   </h3>
+   <p className="text-[14px] line-clamp-2 leading-[20px] font-[400] tracking-[0.2px] text-[#83859C]">
+    {data.description}
+   </p>
+   <h4 className="text-[16px] pt-2 leading-[24px] font-[700] tracking-[0.1px] text-[#2B2B43]">
+    AED {data.price}
+   </h4>
+  </div>
+ );
+};
+
 const VendingMenu = () => {
  const [scrolled, setScrolled] = useState(false);
  const [selectedItem, setSelectedItem] = useState<FoodItem | null>(null);
+ const [selectedItems, setSelectedItems] = useState<FoodItem[]>([]);
  const [isSheetOpen, setIsSheetOpen] = useState(false);
  const [tab, setTab] = useState<number>(0);
- //  const [foodData, setFoodData] = useState<FoodItem[]>([]);
- //  const [isLoading, setIsLoading] = useState<boolean>(false);
- //  const [error, setError] = useState<boolean>(false);
  const dispatch = useDispatch();
- const { foodData, isLoading, error } = useSelector((state) => state?.menu);
+ const { foodData, isLoading, error } = useSelector(
+  (state: any) => state?.menu
+ );
+ const userData = useSelector((state: any) => state?.user?.user);
+ const [orderData, setOrderData] = useState<any>({
+  user: userData ? userData.id : "",
+  monday: [],
+  tuesday: [],
+  wednesday: [],
+  thursday: [],
+  friday: [],
+ });
+ useEffect(() => {
+  const storedOrder = sessionStorage.getItem("orderData");
+  if (storedOrder) {
+   try {
+    const parsed = JSON.parse(storedOrder);
+    setOrderData(parsed);
+   } catch (err) {
+    console.error("Error parsing orderData:", err);
+   }
+  }
+ }, []);
+
  const days = [
   { day: "Monday" },
   { day: "Tuesday" },
@@ -40,11 +106,61 @@ const VendingMenu = () => {
   { day: "Thursday" },
   { day: "Friday" },
  ];
-
  // Function to handle card click and open the item details in the sidebar
  const handleCardClick = (item: FoodItem) => {
   setSelectedItem(item);
   setIsSheetOpen(true);
+ };
+
+ // Modified startOrder to dispatch to Redux
+ const startOrder = () => {
+  if (selectedItem && days?.[tab]?.day) {
+   const dayKey = days[tab].day.toLowerCase(); // e.g. "monday"
+
+   // Dispatch to Redux
+   // Dispatch to Redux - REMOVED for API sync transition
+   // dispatch(
+   //  addItemToCart({
+   //   day: dayKey,
+   //   item: selectedItem,
+   //   userId: userData?.id,
+   //  })
+   // );
+   console.log(
+    "Add to cart clicked in VendingMenu (Logic pending API integration)"
+   );
+
+   // Local state update (legacy, keeping for safety or removing if fully migrated)
+   // We will keep setOrderData for now to avoid breaking local component logic if any rely on it,
+   // but primarily relying on Redux sync.
+   // Actually, let's keep the existing local logic as a backup or just rely on the effect sync?
+   // Better to just replicate the logic locally to update UI immediately without waiting for a re-render from selector if we were using it.
+   // But we aren't using useSelector for orderData here yet.
+
+   setOrderData((prev: any) => {
+    const existingDayItems = prev[dayKey] || [];
+    const exists = existingDayItems.some(
+     (item: any) => item.name === selectedItem.name
+    );
+
+    if (!exists) {
+     const updatedDayItems = [...existingDayItems, selectedItem];
+
+     const updatedOrder = {
+      ...prev,
+      user: userData?.id,
+      [dayKey]: updatedDayItems,
+     };
+
+     // console.log("✅ Updated Order Data:", JSON.stringify(updatedOrder));
+     // sessionStorage.setItem("orderData", JSON.stringify(updatedOrder)); // Redux handles this now?
+     // Actually, let's let Redux handle the session storage update to avoid race conditions.
+     // But wait, our reducer does it. So we don't need to do it here.
+     return updatedOrder;
+    }
+    return prev;
+   });
+  }
  };
 
  // Handle scroll to change sticky header visibility
@@ -54,40 +170,6 @@ const VendingMenu = () => {
   return () => window.removeEventListener("scroll", onScroll);
  }, []);
 
- // Fetch menu data for the selected day
- //  useEffect(() => {
- //   const fetchMenuForDay = async () => {
- //    const authToken = sessionStorage.getItem("authToken"); // Get the auth token from sessionStorage
- //    const baseUrl = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
- //    try {
- //     const response = await fetch(
- //      `${baseUrl}/api/vending/menu/${days[tab].day}`,
- //      {
- //       method: "GET",
- //       headers: {
- //        Authorization: `Token ${authToken}`, // Send the authorization token with the request
- //       },
- //      }
- //     );
-
- //     if (response.ok) {
- //      const data = await response.json();
- //      setFoodData(data.items); // Assuming API returns an array of items
- //      setError(false);
- //     } else {
- //      console.error("Failed to fetch menu data:", response.statusText);
- //      setError(true);
- //     }
- //    } catch (error) {
- //     console.error("Failed to fetch menu data:", error);
- //     setError(true);
- //    } finally {
- //     setIsLoading(false);
- //    }
- //   };
-
- //   fetchMenuForDay();
- //  }, [tab]);
  useEffect(() => {
   if (days?.[tab]?.day) {
    dispatch(fetchMenuByDay(days[tab].day));
@@ -114,7 +196,7 @@ const VendingMenu = () => {
 
     {/* Sticky Header ( when scrolled) */}
     <div
-     className={`w-full sticky top-[64px] bg-neutral-white pt-2 pb-6 transition-all duration-300 ${
+     className={`w-full sticky top-[64px] bg-neutral-white pt-2 pb-6 transition-all duration-300 z-[40] ${
       scrolled ? " shadow-lg" : "shadow-none"
      }`}>
      <div className="main-container">
@@ -182,33 +264,23 @@ const VendingMenu = () => {
 
     {/* Display menu items for the selected day */}
     <div className="w-full h-full pb-[100px] pt-6">
-     <div className="main-container flex gap-[24px] flex-wrap">
-      {isLoading
-       ? "loading ..."
-       : foodData.map((data: any, index: number) => (
-          <LazyLoad>
-           <div
-            key={index}
-            onClick={() => handleCardClick(data)}
-            className="w-full border border-[#EDEEF2] max-w-[354px] bg-neutral-white rounded-[16px] px-3 pt-3 pb-5 sm:px-4 sm:pt-4 sm:pb-6 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow">
-            <img
-             src={data.image_url}
-             alt={data?.imgAlt || "Food Item"}
-             className="block w-full h-auto rounded-[12px] sm:rounded-[16px] object-cover"
-            />
-            <h3 className="text-[24px] pt-3 pb-1 leading-[32px] font-[700] tracking-[0.1px] text-[#2B2B43]">
-             {data.name}
-            </h3>
-            <p className="text-[14px] line-clamp-2 leading-[20px] font-[400] tracking-[0.2px] text-[#83859C]">
-             {data.description}
-            </p>
-            <h4 className="text-[16px] pt-2 leading-[24px] font-[700] tracking-[0.1px] text-[#2B2B43]">
-             AED {data.price}
-            </h4>
-           </div>
-          </LazyLoad>
-         ))}
-     </div>
+     <LazyLoad>
+      <div className="main-container flex gap-[24px] flex-wrap">
+       {isLoading ? (
+        <div className="w-full">
+         <Shrimmer />
+        </div>
+       ) : (
+        foodData?.map((data: any, index: number) => (
+         <MenuItemCard
+          key={index}
+          data={data}
+          onClick={() => handleCardClick(data)}
+         />
+        ))
+       )}
+      </div>
+     </LazyLoad>
     </div>
 
     {/* Sidebar Sheet (Details of selected item) */}
@@ -260,7 +332,13 @@ const VendingMenu = () => {
           className="w-full border border-[#054A86] rounded-lg py-2 font-medium text-[#054A86]">
           Close
          </button>
-         <button className="w-full bg-[#054A86] text-white rounded-lg py-2 font-medium hover:bg-blue-700">
+         <button
+          onClick={() => {
+           startOrder();
+           setIsSheetOpen(false);
+           setSelectedItem(null);
+          }}
+          className="w-full bg-[#054A86] text-white rounded-lg py-2 font-medium hover:bg-blue-700">
           Start Your Order
          </button>
         </div>

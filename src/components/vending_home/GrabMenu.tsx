@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 
 interface FoodItem {
+<<<<<<< Updated upstream
  imgSrc: string;
  heading: string;
  imgAlt: string;
@@ -493,6 +494,475 @@ const GrabMenu: React.FC<CrabMenuProps> = ({ handleConfirmStep }) => {
    </main>
   </div>
  );
+=======
+   imgSrc: string;
+   heading: string;
+   imgAlt: string;
+   description: string;
+   price: string;
+   id: number; // Added ID field
+}
+
+// --- NEW: Interface for items in our cart, now with quantity ---
+interface SelectedFoodItem extends FoodItem {
+   quantity: number;
+}
+
+// --- Renamed interface to match component name ---
+interface GrabMenuProps {
+   handleConfirmStep: () => void;
+   smartGrabMenuFunc?: any; // Added optional prop for smartGrabMenuFunc
+   initialCart?: SelectedFoodItem[]; // NEW: Accept initial state
+   availableItems?: FoodItem[]; // NEW: Accept dynamic menu items
+}
+
+// --- Data defined outside component (no change) ---
+const foodData: FoodItem[] = [
+   // ... (keep existing static data as fallback)
+   {
+      imgSrc: "/images/vending_home/cappucino.svg",
+      heading: "Cappucino",
+      imgAlt: "food1",
+      description:
+         "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
+      price: "AED 47.00",
+      id: 1,
+   },
+   {
+      imgSrc: "/images/vending_home/crosiant.svg",
+      heading: "Croissant",
+      imgAlt: "food2",
+      description:
+         "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
+      price: "AED 34.25",
+      id: 2,
+   },
+   {
+      imgSrc: "/images/vending_home/chicken.svg",
+      heading: "Chicken wrap",
+      imgAlt: "food3",
+      description:
+         "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
+      price: "AED 56.50",
+      id: 3,
+   },
+   {
+      imgSrc: "/images/vending_home/fries.svg",
+      heading: "Fries",
+      imgAlt: "food4",
+      description:
+         "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
+      price: "AED 32.50",
+      id: 4,
+   },
+   {
+      imgSrc: "/images/vending_home/soft_drink.svg",
+      heading: "Soft Drink",
+      imgAlt: "food5",
+      description:
+         "Ea his sensibus eleifend, mollis iudicabit omittantur id mel. Et cum ignota euismod corpora, et saepe.",
+      price: "AED 47.25",
+      id: 5,
+   },
+];
+
+const GrabMenu: React.FC<GrabMenuProps> = ({
+   handleConfirmStep,
+   smartGrabMenuFunc,
+   initialCart = [],
+   availableItems,
+}) => {
+   const [openDialouge, setOpenDialouge] = useState(false);
+   const [scrolled, setScrolled] = useState(false);
+   const [selectedItem, setSelectedItem] = useState<FoodItem | null>(null);
+   const [isSheetOpen, setIsSheetOpen] = useState(false); // This state is set but not used
+   const [toaster, setToaster] = useState<boolean>(false);
+
+   // --- NEW: Single state for the cart. This is your backend-ready array ---
+   // Filter initialCart to only include items with quantity > 0
+   const [cart, setCart] = useState<SelectedFoodItem[]>(
+      initialCart.filter(item => item.quantity > 0)
+   );
+
+   // Use availableItems if provided, otherwise fallback to static foodData
+   const itemsToDisplay = availableItems && availableItems.length > 0 ? availableItems : foodData;
+
+   // --- NEW: Derived state (calculated from 'cart') ---
+   // This calculates the total number of meals in the cart
+   const totalMeals = cart.reduce((acc, item) => acc + item.quantity, 0);
+
+   const handleCardClick = (item: FoodItem) => {
+      setSelectedItem(item);
+      setIsSheetOpen(true);
+   };
+
+   // --- UPDATED: confirmFunc now resets the new 'cart' state ---
+   const confirmFunc = () => {
+      setOpenDialouge(false);
+      setCart([]); // Reset the cart
+      setToaster(true);
+      setTimeout(() => {
+         setToaster(false);
+      }, 2000);
+   };
+
+   useEffect(() => {
+      smartGrabMenuFunc(cart);
+   }, [cart]);
+   // --- Original scroll effect (no change) ---
+   useEffect(() => {
+      let ticking = false;
+      const onScroll = () => {
+         if (!ticking) {
+            window.requestAnimationFrame(() => {
+               setScrolled(window.scrollY > 120);
+               ticking = false;
+            });
+            ticking = true;
+         }
+      };
+      onScroll();
+      window.addEventListener("scroll", onScroll, { passive: true });
+      return () => window.removeEventListener("scroll", onScroll);
+   }, []);
+
+   // --- NEW: Master function to handle all cart logic ---
+   const handleQuantityChange = (
+      e: React.MouseEvent,
+      foodItem: FoodItem,
+      change: number // +1 or -1
+   ) => {
+      e.stopPropagation(); // Prevents the sidebar from opening on card clicks
+
+      setCart((prevCart) => {
+         const existingItemIndex = prevCart.findIndex(
+            (item) => item.imgAlt === foodItem.imgAlt
+         );
+
+         let newCart = [...prevCart]; // Copy the cart
+
+         if (existingItemIndex > -1) {
+            // Item already exists in cart
+            const newQuantity = newCart[existingItemIndex].quantity + change;
+
+            if (newQuantity <= 0) {
+               // Remove item if quantity drops to 0 or below
+               newCart.splice(existingItemIndex, 1);
+            } else {
+               // Update item's quantity
+               newCart[existingItemIndex] = {
+                  ...newCart[existingItemIndex],
+                  quantity: newQuantity,
+               };
+            }
+         } else if (change > 0) {
+            // Item is not in cart, and we are adding it (change must be +1)
+            newCart.push({ ...foodItem, quantity: 1 });
+         }
+         // If item isn't in cart and change is -1, do nothing
+
+         return newCart;
+      });
+   };
+
+   return (
+      <div className="min-h-screen">
+         <main className="flex-1 bg-neutral-white">
+            <div className="w-full bg-transparent pt-2 pb-6">
+               <div className="md:px-[30px]">
+                  {/* title and button */}
+                  <div className="flex md:flex-row flex-col justify-between items-center py-4">
+                     <h2 className="text-[16px] text-[#2B2B43] leading-[24px] font-[700] tracking-[0.1px]">
+                        Choose your meal from our daily menu of 13 chef-prepared meals
+                     </h2>
+                     <div className="md:flex gap-4 hidden md:flex-row flex-col">
+                        {/* --- UPDATED: Checks cart.length --- */}
+                        {cart.length > 0 && (
+                           <Button
+                              className="bg-transparent hover:bg-transparent text-[#545563] border border-[#545563]"
+                              onClick={() => setOpenDialouge(true)}>
+                              Reset
+                           </Button>
+                        )}
+                        {/* --- UPDATED: Checks cart.length --- */}
+                        {cart.length > 0 ? (
+                           <Button
+                              className="bg-[#054A86] hover:bg-[#054A86]"
+                              onClick={() => handleConfirmStep()}>
+                              Confirm and review
+                           </Button>
+                        ) : (
+                           <Button
+                              className="bg-[#F7F7F9] hover:bg-[#F7F7F9] text-[#C7C8D2]"
+                              disabled>
+                              Confirm and review
+                           </Button>
+                        )}
+                     </div>
+                  </div>
+                  <div className="flex md:flex-row justify-between flex-col py-2">
+                     <p className="text-[14px] font-[400] leading-[20px] tracking-[0.2px] text-[#545563]">
+                        {/* --- UPDATED: Reads from cart and shows quantity --- */}
+                        {cart.length === 0
+                           ? "No selected meals"
+                           : `Selected meals: ${cart
+                              .map((item) => `${item.heading} (x${item.quantity})`)
+                              .join(", ")}`}
+                     </p>
+                     <p className="text-[14px] font-[400] leading-[20px] tracking-[0.2px] text-[#545563]">
+                        {/* --- UPDATED: Shows total meals from new calculation --- */}
+                        Total: <span className="font-[700]">{totalMeals} Meals</span>
+                     </p>
+                  </div>
+               </div>
+            </div>
+
+            <div className="w-full h-full pb-4">
+               <div className="md:px-[30px] grid grid-cols-12 md:flex md:gap-[24px] gap-[12px] flex-wrap">
+                  {itemsToDisplay.map((data, index) => {
+                     // --- NEW: Check if this item is in the cart ---
+                     const itemInCart = cart.find((item) => item.imgAlt === data.imgAlt);
+
+                     return (
+                        <MenuCard
+                           key={data.id || index}
+                           data={data}
+                           itemInCart={itemInCart}
+                           handleCardClick={handleCardClick}
+                           handleQuantityChange={handleQuantityChange}
+                        />
+                     );
+                  })}
+               </div>
+               <div className="flex gap-4 md:flex-row flex-col md:hidden pt-6">
+                  {/* --- UPDATED: Checks cart.length --- */}
+                  {cart.length > 0 && (
+                     <Button
+                        className="bg-transparent hover:bg-transparent text-[#545563] border border-[#545563]"
+                        onClick={() => setOpenDialouge(true)}>
+                        Reset
+                     </Button>
+                  )}
+                  {/* --- UPDATED: Checks cart.length --- */}
+                  {cart.length > 0 ? (
+                     <Button
+                        className="bg-[#054A86] hover:bg-[#054A86]"
+                        onClick={() => handleConfirmStep()}>
+                        Confirm and review
+                     </Button>
+                  ) : (
+                     <Button
+                        className="bg-[#F7F7F9] hover:bg-[#F7F7F9] text-[#C7C8D2]"
+                        disabled>
+                        Confirm and review
+                     </Button>
+                  )}
+               </div>
+            </div>
+
+            {/* Sidebar Sheet */}
+            <AnimatePresence>
+               {selectedItem && (
+                  <motion.div
+                     className="fixed inset-0 z-50 flex justify-end bg-black/75 "
+                     initial={{ opacity: 0 }}
+                     animate={{ opacity: 1 }}
+                     exit={{ opacity: 0 }}>
+                     {/* Sidebar Panel */}
+                     <motion.div
+                        initial={{ x: "100%" }}
+                        animate={{ x: 0 }}
+                        exit={{ x: "100%" }}
+                        transition={{ type: "spring", stiffness: 250, damping: 30 }}
+                        className="bg-white w-full md:px-8 md:py-4 py-6 px-[15px] max-w-[522px] h-full shadow-2xl flex flex-col overflow-y-auto">
+                        {/* Header */}
+                        <div className="flex items-center justify-between pb-[16px] ">
+                           <h2 className="text-[28px] leading-[36px] font-[700] ">
+                              {selectedItem.heading}
+                           </h2>
+                           <button
+                              onClick={() => setSelectedItem(null)}
+                              className="p-2 rounded-full hover:bg-gray-100">
+                              <X className="w-5 h-5" />
+                           </button>
+                        </div>
+
+                        {/* Image */}
+                        <img
+                           src={selectedItem.imgSrc}
+                           alt={selectedItem.imgAlt}
+                           className="w-full object-cover h-60 md:h-[343px] rounded-[16px]"
+                        />
+
+                        {/* Content */}
+                        <div className="flex-1 md:p-5  py-6 space-y-4">
+                           <p className="text-gray-600 text-sm">{selectedItem.description}</p>
+
+                           <h3 className="text-[24px] leading-[32px] font-[700] tracking-[0.1px]">
+                              {selectedItem.price}
+                           </h3>
+
+                           {selectedItem && (
+                              <div className="md:pb-[24px]">
+                                 <img src="/images/icons/offertag.svg" alt="offer" />
+                                 <p className="py-3 px-[18px]">Buy one get one for free</p>
+                              </div>
+                           )}
+                           <div className="mt-0">
+                              <Link
+                                 className="text-[#056AC1] text-[16px] leading-[24px] md:font-[400] font-[600] tracking-[0.1px] underline"
+                                 to={"/"}>
+                                 Terms & conditions Apply
+                              </Link>
+                           </div>
+                        </div>
+
+                        {/* Footer Buttons */}
+                        <div className="md:p-4  flex flex-col sm:flex-row gap-3">
+                           <button
+                              onClick={() => setSelectedItem(null)}
+                              className="w-full border border-[#054A86] rounded-lg py-2 font-medium text-[#054A86]">
+                              Close
+                           </button>
+                           <button
+                              // --- UPDATED: Uses the new handler function ---
+                              onClick={() => {
+                                 if (selectedItem) {
+                                    // We pass a "fake" event object
+                                    handleQuantityChange(
+                                       { stopPropagation: () => { } } as React.MouseEvent,
+                                       selectedItem,
+                                       1
+                                    );
+                                 }
+                                 setSelectedItem(null);
+                              }}
+                              className="w-full bg-[#054A86] text-white rounded-lg py-2 font-medium ">
+                              + Add
+                           </button>
+                        </div>
+                     </motion.div>
+                  </motion.div>
+               )}
+            </AnimatePresence>
+
+            {/* --- All other modals (Reset, Toaster) remain unchanged --- */}
+
+            {/* menu */}
+            {openDialouge && (
+               <motion.div
+                  className="fixed hidden inset-0 bg-black/75 md:flex items-center justify-center z-50"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}>
+                  <motion.div
+                     className="bg-white px-4 py-5  rounded-lg shadow-lg max-w-[394px] "
+                     initial={{ scale: 0.8, opacity: 0 }}
+                     animate={{ scale: 1, opacity: 1 }}
+                     exit={{ scale: 0.8, opacity: 0 }}
+                     transition={{ duration: 0.2 }}>
+                     <div className=" text-lg font-bold mb-2 gap-3 flex ">
+                        <img src="/images/icons/info_icon.svg" alt="info" />
+                        <h3>Reset Menu Selection?</h3>
+                     </div>
+                     <p className="text-[#545563] mb-8">
+                        Are you sure you want to reset your menu selection?
+                     </p>
+                     <div className="flex justify-end gap-4">
+                        <button
+                           onClick={() => setOpenDialouge(false)}
+                           className="px-4 py-2 bg-neutral-white border border-[neutral/gray dark] rounded-[8px] hover:bg-gray-300">
+                           Cancel
+                        </button>
+                        <button
+                           onClick={() => confirmFunc()}
+                           className="px-4 py-2 bg-[#054A86] text-white rounded-lg hover:bg-[#054A86]">
+                           Confirm
+                        </button>
+                     </div>
+                  </motion.div>
+               </motion.div>
+            )}
+            {/* reset dialouge mobile*/}
+            <AnimatePresence>
+               {openDialouge && (
+                  <motion.div
+                     className="fixed md:hidden inset-0 z-50 flex justify-end bg-black/75 "
+                     initial={{ opacity: 0 }}
+                     animate={{ opacity: 1 }}
+                     exit={{ opacity: 0 }}>
+                     {/* Sidebar Panel */}
+                     <motion.div
+                        initial={{ x: "100%" }}
+                        animate={{ x: 0 }}
+                        exit={{ x: "100%" }}
+                        transition={{ type: "spring", stiffness: 250, damping: 30 }}
+                        className="bg-white w-full md:px-8 md:py-4 px-[15px] py-6 max-w-[522px] h-full shadow-2xl flex flex-col overflow-y-auto">
+                        {/* Header */}
+                        <div className="flex items-center gap-4 pb-[24px] md:pb-[16px]">
+                           <img src="/images/icons/info_icon.svg" alt="alert" />
+                           <h2 className="text-[28px] leading-[36px] font-[700]   ">
+                              Reset Menu Selection?
+                           </h2>
+                        </div>
+
+                        {/* Content */}
+                        <div className="flex-1 py-0 ">
+                           <p className="text-gray-600 text-[16px] leading-[24px] font-[400] tracking-[0.1px]">
+                              Are you sure you want to reset your menu selection?
+                           </p>
+                        </div>
+
+                        {/* Footer Buttons */}
+                        <div className="md:p-4  flex flex-col sm:flex-row gap-3">
+                           <button
+                              onClick={() => setOpenDialouge(false)}
+                              className="w-full border border-[#054A86] rounded-lg py-2 font-medium text-[#054A86]">
+                              Close
+                           </button>
+                           <button
+                              onClick={() => confirmFunc()}
+                              className="w-full bg-[#054A86] text-white rounded-lg py-2 font-medium ">
+                              Confirm
+                           </button>
+                        </div>
+                     </motion.div>
+                  </motion.div>
+               )}
+            </AnimatePresence>
+
+            {/* toaster  */}
+            {toaster && (
+               <div className="fixed top-[104px] left-1/2 transform -translate-x-1/2 max-w-[540px] w-full h-[52px] bg-[#E8F9F1] rounded-[16px] shadow-[0px_4px_10px_rgba(232,249,241,0.6)] flex items-center px-4 gap-3 z-50">
+                  {/* ... (svg icon) ... */}
+                  <svg
+                     width="20"
+                     height="20"
+                     viewBox="0 0 20 20"
+                     fill="none"
+                     xmlns="http://www.w3.org/2000/svg"
+                     className="flex-shrink-0">
+                     <path
+                        d="M10 20C15.5228 20 20 15.5228 20 10C20 4.47715 15.5228 0 10 0C4.47715 0 0 4.47715 0 10C0 15.5228 4.47715 20 10 20Z"
+                        fill="#34C759"
+                     />
+                     <path
+                        d="M14 6L8.5 11.5L6 9"
+                        stroke="white"
+                        strokeWidth="1.66667"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                     />
+                  </svg>
+                  <span className="flex-grow whitespace-nowrap text-[#2B2B43] font-medium text-sm">
+                     Menu selections have been successfully reset.
+                  </span>
+               </div>
+            )}
+         </main>
+      </div>
+   );
+>>>>>>> Stashed changes
 };
 
 export default GrabMenu;

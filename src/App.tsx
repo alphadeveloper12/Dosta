@@ -36,19 +36,11 @@ import ComingSoon from "./pages/ComingSoon"; // Import ComingSoon
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { fetchCartData } from "./redux/slices/cartSlice";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+
 
 const queryClient = new QueryClient();
-
-// Helper component to sync cart globally from API
-const GlobalCartSync = () => {
- const dispatch = useDispatch();
- useEffect(() => {
-  // Fetch latest cart state from API on mount
-  // @ts-ignore
-  dispatch(fetchCartData());
- }, [dispatch]);
- return null;
-};
+const GOOGLE_CLIENT_ID = "760692328304-hiu23pr6oq24ptkq3iiqqcm8k8rn639i.apps.googleusercontent.com";
 
 const App = () => (
  <QueryClientProvider client={queryClient}>
@@ -99,6 +91,13 @@ const App = () => (
       <Route path="/settings" element={<Settings />} />
      </Route>
 
+          {/* Fallback Route */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
+
      {/* Fallback Route */}
      <Route path="*" element={<NotFound />} />
     </Routes>
@@ -106,6 +105,7 @@ const App = () => (
    </BrowserRouter>
   </TooltipProvider>
  </QueryClientProvider>
+
 );
 
 export default App;

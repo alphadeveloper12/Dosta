@@ -58,6 +58,16 @@ const RamadanMenuSelection: React.FC<RamadanMenuSelectionProps> = ({
  useEffect(() => {
   const fetchRamadanMenu = async () => {
    try {
+    let currentId = selectedServiceStyles.id;
+    // Map Private ServiceStyle IDs to Corporate Ones for Menu Query if needed
+    // Iftar Menu: Corporate ID 15, Private ID might vary (e.g. 17)
+    // Sohour Menu: Corporate ID 16, Private ID might vary (e.g. 18)
+    if (selectedServiceStyles.name.toLowerCase().includes("iftar")) {
+     currentId = 15;
+    } else if (selectedServiceStyles.name.toLowerCase().includes("sohour")) {
+     currentId = 16;
+    }
+
     if (!selectedServiceStyles?.id || !selectedBudget?.id) {
      setError("Missing service style or budget selection.");
      setLoading(false);
@@ -67,7 +77,7 @@ const RamadanMenuSelection: React.FC<RamadanMenuSelectionProps> = ({
     // Fetch menus filtering by service style and budget
     const response = await axios.get(`${baseUrl}/api/catering/ramadan-menus/`, {
      params: {
-      service_style_id: selectedServiceStyles.id,
+      service_style_id: currentId,
       budget_option_id: selectedBudget.id,
       is_active: true,
      },

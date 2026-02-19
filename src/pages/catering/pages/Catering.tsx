@@ -259,9 +259,13 @@ const Catering = () => {
 
   if (step === 2)
    setStep(1); // Go back to Budget
-  else if (step === 3)
+  else if (step === 3) {
    setStep(2); // Go back to Event
-  else if (step === 4)
+   // Clear Step 3 selections
+   setSelectedProvider(null);
+   setSelectedServiceStyles(null);
+   setSelectedDetailedEventName(null);
+  } else if (step === 4)
    setStep(3); // Go back to Provider
   else if (step === 5) {
    // Reset Budget and Pax when going back from Budget Step

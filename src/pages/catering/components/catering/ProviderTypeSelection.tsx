@@ -64,10 +64,10 @@ const ProviderTypeSelection: React.FC<ProviderTypeSelectionProps> = ({
  const authToken =
   sessionStorage.getItem("authToken") || localStorage.getItem("authToken");
 
- // Determine if we should show Event Name selection (Non-Corporate)
- const showEventNameSelection = !selectedEvent?.name
-  ?.toLowerCase()
-  .includes("corporate");
+ // Determine if we should show Event Name selection (Non-Corporate and Non-Private Chef)
+ const showEventNameSelection =
+  !selectedEvent?.name?.toLowerCase().includes("corporate") &&
+  !selectedEvent?.name?.toLowerCase().includes("private chef");
 
  useEffect(() => {
   const fetchData = async () => {

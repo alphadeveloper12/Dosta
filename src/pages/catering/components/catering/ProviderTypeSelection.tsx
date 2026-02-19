@@ -241,11 +241,17 @@ const ProviderTypeSelection: React.FC<ProviderTypeSelectionProps> = ({
      )}
      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 max-w-5xl">
       {serviceStyles
-       .filter(
-        (style) =>
+       .filter((style) => {
+        // If Corporate event, SHOW Iftar/Sohour (return true)
+        if (selectedEvent?.name?.toLowerCase().includes("corporate")) {
+         return true;
+        }
+        // For Private/other events where they are handled via Event Name, HIDE them
+        return (
          !style.name.toLowerCase().includes("iftar") &&
-         !style.name.toLowerCase().includes("sohour"),
-       )
+         !style.name.toLowerCase().includes("sohour")
+        );
+       })
        .map((style) => {
         let isDisabled = false;
         let tooltipContent = "";

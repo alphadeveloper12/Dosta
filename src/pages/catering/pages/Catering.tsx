@@ -309,11 +309,13 @@ const Catering = () => {
  };
 
  // Toggle selection functions
- const toggleServiceStyle = (style: {
-  id: number;
-  name: string;
-  description?: string;
- }) => {
+ const toggleServiceStyle = (
+  style: {
+   id: number;
+   name: string;
+   description?: string;
+  } | null,
+ ) => {
   setSelectedServiceStyles(style);
   // Clear downstream selections to prevent stale data
   setSelectedCuisines([]);

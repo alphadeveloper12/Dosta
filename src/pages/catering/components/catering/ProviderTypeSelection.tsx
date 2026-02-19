@@ -23,11 +23,13 @@ interface ProviderTypeSelectionProps {
  setSelectedProvider: React.Dispatch<
   React.SetStateAction<{ id: string | null; name: string | null } | null>
  >;
- toggleServiceStyle: (style: {
-  id: number;
-  name: string;
-  description?: string;
- }) => void;
+ toggleServiceStyle: (
+  style: {
+   id: number;
+   name: string;
+   description?: string;
+  } | null,
+ ) => void;
  handleGoBack: () => void;
  handleContinue: () => void;
  selectedServiceStyles: {
@@ -118,6 +120,30 @@ const ProviderTypeSelection: React.FC<ProviderTypeSelectionProps> = ({
   return () => clearTimeout(timer);
  }, [baseUrl, authToken, selectedEvent, showEventNameSelection]);
 
+ // --- Auto-select Service Style for Ramadan Events ---
+ useEffect(() => {
+  if (selectedDetailedEventName?.name === "Iftar") {
+   const iftarStyle = serviceStyles.find((s) =>
+    s.name.toLowerCase().includes("iftar"),
+   );
+   if (iftarStyle && selectedServiceStyles?.id !== iftarStyle.id) {
+    toggleServiceStyle(iftarStyle);
+   }
+  } else if (selectedDetailedEventName?.name === "Sohour") {
+   const sohourStyle = serviceStyles.find((s) =>
+    s.name.toLowerCase().includes("sohour"),
+   );
+   if (sohourStyle && selectedServiceStyles?.id !== sohourStyle.id) {
+    toggleServiceStyle(sohourStyle);
+   }
+  }
+ }, [
+  selectedDetailedEventName,
+  serviceStyles,
+  selectedServiceStyles,
+  toggleServiceStyle,
+ ]);
+
  if (loading) {
   return (
    <div className="w-full h-[50vh] rounded-2xl overflow-hidden">
@@ -176,9 +202,11 @@ const ProviderTypeSelection: React.FC<ProviderTypeSelectionProps> = ({
        {eventNames.map((event) => (
         <Button
          key={event.id}
-         onClick={() =>
-          setSelectedDetailedEventName({ id: event.id, name: event.name })
-         }
+         onClick={() => {
+          setSelectedDetailedEventName({ id: event.id, name: event.name });
+          // Clear service style when event name changes
+          toggleServiceStyle(null);
+         }}
          style={{
           fontSize: "16px",
           height: "60px",
@@ -212,66 +240,81 @@ const ProviderTypeSelection: React.FC<ProviderTypeSelectionProps> = ({
       </h3>
      )}
      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 max-w-5xl">
-      {serviceStyles.map((style) => {
-       let isDisabled = false;
-       let tooltipContent = "";
+      {serviceStyles
+       .filter(
+        (style) =>
+         !style.name.toLowerCase().includes("iftar") &&
+         !style.name.toLowerCase().includes("sohour"),
+       )
+       .map((style) => {
+        let isDisabled = false;
+        let tooltipContent = "";
 
-       if (isPrivateChef) {
-        isDisabled = guestCount > style.min_pax;
-        tooltipContent = isDisabled
-         ? `Maximum ${style.min_pax} guests allowed`
-         : "";
-       } else {
-        isDisabled = style.min_pax > guestCount;
-        tooltipContent = isDisabled
-         ? `Minimum ${style.min_pax} guests required`
-         : "";
-       }
+        // NEW: Disable manual selection if Iftar/Sohour event is selected
+        // (because the system auto-selects the hidden Iftar/Sohour service style)
+        const isRamadanEvent =
+         selectedDetailedEventName?.name === "Iftar" ||
+         selectedDetailedEventName?.name === "Sohour";
 
-       return (
-        <Tippy key={style.id} content={tooltipContent} disabled={!isDisabled}>
-         <div className="inline-block w-full">
-          {" "}
-          {/* Wrapper for Tippy on disabled button */}
-          <Button
-           onClick={() =>
-            !isDisabled &&
-            toggleServiceStyle({
-             id: style.id,
-             name: style.name,
-             description: style.description,
-            })
-           }
-           disabled={isDisabled}
-           style={{
-            fontSize: "16px",
-            height: "60px",
-            backgroundColor: isDisabled
-             ? "#F5F5F5"
-             : selectedServiceStyles?.id === style.id
-               ? "#EAF5FF"
-               : "#fff",
-            color: isDisabled ? "#A0A0A0" : "#2B2B43",
-            fontWeight: "400",
-            borderRadius: "16px",
-            padding: "16px",
-            width: "100%", // Changed to 100%
-            border:
-             selectedServiceStyles?.id === style.id
-              ? "1px solid #054A86"
-              : "1px solid #C7C8D2",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: isDisabled ? "not-allowed" : "pointer",
-            opacity: isDisabled ? 0.7 : 1,
-           }}>
-           {style.name}
-          </Button>
-         </div>
-        </Tippy>
-       );
-      })}
+        if (isRamadanEvent) {
+         isDisabled = true;
+         tooltipContent = `Service Style is automatically selected for ${selectedDetailedEventName?.name}`;
+        } else if (isPrivateChef) {
+         isDisabled = guestCount > style.min_pax;
+         tooltipContent = isDisabled
+          ? `Maximum ${style.min_pax} guests allowed`
+          : "";
+        } else {
+         isDisabled = style.min_pax > guestCount;
+         tooltipContent = isDisabled
+          ? `Minimum ${style.min_pax} guests required`
+          : "";
+        }
+
+        return (
+         <Tippy key={style.id} content={tooltipContent} disabled={!isDisabled}>
+          <div className="inline-block w-full">
+           {" "}
+           {/* Wrapper for Tippy on disabled button */}
+           <Button
+            onClick={() =>
+             !isDisabled &&
+             toggleServiceStyle({
+              id: style.id,
+              name: style.name,
+              description: style.description,
+             })
+            }
+            disabled={isDisabled}
+            style={{
+             fontSize: "16px",
+             height: "60px",
+             backgroundColor: isDisabled
+              ? "#F5F5F5"
+              : selectedServiceStyles?.id === style.id
+                ? "#EAF5FF"
+                : "#fff",
+             color: isDisabled ? "#A0A0A0" : "#2B2B43",
+             fontWeight: "400",
+             borderRadius: "16px",
+             padding: "16px",
+             width: "100%", // Changed to 100%
+             border:
+              selectedServiceStyles?.id === style.id
+               ? "1px solid #054A86"
+               : "1px solid #C7C8D2",
+             display: "flex",
+             alignItems: "center",
+             justifyContent: "center",
+             cursor: isDisabled ? "not-allowed" : "pointer",
+             opacity: isDisabled ? 0.7 : 1,
+            }}>
+            {style.name}
+           </Button>
+          </div>
+         </Tippy>
+        );
+       })}
      </div>
     </div>
 

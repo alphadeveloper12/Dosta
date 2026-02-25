@@ -27,6 +27,7 @@ import LiveStationMenu from "../components/catering/LiveStationMenu";
 import AmericanMenuSelection from "../components/catering/AmericanMenuSelection";
 import CanapeMenu from "../components/catering/CanapeMenu";
 import RamadanMenuSelection from "../components/catering/RamadanMenuSelection";
+import IftarBoxesMenuSelection from "../components/catering/IftarBoxesMenuSelection";
 
 const Catering = () => {
  const navigate = useNavigate();
@@ -177,11 +178,16 @@ const Catering = () => {
    ?.toLowerCase()
    .includes("live station");
 
-  // NEW: Check for Ramadan Menus
+  // NEW: Check for Iftar Boxes specifically
+  const isIftarBoxes =
+   selectedServiceStyles?.name?.toLowerCase().includes("iftar") &&
+   selectedServiceStyles?.name?.toLowerCase().includes("box");
 
+  // NEW: Check for Ramadan Menus (Normal Iftar/Sohour)
   const isRamadan =
-   selectedServiceStyles?.name?.toLowerCase().includes("iftar") ||
-   selectedServiceStyles?.name?.toLowerCase().includes("sohour");
+   !isIftarBoxes &&
+   (selectedServiceStyles?.name?.toLowerCase().includes("iftar") ||
+    selectedServiceStyles?.name?.toLowerCase().includes("sohour"));
 
   const isAmericanCuisine = selectedCuisines.some(
    (c) => c.name.toLowerCase() === "american",
@@ -192,8 +198,8 @@ const Catering = () => {
   else if (step === 2 && selectedLocation?.id)
    setStep(3); // Event (Step 2) -> Provider (Step 3)
   else if (step === 3 && selectedServiceStyles) {
-   if (isRamadan) {
-    setStep(5); // Provider (Step 3) -> Budget (Step 5) -- SKIPPING Cuisine for Ramadan
+   if (isRamadan || isIftarBoxes) {
+    setStep(5); // Provider (Step 3) -> Budget (Step 5) -- SKIPPING Cuisine for Ramadan and Iftar Boxes
    } else if (isBuffetOrSetMenu) {
     setStep(4); // Provider (Step 3) -> Cuisine (Step 4)
    } else {
@@ -202,7 +208,9 @@ const Catering = () => {
   } else if (step === 4 && selectedCuisines.length > 0) {
    setStep(5); // Cuisine (Step 4) -> Budget (Step 5)
   } else if (step === 5 && selectedBudget.id) {
-   if (isRamadan) {
+   if (isIftarBoxes) {
+    setStep(16); // Budget (Step 5) -> Iftar Boxes Menu Selection (Step 16)
+   } else if (isRamadan) {
     setStep(15); // Budget (Step 5) -> Ramadan Menu Selection (Step 15)
    } else if (isAmericanCuisine) {
     setStep(13); // American Menu Selection (Step 13)
@@ -229,7 +237,9 @@ const Catering = () => {
    setStep(8); // American Menu (Step 13) -> Summary (Step 8)
   else if (step === 14)
    setStep(8); // Canape Menu (Step 14) -> Summary (Step 8)
-  else if (step === 15) setStep(8); // Ramadan Menu (Step 15) -> Summary (Step 8)
+  else if (step === 15)
+   setStep(8); // Ramadan Menu (Step 15) -> Summary (Step 8)
+  else if (step === 16) setStep(8); // Iftar Boxes Menu (Step 16) -> Summary (Step 8)
  };
  const handleGoBack = () => {
   const isBuffetOrSetMenu =
@@ -248,10 +258,16 @@ const Catering = () => {
    ?.toLowerCase()
    .includes("canape");
 
+  // NEW: Check for Iftar Boxes specifically
+  const isIftarBoxes =
+   selectedServiceStyles?.name?.toLowerCase().includes("iftar") &&
+   selectedServiceStyles?.name?.toLowerCase().includes("box");
+
   // NEW: Check for Ramadan Menus
   const isRamadan =
-   selectedServiceStyles?.name?.toLowerCase().includes("iftar") ||
-   selectedServiceStyles?.name?.toLowerCase().includes("sohour");
+   !isIftarBoxes &&
+   (selectedServiceStyles?.name?.toLowerCase().includes("iftar") ||
+    selectedServiceStyles?.name?.toLowerCase().includes("sohour"));
 
   const isAmericanCuisine = selectedCuisines.some(
    (c) => c.name.toLowerCase() === "american",
@@ -272,7 +288,7 @@ const Catering = () => {
    setSelectedBudget({ id: null, label: null, price_range: null });
    setSelectedPax({ id: null, label: null, number: null });
 
-   if (isRamadan) {
+   if (isRamadan || isIftarBoxes) {
     setStep(3); // Go back to Provider (Skipped Cuisine)
    } else if (isBuffetOrSetMenu) {
     setStep(4); // Go back to Cuisine
@@ -284,7 +300,9 @@ const Catering = () => {
   else if (step === 7) {
    setStep(5); // Go back to Budget (Skipping Course Selection)
   } else if (step === 8) {
-   if (isRamadan) {
+   if (isIftarBoxes) {
+    setStep(16); // Back to Iftar Boxes Menu
+   } else if (isRamadan) {
     setStep(15); // Back to Ramadan Menu
    } else if (isAmericanCuisine) {
     setStep(13); // Back to American Menu
@@ -309,7 +327,9 @@ const Catering = () => {
    setStep(5); // American Menu -> Budget
   else if (step === 14)
    setStep(5); // Canape Menu -> Budget
-  else if (step === 15) setStep(5); // Ramadan Menu -> Budget
+  else if (step === 15)
+   setStep(5); // Ramadan Menu -> Budget
+  else if (step === 16) setStep(5); // Iftar Boxes Menu -> Budget
  };
 
  // Toggle selection functions
@@ -534,6 +554,18 @@ const Catering = () => {
          handleGoBack={handleGoBack}
          handleContinue={handleContinue}
          setSelectedMenuItems={setSelectedMenuItems}
+         setSelectedMenuDescription={setSelectedMenuDescription}
+        />
+       </LazyLoad>
+      )}
+      {/* Step 16: Iftar Boxes Menu Selection */}
+      {step === 16 && (
+       <LazyLoad>
+        <IftarBoxesMenuSelection
+         selectedServiceStyles={selectedServiceStyles}
+         selectedBudget={selectedBudget}
+         handleGoBack={handleGoBack}
+         handleContinue={handleContinue}
          setSelectedMenuDescription={setSelectedMenuDescription}
         />
        </LazyLoad>

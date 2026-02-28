@@ -12,6 +12,7 @@ import { useDispatch } from "react-redux";
 import AuthMiddleware from "./middleware/AuthMiddleware";
 import GuestMiddleware from "./middleware/GuestMiddleware";
 import ScrollToTop from "./components/home/ScrollToTop";
+import ChatBot from "./components/common/ChatBot";
 
 // Lazy load pages
 const Index = lazy(() => import("./pages/Index"));
@@ -132,6 +133,7 @@ const App = () => (
                     </Suspense>
 
                     <GlobalCartSync />
+                    <ChatBot />
                 </BrowserRouter>
             </TooltipProvider>
         </QueryClientProvider>

@@ -1,4 +1,4 @@
-const baseUrl = import.meta.env.VITE_BASE_URL || "https://dosta.cloud/";
+const baseUrl = import.meta.env.VITE_BASE_URL || "https://dosta.cloud";
 
 export const sendChatMessage = async (message: string) => {
     try {

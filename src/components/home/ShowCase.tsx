@@ -42,6 +42,14 @@ const steps = [
   button: "Book Your Event",
   link: "/catering", // Special link for catering
  },
+ {
+  icon: "images/header/card4.svg", // Replace with your actual image path
+  title: "Delightfull Sweets for Happy Occasions",
+  description: "Dosta Sweets offers a wide range of sweets for any occasion.",
+  tag: "DOSTA SWEETS",
+  button: "Browse Menu",
+  link: "/dosta-sweets", // Special link for catering
+ },
  // Commented out - Corporate card
  // {
  //   icon: "images/header/card5.svg", // Replace with your actual image path
@@ -76,7 +84,7 @@ const ShowCase = () => {
    <div className="main-container relative flex justify-center items-center">
     {/* Steps */}
     <div className="lg:px-0 px-[15px] -mt-[145px] flex justify-center w-full">
-     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 my-[24px]">
+     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 my-[24px]">
       {steps.map((step, index) => {
        return (
         <ShowCaseCard
@@ -115,10 +123,12 @@ const ShowCaseCard = ({
    initial={{ opacity: 0, y: 50 }}
    animate={isInView ? { opacity: 1, y: 0 } : {}}
    transition={{
-    duration: 0.6,
+    type: "spring",
+    stiffness: 70,
+    damping: 20,
     delay: index * 0.15,
-    ease: [0.22, 1, 0.36, 1],
-   }}>
+   }}
+   style={{ willChange: "transform, opacity" }}>
    <Link to={step.link}>
     <div className="relative   md:max-w-[350px] w-full h-auto md:h-[478px] shadow-xl bg-neutral-white rounded-[16px] flex flex-col justify-between overflow-hidden">
      <div className="relative w-full h-[224px] md:h-[224px]">

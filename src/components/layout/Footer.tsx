@@ -46,9 +46,8 @@ const Footer = () => {
 
  const socialLinks = [
   { icon: Facebook, href: "#" },
-  { icon: Instagram, href: "#" },
-  { icon: Youtube, href: "#" },
-  { icon: Linkedin, href: "#" },
+  { icon: Instagram, href: "https://www.instagram.com/dosta.ae/" },
+  { icon: Linkedin, href: "https://www.linkedin.com/in/dosta-ae-7290913a4/" },
  ];
 
  return (

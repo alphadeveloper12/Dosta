@@ -1,16 +1,16 @@
 import { Navigate, Outlet } from "react-router-dom";
 
-const GuestMiddleware = () => {
-  const authToken =
-    localStorage.getItem("authToken") || (sessionStorage.getItem("authToken") || localStorage.getItem("authToken"));
+const AuthMiddleware = () => {
+ const authToken =
+  sessionStorage.getItem("authToken") || localStorage.getItem("authToken");
 
-  // ✅ if token exists → redirect to home
-  if (!authToken) {
-    return <Navigate to="/signup" replace />;
-  }
+ // If no token → redirect to sign in
+ if (!authToken) {
+  return <Navigate to="/signin" replace />;
+ }
 
-  // ✅ otherwise allow visiting guest routes
-  return <Outlet />;
+ // Token exists → allow visiting protected routes
+ return <Outlet />;
 };
 
-export default GuestMiddleware;
+export default AuthMiddleware;

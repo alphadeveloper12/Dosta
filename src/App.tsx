@@ -17,6 +17,7 @@ import ChatBot from "./components/common/ChatBot";
 
 // Lazy load pages
 const Index = lazy(() => import("./pages/Index"));
+const Sweets = lazy(() => import("./pages/catering/Sweets"));
 const SignIn = lazy(() => import("./pages/SignIn"));
 const VendingHome = lazy(() => import("./pages/VendingHome"));
 const CateringHome = lazy(() => import("./pages/catering/pages/Index"));
@@ -89,6 +90,7 @@ const App = () => (
        <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Index />} />
+        <Route path="/dosta-sweets" element={<Sweets />} />
         <Route path="/vending-home" element={<VendingHome />} />
         <Route path="/about-us" element={<AboutUs />} />
         <Route path="/coming-soon" element={<ComingSoon />} />

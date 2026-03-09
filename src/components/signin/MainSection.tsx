@@ -141,6 +141,7 @@ const MainSection: React.FC = () => {
   return (
    <AnimateOnScroll
     direction="left"
+    data-lenis-prevent="true"
     className="md:w-[45%] w-full h-screen max-h-[100vh] bg-white px-[15px] sm:px-10 md:px-12 lg:px-14 pt-6 pb-3 flex flex-col overflow-y-auto scrollbar-hide">
     <div className="max-w-sm w-full mx-auto flex flex-col h-full md:justify-start justify-between pb-[32px]">
      <div>

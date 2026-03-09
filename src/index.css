@@ -234,6 +234,11 @@ All colors MUST be HSL.
  }
 }
 
+/* Global Smooth Scroll and Hidden Scrollbars */
+* {
+ scroll-behavior: smooth !important;
+}
+
 /* Hide spin buttons for Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {

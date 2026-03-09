@@ -12,6 +12,7 @@ import { useDispatch } from "react-redux";
 import AuthMiddleware from "./middleware/AuthMiddleware";
 import GuestMiddleware from "./middleware/GuestMiddleware";
 import ScrollToTop from "./components/home/ScrollToTop";
+import { ReactLenis } from "lenis/react";
 import ChatBot from "./components/common/ChatBot";
 
 // Lazy load pages
@@ -76,73 +77,75 @@ const GlobalCartSync = () => {
 const App = () => (
  <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
   <QueryClientProvider client={queryClient}>
-   <TooltipProvider>
-    <Toaster />
-    <Sonner />
+   <ReactLenis root options={{ lerp: 0.1, duration: 1.5, smoothWheel: true }}>
+    <TooltipProvider>
+     <Toaster />
+     <Sonner />
 
-    <BrowserRouter>
-     <ScrollToTop />
+     <BrowserRouter>
+      <ScrollToTop />
 
-     <Suspense fallback={<PageLoader />}>
-      <Routes>
-       {/* Public Routes */}
-       <Route path="/" element={<Index />} />
-       <Route path="/vending-home" element={<VendingHome />} />
-       <Route path="/about-us" element={<AboutUs />} />
-       <Route path="/coming-soon" element={<ComingSoon />} />
-       <Route path="/services" element={<Services />} />
-       <Route path="/portfolio" element={<Portfolio />} />
-       <Route path="/contact-us" element={<ContactUs />} />
-       <Route path="/cookies-policy" element={<CookiesPolicy />} />
-       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-       <Route path="/refund-policy" element={<RefundPolicy />} />
-       <Route path="/terms" element={<Terms />} />
-       <Route path="/how-it-works" element={<HowItWorks />} />
-       <Route path="/help-center" element={<HelpCenter />} />
-       <Route path="/report-bug" element={<ReportBug />} />
-       <Route path="/faqs" element={<Faqs />} />
-       <Route path="/trade-licenses" element={<TradeLicenses />} />
+      <Suspense fallback={<PageLoader />}>
+       <Routes>
+        {/* Public Routes */}
+        <Route path="/" element={<Index />} />
+        <Route path="/vending-home" element={<VendingHome />} />
+        <Route path="/about-us" element={<AboutUs />} />
+        <Route path="/coming-soon" element={<ComingSoon />} />
+        <Route path="/services" element={<Services />} />
+        <Route path="/portfolio" element={<Portfolio />} />
+        <Route path="/contact-us" element={<ContactUs />} />
+        <Route path="/cookies-policy" element={<CookiesPolicy />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/refund-policy" element={<RefundPolicy />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/how-it-works" element={<HowItWorks />} />
+        <Route path="/help-center" element={<HelpCenter />} />
+        <Route path="/report-bug" element={<ReportBug />} />
+        <Route path="/faqs" element={<Faqs />} />
+        <Route path="/trade-licenses" element={<TradeLicenses />} />
 
-       {/* Vending */}
-       <Route path="/vending-home/menu" element={<VendingMenu />} />
-       <Route path="/vending-home/order-now" element={<OrderNow />} />
-       <Route path="/vending-home/cart" element={<CartPage />} />
-       <Route element={<AuthMiddleware />}>
-        <Route path="/vending-home/my-orders" element={<MyOrders />} />
-       </Route>
+        {/* Vending */}
+        <Route path="/vending-home/menu" element={<VendingMenu />} />
+        <Route path="/vending-home/order-now" element={<OrderNow />} />
+        <Route path="/vending-home/cart" element={<CartPage />} />
+        <Route element={<AuthMiddleware />}>
+         <Route path="/vending-home/my-orders" element={<MyOrders />} />
+        </Route>
 
-       {/* Catering */}
-       <Route path="/catering" element={<CateringHome />} />
-       <Route path="/catering/plan" element={<CateringPlan />} />
-       <Route
-        path="/catering/confirmation"
-        element={<CateringConfirmation />}
-       />
-       <Route
-        path="/catering/request-custom-quote"
-        element={<RequestCustomQuote />}
-       />
+        {/* Catering */}
+        <Route path="/catering" element={<CateringHome />} />
+        <Route path="/catering/plan" element={<CateringPlan />} />
+        <Route
+         path="/catering/confirmation"
+         element={<CateringConfirmation />}
+        />
+        <Route
+         path="/catering/request-custom-quote"
+         element={<RequestCustomQuote />}
+        />
 
-       {/* Guest Routes */}
-       <Route element={<GuestMiddleware />}>
-        <Route path="/signin" element={<SignIn />} />
-        <Route path="/signup" element={<Signup />} />
-       </Route>
+        {/* Guest Routes */}
+        <Route element={<GuestMiddleware />}>
+         <Route path="/signin" element={<SignIn />} />
+         <Route path="/signup" element={<Signup />} />
+        </Route>
 
-       {/* Protected Routes */}
-       <Route element={<AuthMiddleware />}>
-        <Route path="/settings" element={<Settings />} />
-       </Route>
+        {/* Protected Routes */}
+        <Route element={<AuthMiddleware />}>
+         <Route path="/settings" element={<Settings />} />
+        </Route>
 
-       {/* Fallback Route */}
-       <Route path="*" element={<NotFound />} />
-      </Routes>
-     </Suspense>
+        {/* Fallback Route */}
+        <Route path="*" element={<NotFound />} />
+       </Routes>
+      </Suspense>
 
-     <GlobalCartSync />
-     <ChatBot />
-    </BrowserRouter>
-   </TooltipProvider>
+      <GlobalCartSync />
+      <ChatBot />
+     </BrowserRouter>
+    </TooltipProvider>
+   </ReactLenis>
   </QueryClientProvider>
  </GoogleOAuthProvider>
 );

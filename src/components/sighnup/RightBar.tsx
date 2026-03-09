@@ -423,6 +423,7 @@ const RightBar = () => {
  return (
   <AnimateOnScroll
    direction="right"
+   data-lenis-prevent="true"
    className="bg-white w-full lg:w-[57.64%] h-screen overflow-y-auto">
    <div className="min-h-full px-[15px] lg:pl-[7.8125rem] pt-6 pb-8 flex md:items-center items-start justify-center lg:justify-start">
     <div className="flex flex-col justify-between w-full max-w-[25rem] lg:min-h-full py-4">

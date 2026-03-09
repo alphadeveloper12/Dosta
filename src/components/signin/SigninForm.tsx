@@ -27,6 +27,7 @@ const SignInFormComponent = ({
 }) => (
  <AnimateOnScroll
   direction="left"
+  data-lenis-prevent="true"
   className="md:w-[45%] w-[100%] max-h-[100vh] overflow-y-auto scrollbar-hide bg-white px-[15px] sm:px-10 md:px-12 lg:px-14 pt-6 pb-4 flex flex-col">
   <div className="w-full max-w-sm mx-auto">
    <Link to={"/"}>

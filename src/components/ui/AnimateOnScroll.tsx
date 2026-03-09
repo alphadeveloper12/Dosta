@@ -8,6 +8,7 @@ interface AnimateOnScrollProps {
  direction?: "up" | "down" | "left" | "right" | "none";
  duration?: number;
  once?: boolean;
+ "data-lenis-prevent"?: boolean | "true" | "false" | string;
 }
 
 /**
@@ -21,6 +22,7 @@ const AnimateOnScroll = ({
  direction = "up",
  duration = 0.6,
  once = true,
+ ...rest
 }: AnimateOnScrollProps) => {
  const ref = useRef(null);
  const isInView = useInView(ref, { once, margin: "-60px" });
@@ -41,7 +43,8 @@ const AnimateOnScroll = ({
    className={className}
    initial={{ opacity: 0, x, y }}
    animate={isInView ? { opacity: 1, x: 0, y: 0 } : {}}
-   transition={{ duration, delay, ease: [0.22, 1, 0.36, 1] }}>
+   transition={{ duration, delay, ease: [0.22, 1, 0.36, 1] }}
+   {...rest}>
    {children}
   </motion.div>
  );

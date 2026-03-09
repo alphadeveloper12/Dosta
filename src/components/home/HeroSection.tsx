@@ -1,6 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import Slider from "react-slick"; // Importing React Slick
+import { motion } from "framer-motion";
+import { useState } from "react";
 
 // Settings for the slider
 const sliderSettings = {
@@ -54,34 +56,63 @@ const SliderData = [
 
 const HeroSection = () => {
  const navigate = useNavigate();
+ const [slideKey, setSlideKey] = useState(0);
+
+ const settings = {
+  ...sliderSettings,
+  beforeChange: () => setSlideKey((k) => k + 1),
+ };
 
  return (
   <section className="relative  lg:min-h-[623px] sm:min-h-[732px] md:min-h-[653px] max-md:pt-[15px] max-md:pb-48 flex items-start  justify-center  sm:py-0 bg-primary-dark">
    {/* React Slick Carousel */}
-   <Slider {...sliderSettings} className=" main-container max-md:px-4">
+   <Slider {...settings} className=" main-container max-md:px-4">
     {/* Render the same card 4 times for now */}
+        
     {SliderData.map((item, index) => (
      <div
       key={index}
       className="relative z-10 w-full lg:mt-[52px]  sm:mt-0 px-4">
       <div className="w-full flex flex-col-reverse md:flex-row md:pt-[40px] md:pb-[20px] lg:pt-0 items-center justify-between md:gap-[80px] gap-[20px] px-0 sm:px-0 md:px-0 py-0 sm:py-0">
-       <div className="w-auto md:w-[50%] ">
-        <h1 className=" pt-[22px] max-md:text-center md:pt-0 lg:text-[40px] md:text-[36px]  text-[36px] lg:leading-[56px] md:leading-[46px] leading-[42px] font-[800] tracking-[0.1px] text-neutral-white pb-[16px]">
+       <motion.div
+        key={`text-${index}-${slideKey}`}
+        className="w-auto md:w-[50%] "
+        initial={{ opacity: 0, x: -40 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}>
+        <motion.h1
+         className=" pt-[22px] max-md:text-center md:pt-0 lg:text-[40px] md:text-[36px]  text-[36px] lg:leading-[56px] md:leading-[46px] leading-[42px] font-[800] tracking-[0.1px] text-neutral-white pb-[16px]"
+         initial={{ opacity: 0, y: 20 }}
+         animate={{ opacity: 1, y: 0 }}
+         transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}>
          {item.title}
-        </h1>
-        <p className="text-[16px] max-md:text-center leading-[24px] tracking-[0.1px] font-[700] text-neutral-white pb-[32px]">
+        </motion.h1>
+        <motion.p
+         className="text-[16px] max-md:text-center leading-[24px] tracking-[0.1px] font-[700] text-neutral-white pb-[32px]"
+         initial={{ opacity: 0, y: 20 }}
+         animate={{ opacity: 1, y: 0 }}
+         transition={{ duration: 0.5, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}>
          {item.description}
-        </p>
-        <div className="max-md:w-full max-md:text-center">
+        </motion.p>
+        <motion.div
+         className="max-md:w-full max-md:text-center"
+         initial={{ opacity: 0, y: 15 }}
+         animate={{ opacity: 1, y: 0 }}
+         transition={{ duration: 0.5, delay: 0.35 }}>
          <Link
           to={item.buttonLink}
           className="bg-[#FF5C60] rounded-[8px] border-none text-[14px] font-[700] text-white py-[12px] px-[16px]">
           {item.buttonText}
          </Link>
-        </div>
-       </div>
+        </motion.div>
+       </motion.div>
 
-       <div className="relative md:w-[50%] lg:min-w-[540px] rounded-[24px]">
+       <motion.div
+        key={`img-${index}-${slideKey}`}
+        className="relative md:w-[50%] lg:min-w-[540px] rounded-[24px]"
+        initial={{ opacity: 0, x: 40, scale: 0.95 }}
+        animate={{ opacity: 1, x: 0, scale: 1 }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}>
         <div className="overflow-hidden hidden md:block rounded-[24px]">
          <img
           src={item.image}
@@ -98,7 +129,7 @@ const HeroSection = () => {
           className="w-full md:hidden block min-w-[330px] min-h-[225px] h-full object-cover object-top"
          />
         </div>
-       </div>
+       </motion.div>
       </div>
      </div>
     ))}

@@ -1,9 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import AnimateOnScroll from "@/components/ui/AnimateOnScroll";
 
 const LeftBar = () => {
  return (
-  <div className="left w-[42.36%] h-screen bg-[#054A86] items-start pl-[5rem] lg:pl-[10.3125rem] py-[5rem] pr-[3.5rem] flex-col justify-between hidden lg:flex">
+  <AnimateOnScroll
+   direction="left"
+   className="left w-[42.36%] h-screen bg-[#054A86] items-start pl-[5rem] lg:pl-[10.3125rem] py-[5rem] pr-[3.5rem] flex-col justify-between hidden lg:flex">
    <Link to={"/"}>
     <img
      src="/images/nav/logo.svg"
@@ -20,7 +23,7 @@ const LeftBar = () => {
      molestiae.
     </p>
    </div>
-  </div>
+  </AnimateOnScroll>
  );
 };
 

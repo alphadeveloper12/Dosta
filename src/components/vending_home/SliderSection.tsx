@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import type { EmblaCarouselType, EmblaOptionsType } from "embla-carousel";
 import { Link, useNavigate } from "react-router-dom";
+import AnimateOnScroll from "@/components/ui/AnimateOnScroll";
 
 type Slide = { day: string; img: string; blurb: string };
 
@@ -125,7 +126,7 @@ const SliderSection: React.FC = () => {
  // Triple the slides to guarantee continuous loop regardless of viewport
  const RENDERED_SLIDES = useMemo(
   () => Array.from({ length: 3 }).flatMap(() => SLIDES),
-  []
+  [],
  );
 
  const onSelect = useCallback((api: EmblaCarouselType) => {
@@ -149,47 +150,51 @@ const SliderSection: React.FC = () => {
 
  return (
   <section className="relative main-container  ">
-   <div className="flex flex-col w-full items-center justify-center gap-2 mb-8">
-    <h2 className="text-[28px] leading-[36px] md:pt-12 pt-6 max-md:text-center font-bold text-[#032F55]">
-     Explore Our Daily Menu
-    </h2>
-    <p className="text-base md:font-normal font-[700] max-md:text-center text[#032F55]">
-     {" "}
-     Daily menu of 13 chef-prepared meals, available Monday to Friday.{" "}
-     <Link className="underline text-[#056AC1]" to={"/vending-home/menu"}>
-      View our complete menu
-     </Link>
-    </p>
-   </div>
+   <AnimateOnScroll>
+    <div className="flex flex-col w-full items-center justify-center gap-2 mb-8">
+     <h2 className="text-[28px] leading-[36px] md:pt-12 pt-6 max-md:text-center font-bold text-[#032F55]">
+      Explore Our Daily Menu
+     </h2>
+     <p className="text-base md:font-normal font-[700] max-md:text-center text[#032F55]">
+      {" "}
+      Daily menu of 13 chef-prepared meals, available Monday to Friday.{" "}
+      <Link className="underline text-[#056AC1]" to={"/vending-home/menu"}>
+       View our complete menu
+      </Link>
+     </p>
+    </div>
+   </AnimateOnScroll>
    {/* Always-enabled arrows */}
    <Arrow dir="left" onClick={scrollPrev} />
    <Arrow dir="right" onClick={scrollNext} />
 
    {/* Viewport */}
-   <div className="overflow-hidden" ref={emblaRef}>
-    {/* Track: each direct child is a slide (no extra spacers!) */}
-    <div className="flex" onClick={() => navigate("/vending-home/menu")}>
-     {RENDERED_SLIDES.map((s, idx) => (
-      <div
-       key={`${s.day}-${idx}`}
-       className="relative shrink-0 cursor-pointer min-w-0 basis-[100%] pr-unset sm:px-2 sm:basis-1/2 lg:basis-1/4">
-       <div className="group relative h-64 w-full overflow-hidden rounded-2xl shadow hover:shadow-lg transition-shadow">
-        <img
-         src={s.img}
-         alt={s.day}
-         className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-        />
+   <AnimateOnScroll delay={0.15}>
+    <div className="overflow-hidden" ref={emblaRef}>
+     {/* Track: each direct child is a slide (no extra spacers!) */}
+     <div className="flex" onClick={() => navigate("/vending-home/menu")}>
+      {RENDERED_SLIDES.map((s, idx) => (
+       <div
+        key={`${s.day}-${idx}`}
+        className="relative shrink-0 cursor-pointer min-w-0 basis-[100%] pr-unset sm:px-2 sm:basis-1/2 lg:basis-1/4">
+        <div className="group relative h-64 w-full overflow-hidden rounded-2xl shadow hover:shadow-lg transition-shadow">
+         <img
+          src={s.img}
+          alt={s.day}
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+         />
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/25 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-         <h3 className="text-xl font-semibold drop-shadow">{s.day}</h3>
-         <p className="mt-1 text-[11px] leading-snug opacity-85">{s.blurb}</p>
+         <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/25 to-transparent" />
+         <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+          <h3 className="text-xl font-semibold drop-shadow">{s.day}</h3>
+          <p className="mt-1 text-[11px] leading-snug opacity-85">{s.blurb}</p>
+         </div>
         </div>
        </div>
-      </div>
-     ))}
+      ))}
+     </div>
     </div>
-   </div>
+   </AnimateOnScroll>
 
    {/* Dots */}
    <div className="mt-4 flex items-center justify-center gap-2 slides_images">

@@ -11,6 +11,9 @@ import {
  ShieldCheck,
  User,
 } from "lucide-react";
+import AnimateOnScroll, {
+ AnimateStaggerItem,
+} from "@/components/ui/AnimateOnScroll";
 
 const HelpCenter = () => {
  const categories = [
@@ -48,15 +51,17 @@ const HelpCenter = () => {
     {/* Hero Section */}
     <section className="bg-primary py-20 text-center px-4 text-primary-foreground">
      <div className="main-container">
-      <h1 className="text-4xl md:text-5xl font-bold mb-6">How can we help?</h1>
-      <div className="max-w-xl mx-auto relative">
-       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-       <Input
-        type="text"
-        placeholder="Search for answers..."
-        className="pl-10 py-6 text-lg rounded-full bg-background text-foreground border-none shadow-lg focus-visible:ring-2 focus-visible:ring-secondary"
-       />
-      </div>
+      <AnimateOnScroll>
+       <h1 className="text-4xl md:text-5xl font-bold mb-6">How can we help?</h1>
+       <div className="max-w-xl mx-auto relative">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+        <Input
+         type="text"
+         placeholder="Search for answers..."
+         className="pl-10 py-6 text-lg rounded-full bg-background text-foreground border-none shadow-lg focus-visible:ring-2 focus-visible:ring-secondary"
+        />
+       </div>
+      </AnimateOnScroll>
      </div>
     </section>
 
@@ -68,21 +73,21 @@ const HelpCenter = () => {
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
        {categories.map((category, index) => (
-        <Card
-         key={index}
-         className="hover:shadow-lg transition-shadow cursor-pointer border-none shadow-md group">
-         <CardHeader>
-          <div className="group-hover:scale-110 transition-transform duration-300 origin-left">
-           {category.icon}
-          </div>
-          <CardTitle className="text-lg font-semibold text-foreground">
-           {category.title}
-          </CardTitle>
-         </CardHeader>
-         <CardContent>
-          <p className="text-muted-foreground">{category.description}</p>
-         </CardContent>
-        </Card>
+        <AnimateStaggerItem key={index} index={index}>
+         <Card className="hover:shadow-lg transition-shadow cursor-pointer border-none shadow-md group">
+          <CardHeader>
+           <div className="group-hover:scale-110 transition-transform duration-300 origin-left">
+            {category.icon}
+           </div>
+           <CardTitle className="text-lg font-semibold text-foreground">
+            {category.title}
+           </CardTitle>
+          </CardHeader>
+          <CardContent>
+           <p className="text-muted-foreground">{category.description}</p>
+          </CardContent>
+         </Card>
+        </AnimateStaggerItem>
        ))}
       </div>
      </div>
@@ -91,19 +96,21 @@ const HelpCenter = () => {
     {/* Contact Section */}
     <section className="bg-muted/30 py-16 text-center px-4">
      <div className="main-container">
-      <h2 className="text-2xl font-bold mb-4 text-foreground">
-       Still need help?
-      </h2>
-      <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
-       Our support team is available 24/7 to assist you with any issues or
-       questions you may have.
-      </p>
-      <Button
-       size="lg"
-       className="font-semibold px-8"
-       onClick={() => (window.location.href = "/contact-us")}>
-       Contact Support
-      </Button>
+      <AnimateOnScroll>
+       <h2 className="text-2xl font-bold mb-4 text-foreground">
+        Still need help?
+       </h2>
+       <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
+        Our support team is available 24/7 to assist you with any issues or
+        questions you may have.
+       </p>
+       <Button
+        size="lg"
+        className="font-semibold px-8"
+        onClick={() => (window.location.href = "/contact-us")}>
+        Contact Support
+       </Button>
+      </AnimateOnScroll>
      </div>
     </section>
    </main>

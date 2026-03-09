@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/accordion";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import AnimateOnScroll from "@/components/ui/AnimateOnScroll";
 
 const Faqs = () => {
  const faqs = [
@@ -46,29 +47,33 @@ const Faqs = () => {
    <Header />
    <main className="flex-1 relative py-16 px-4">
     <div className="main-container max-w-3xl">
-     <div className="text-center mb-12">
-      <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-       Frequently Asked Questions
-      </h1>
-      <p className="text-muted-foreground">
-       Find answers to common questions about our services and platform.
-      </p>
-     </div>
+     <AnimateOnScroll>
+      <div className="text-center mb-12">
+       <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+        Frequently Asked Questions
+       </h1>
+       <p className="text-muted-foreground">
+        Find answers to common questions about our services and platform.
+       </p>
+      </div>
+     </AnimateOnScroll>
 
-     <div className="bg-card border rounded-lg p-6 md:p-8 shadow-sm">
-      <Accordion type="single" collapsible className="w-full">
-       {faqs.map((faq, index) => (
-        <AccordionItem key={index} value={`item-${index}`}>
-         <AccordionTrigger className="text-left text-lg font-medium">
-          {faq.question}
-         </AccordionTrigger>
-         <AccordionContent className="text-muted-foreground">
-          {faq.answer}
-         </AccordionContent>
-        </AccordionItem>
-       ))}
-      </Accordion>
-     </div>
+     <AnimateOnScroll delay={0.15}>
+      <div className="bg-card border rounded-lg p-6 md:p-8 shadow-sm">
+       <Accordion type="single" collapsible className="w-full">
+        {faqs.map((faq, index) => (
+         <AccordionItem key={index} value={`item-${index}`}>
+          <AccordionTrigger className="text-left text-lg font-medium">
+           {faq.question}
+          </AccordionTrigger>
+          <AccordionContent className="text-muted-foreground">
+           {faq.answer}
+          </AccordionContent>
+         </AccordionItem>
+        ))}
+       </Accordion>
+      </div>
+     </AnimateOnScroll>
     </div>
    </main>
    <Footer />

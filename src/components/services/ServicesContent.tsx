@@ -8,6 +8,9 @@ import {
  HeartHandshake,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import AnimateOnScroll, {
+ AnimateStaggerItem,
+} from "@/components/ui/AnimateOnScroll";
 
 const ServicesContent = () => {
  const services = [
@@ -56,12 +59,14 @@ const ServicesContent = () => {
   {
    icon: Utensils,
    title: "Premium Catering",
-   description: "Our dedicated Premium Catering Service is right at your doorstep.",
+   description:
+    "Our dedicated Premium Catering Service is right at your doorstep.",
   },
   {
    icon: MapPin,
    title: "Wide Coverage",
-   description: "Our dedicated Wide Coverage Service is right at your doorstep.",
+   description:
+    "Our dedicated Wide Coverage Service is right at your doorstep.",
   },
  ];
 
@@ -71,26 +76,28 @@ const ServicesContent = () => {
    <section className="relative bg-primary-dark text-white py-20 overflow-hidden">
     <div className="absolute inset-0 opacity-10 bg-[url('/images/nav/dosta_blue.svg')] bg-repeat space-x-4"></div>
     <div className="main-container relative z-10 text-center">
-     <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-      Our Exceptional Services <br />
-      <span className="">Tailored for You</span>
-     </h1>
-     <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-10">
-      Experience the best in delivery and catering. We bring convenience and
-      quality right to your doorstep.
-     </p>
-     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-      <Link
-       to="/signup"
-       className="bg-[#ff5c60] hover:bg-red-600 text-white font-bold py-3 px-8 rounded-lg transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
-       Get Started <ArrowRight size={20} />
-      </Link>
-      <Link
-       to="/contact-us"
-       className="bg-transparent border-2 border-white hover:bg-white hover:text-primary-dark text-white font-bold py-3 px-8 rounded-lg transition-all flex items-center justify-center">
-       Contact Us
-      </Link>
-     </div>
+     <AnimateOnScroll>
+      <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+       Our Exceptional Services <br />
+       <span className="">Tailored for You</span>
+      </h1>
+      <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-10">
+       Experience the best in delivery and catering. We bring convenience and
+       quality right to your doorstep.
+      </p>
+      <div className="flex flex-col sm:flex-row gap-4 justify-center">
+       <Link
+        to="/signup"
+        className="bg-[#ff5c60] hover:bg-red-600 text-white font-bold py-3 px-8 rounded-lg transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
+        Get Started <ArrowRight size={20} />
+       </Link>
+       <Link
+        to="/contact-us"
+        className="bg-transparent border-2 border-white hover:bg-white hover:text-primary-dark text-white font-bold py-3 px-8 rounded-lg transition-all flex items-center justify-center">
+        Contact Us
+       </Link>
+      </div>
+     </AnimateOnScroll>
     </div>
    </section>
 
@@ -109,20 +116,20 @@ const ServicesContent = () => {
 
      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
       {services.map((service, index) => (
-       <div
-        key={index}
-        className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 group">
-        <div
-         className={`w-14 h-14 rounded-xl flex items-center justify-center mb-6 ${service.color} group-hover:scale-110 transition-transform`}>
-         <service.icon size={28} />
+       <AnimateStaggerItem key={index} index={index}>
+        <div className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 group">
+         <div
+          className={`w-14 h-14 rounded-xl flex items-center justify-center mb-6 ${service.color} group-hover:scale-110 transition-transform`}>
+          <service.icon size={28} />
+         </div>
+         <h3 className="text-xl font-bold text-neutral-black mb-3">
+          {service.title}
+         </h3>
+         <p className="text-neutral-gray-dark leading-relaxed">
+          {service.description}
+         </p>
         </div>
-        <h3 className="text-xl font-bold text-neutral-black mb-3">
-         {service.title}
-        </h3>
-        <p className="text-neutral-gray-dark leading-relaxed">
-         {service.description}
-        </p>
-       </div>
+       </AnimateStaggerItem>
       ))}
      </div>
     </div>
@@ -157,17 +164,19 @@ const ServicesContent = () => {
 
        <div className="space-y-6">
         {features.map((feature, index) => (
-         <div key={index} className="flex gap-4">
-          <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary-light flex items-center justify-center text-primary">
-           <feature.icon size={24} />
+         <AnimateStaggerItem key={index} index={index} direction="right">
+          <div className="flex gap-4">
+           <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary-light flex items-center justify-center text-primary">
+            <feature.icon size={24} />
+           </div>
+           <div>
+            <h4 className="text-xl font-bold text-neutral-black mb-2">
+             {feature.title}
+            </h4>
+            <p className="text-neutral-gray-dark">{feature.description}</p>
+           </div>
           </div>
-          <div>
-           <h4 className="text-xl font-bold text-neutral-black mb-2">
-            {feature.title}
-           </h4>
-           <p className="text-neutral-gray-dark">{feature.description}</p>
-          </div>
-         </div>
+         </AnimateStaggerItem>
         ))}
        </div>
       </div>
@@ -181,18 +190,20 @@ const ServicesContent = () => {
     <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-80 h-80 bg-secondary rounded-full opacity-20 blur-3xl"></div>
 
     <div className="main-container relative z-10 text-center">
-     <h2 className="text-3xl md:text-4xl font-bold mb-6">
-      Ready to Experience the Difference?
-     </h2>
-     <p className="text-primary-light text-lg mb-10 max-w-2xl mx-auto">
-      Join thousands of satisfied customers who trust Dosta for their delivery
-      and catering needs.
-     </p>
-     <Link
-      to="/signin"
-      className="inline-block bg-white text-primary font-bold py-4 px-10 rounded-full hover:bg-gray-100 transition-colors shadow-lg transform hover:scale-105">
-      Join Dosta Today
-     </Link>
+     <AnimateOnScroll>
+      <h2 className="text-3xl md:text-4xl font-bold mb-6">
+       Ready to Experience the Difference?
+      </h2>
+      <p className="text-primary-light text-lg mb-10 max-w-2xl mx-auto">
+       Join thousands of satisfied customers who trust Dosta for their delivery
+       and catering needs.
+      </p>
+      <Link
+       to="/signin"
+       className="inline-block bg-white text-primary font-bold py-4 px-10 rounded-full hover:bg-gray-100 transition-colors shadow-lg transform hover:scale-105">
+       Join Dosta Today
+      </Link>
+     </AnimateOnScroll>
     </div>
    </section>
   </div>

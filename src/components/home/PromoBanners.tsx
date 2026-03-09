@@ -1,4 +1,6 @@
 import { Button } from "@/components/ui/button";
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
 
 const PromoBanners = () => {
  const promoData = [
@@ -18,13 +20,23 @@ const PromoBanners = () => {
   },
  ];
 
+ const sectionRef = useRef(null);
+ const isInView = useInView(sectionRef, { once: true, margin: "-80px" });
+
  return (
   <section className="bg-neutral-white lg:pt-[120px]  pt-[24px] pb-[48px]">
-   <div className="main-container">
+   <div className="main-container" ref={sectionRef}>
     <div className="w-full flex flex-col md:flex-row justify-center items-center md:items-stretch gap-[20px] md:gap-[30px]">
      {promoData.map((promo, index) => (
-      <div
+      <motion.div
        key={index}
+       initial={{ opacity: 0, x: index === 0 ? -50 : 50 }}
+       animate={isInView ? { opacity: 1, x: 0 } : {}}
+       transition={{
+        duration: 0.6,
+        delay: index * 0.15,
+        ease: [0.22, 1, 0.36, 1],
+       }}
        className={`w-full max-w-[540px] lg:min-h-[180px] md:h-auto flex items-center md:w-[540px] rounded-xl overflow-hidden shadow-lg md:min-h-[180px]`}
        style={{ backgroundColor: promo.bgColor }}>
        <div className="flex items-center h-full ">
@@ -50,7 +62,7 @@ const PromoBanners = () => {
          />
         </div>
        </div>
-      </div>
+      </motion.div>
      ))}
     </div>
    </div>

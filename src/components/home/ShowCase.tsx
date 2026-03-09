@@ -1,5 +1,7 @@
 import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 import ImageWithShimmer from "@/components/ui/ImageWithShimmer";
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
 
 const steps = [
  // Commented out - Delivery card
@@ -77,35 +79,12 @@ const ShowCase = () => {
      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 my-[24px]">
       {steps.map((step, index) => {
        return (
-        <Link key={index} to={step.link}>
-         <div className="relative   md:max-w-[350px] w-full h-auto md:h-[478px] shadow-xl bg-neutral-white rounded-[16px] flex flex-col justify-between overflow-hidden">
-          <div className="relative w-full h-[224px] md:h-[224px]">
-           <ImageWithShimmer
-            src={step.icon}
-            alt="logo"
-            className="w-full h-full object-cover rounded-t-[16px]"
-            wrapperClassName="w-full h-full rounded-t-[16px]"
-           />
-           <span className="text-primary-dark absolute bottom-[-14px] left-4 z-10 text-[10px] md:text-[11px] leading-4 font-[700] tracking-[0.6px] rounded-[16px] bg-[#A7CF38] py-[6px] px-[12px]">
-            {step.tag}
-           </span>
-          </div>
-
-          <div className="max-md:flex-1 max-md:flex flex-col md:flex-none  justify-between pt-[24px] md:pt-[32px] px-[16px] md:px-[24px] pb-[24px] md:pb-[24px]">
-           <h2 className=" text-[28px] leading-[36px]  tracking-[0.1px] font-[700] text-primary mb-2">
-            {step.title}
-           </h2>
-           <p className="text-neutral-gray-dark text-[14px] leading-[20px] font-[400] pb-[24px]">
-            {step.description}
-           </p>
-           <button
-            className="py-3 px-4 border text-[14px]  w-fit text-primary-dark leading-[20px] tracking-[0.3px] border-[#054A86] rounded-[8px]"
-            onClick={() => handleNavigation(step.link)}>
-            {step.button}
-           </button>
-          </div>
-         </div>
-        </Link>
+        <ShowCaseCard
+         key={index}
+         step={step}
+         index={index}
+         handleNavigation={handleNavigation}
+        />
        );
       })}
      </div>
@@ -116,3 +95,59 @@ const ShowCase = () => {
 };
 
 export default ShowCase;
+
+// Animated card wrapper — triggers on scroll
+const ShowCaseCard = ({
+ step,
+ index,
+ handleNavigation,
+}: {
+ step: any;
+ index: number;
+ handleNavigation: (link: string) => void;
+}) => {
+ const ref = useRef(null);
+ const isInView = useInView(ref, { once: true, margin: "-60px" });
+
+ return (
+  <motion.div
+   ref={ref}
+   initial={{ opacity: 0, y: 50 }}
+   animate={isInView ? { opacity: 1, y: 0 } : {}}
+   transition={{
+    duration: 0.6,
+    delay: index * 0.15,
+    ease: [0.22, 1, 0.36, 1],
+   }}>
+   <Link to={step.link}>
+    <div className="relative   md:max-w-[350px] w-full h-auto md:h-[478px] shadow-xl bg-neutral-white rounded-[16px] flex flex-col justify-between overflow-hidden">
+     <div className="relative w-full h-[224px] md:h-[224px]">
+      <ImageWithShimmer
+       src={step.icon}
+       alt="logo"
+       className="w-full h-full object-cover rounded-t-[16px]"
+       wrapperClassName="w-full h-full rounded-t-[16px]"
+      />
+      <span className="text-primary-dark absolute bottom-[-14px] left-4 z-10 text-[10px] md:text-[11px] leading-4 font-[700] tracking-[0.6px] rounded-[16px] bg-[#A7CF38] py-[6px] px-[12px]">
+       {step.tag}
+      </span>
+     </div>
+
+     <div className="max-md:flex-1 max-md:flex flex-col md:flex-none  justify-between pt-[24px] md:pt-[32px] px-[16px] md:px-[24px] pb-[24px] md:pb-[24px]">
+      <h2 className=" text-[28px] leading-[36px]  tracking-[0.1px] font-[700] text-primary mb-2">
+       {step.title}
+      </h2>
+      <p className="text-neutral-gray-dark text-[14px] leading-[20px] font-[400] pb-[24px]">
+       {step.description}
+      </p>
+      <button
+       className="py-3 px-4 border text-[14px]  w-fit text-primary-dark leading-[20px] tracking-[0.3px] border-[#054A86] rounded-[8px]"
+       onClick={() => handleNavigation(step.link)}>
+       {step.button}
+      </button>
+     </div>
+    </div>
+   </Link>
+  </motion.div>
+ );
+};

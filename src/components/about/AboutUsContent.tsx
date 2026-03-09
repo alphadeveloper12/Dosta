@@ -2,19 +2,25 @@
 const PRIMARY_DARK_BLUE = "#0e2c45"; // Used for dark backgrounds (like the CTA background)
 const ACCENT_BLUE = "#03446d"; // The new accent color requested by the client
 
+import AnimateOnScroll, {
+ AnimateStaggerItem,
+} from "@/components/ui/AnimateOnScroll";
+
 const AboutUsContent = () => {
  return (
   <main className="flex-grow  bg-white w-full">
    <div className="main-container">
     <section className="py-20 ">
      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <p
-       className={`font-semibold uppercase tracking-widest mb-3 text-primary`}>
-       Who We Are
-      </p>
-      <h1 className="text-5xl md:text-6xl font-extrabold text-primary leading-tight mb-6">
-       About Us
-      </h1>
+      <AnimateOnScroll>
+       <p
+        className={`font-semibold uppercase tracking-widest mb-3 text-primary`}>
+        Who We Are
+       </p>
+       <h1 className="text-5xl md:text-6xl font-extrabold text-primary leading-tight mb-6">
+        About Us
+       </h1>
+      </AnimateOnScroll>
       <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
        DOSTA is a UAE-based smart food and beverage group delivering innovative
        F&B solutions, automated catering services, smart vending machines, and
@@ -63,63 +69,67 @@ const AboutUsContent = () => {
     <section className="py-20 ">
      <div className="w-full grid md:grid-cols-2 gap-8">
       {/* Mission Card */}
-      <div
-       className={`bg-white p-8 rounded-xl shadow-xl border-t-4 border-primary`}>
-       <div className="flex items-center space-x-4 mb-4">
-        {/* Icon for Mission (Focus on operational excellence) */}
-        <svg
-         className={`w-10 h-10 text-primary`}
-         fill="none"
-         stroke="currentColor"
-         viewBox="0 0 24 24"
-         xmlns="http://www.w3.org/2000/svg">
-         <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-        </svg>
-        <h2 className="text-3xl font-bold text-gray-900">Our Mission</h2>
+      <AnimateOnScroll direction="left">
+       <div
+        className={`bg-white p-8 rounded-xl h-full shadow-xl border-t-4 border-primary`}>
+        <div className="flex items-center space-x-4 mb-4 ">
+         {/* Icon for Mission (Focus on operational excellence) */}
+         <svg
+          className={`w-10 h-10 text-primary`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg">
+          <path
+           strokeLinecap="round"
+           strokeLinejoin="round"
+           strokeWidth="2"
+           d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+         </svg>
+         <h2 className="text-3xl font-bold text-gray-900">Our Mission</h2>
+        </div>
+        <p className="text-gray-700 text-lg leading-relaxed">
+         To lead food and beverage innovation in the UAE by consolidating
+         advanced catering, vending, and delivery automation services under one
+         smart holding structure—driving operational excellence, digital
+         transformation, and sustainable growth while supporting the UAE Vision
+         2031 and national sustainability objectives.
+        </p>
        </div>
-       <p className="text-gray-700 text-lg leading-relaxed">
-        To lead food and beverage innovation in the UAE by consolidating
-        advanced catering, vending, and delivery automation services under one
-        smart holding structure—driving operational excellence, digital
-        transformation, and sustainable growth while supporting the UAE Vision
-        2031 and national sustainability objectives.
-       </p>
-      </div>
+      </AnimateOnScroll>
 
       {/* Vision Card */}
-      <div className="bg-white p-8 rounded-xl shadow-xl border-t-4 border-primary">
-       <div className="flex items-center space-x-4 mb-4">
-        {/* Icon for Vision (Focus on future/sight) */}
-        <svg
-         className={`w-10 h-10 text-primary`}
-         fill="none"
-         stroke="currentColor"
-         viewBox="0 0 24 24"
-         xmlns="http://www.w3.org/2000/svg">
-         <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-         <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-        </svg>
-        <h2 className="text-3xl font-bold text-gray-900">Our Vision</h2>
+      <AnimateOnScroll direction="right" delay={0.15}>
+       <div className="bg-white p-8 rounded-xl h-full shadow-xl border-t-4 border-primary">
+        <div className="flex items-center space-x-4 mb-4">
+         {/* Icon for Vision (Focus on future/sight) */}
+         <svg
+          className={`w-10 h-10 text-primary`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg">
+          <path
+           strokeLinecap="round"
+           strokeLinejoin="round"
+           strokeWidth="2"
+           d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          <path
+           strokeLinecap="round"
+           strokeLinejoin="round"
+           strokeWidth="2"
+           d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+         </svg>
+         <h2 className="text-3xl font-bold text-gray-900">Our Vision</h2>
+        </div>
+        <p className="text-gray-700 text-lg leading-relaxed">
+         To become the UAE’s most trusted smart food, catering, and delivery
+         solutions provider, recognized across Dubai, Abu Dhabi, and the GCC for
+         technology-driven operations, sustainable practices, and
+         customer-centric food experiences.
+        </p>
        </div>
-       <p className="text-gray-700 text-lg leading-relaxed">
-        To become the UAE’s most trusted smart food, catering, and delivery
-        solutions provider, recognized across Dubai, Abu Dhabi, and the GCC for
-        technology-driven operations, sustainable practices, and
-        customer-centric food experiences.
-       </p>
-      </div>
+      </AnimateOnScroll>
      </div>
     </section>
 
@@ -144,24 +154,24 @@ const AboutUsContent = () => {
         "Sustainable food systems aligned with UAE ESG and sustainability goals",
         "End-to-end food and beverage management for events and high-volume environments",
        ].map((item, index) => (
-        <div
-         key={index}
-         className="flex items-start p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-         <div className="flex-shrink-0 mr-4">
-          <svg
-           className="w-6 h-6 text-primary"
-           fill="none"
-           stroke="currentColor"
-           viewBox="0 0 24 24">
-           <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M5 13l4 4L19 7"></path>
-          </svg>
+        <AnimateStaggerItem key={index} index={index}>
+         <div className="flex items-start p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+          <div className="flex-shrink-0 mr-4">
+           <svg
+            className="w-6 h-6 text-primary"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24">
+            <path
+             strokeLinecap="round"
+             strokeLinejoin="round"
+             strokeWidth="2"
+             d="M5 13l4 4L19 7"></path>
+           </svg>
+          </div>
+          <p className="text-gray-700 font-medium">{item}</p>
          </div>
-         <p className="text-gray-700 font-medium">{item}</p>
-        </div>
+        </AnimateStaggerItem>
        ))}
       </div>
 

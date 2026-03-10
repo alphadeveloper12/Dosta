@@ -451,7 +451,14 @@ const VendingMenu = () => {
 
  // Handle scroll to change sticky header visibility
  useEffect(() => {
-  const onScroll = () => setScrolled(window.scrollY >= 220);
+  let isScrolled = false;
+  const onScroll = () => {
+   const shouldBeScrolled = window.scrollY >= 200;
+   if (shouldBeScrolled !== isScrolled) {
+    isScrolled = shouldBeScrolled;
+    setScrolled(isScrolled);
+   }
+  };
   window.addEventListener("scroll", onScroll, { passive: true });
   return () => window.removeEventListener("scroll", onScroll);
  }, []);
@@ -461,11 +468,8 @@ const VendingMenu = () => {
    {/* <VendingHeader /> */}
    <Header />
    <main className="flex-1 bg-[#F7F7F9]">
-    {/* BreadCrumb and title (hidden when scrolled) */}
-    <div
-     className={`w-full bg-neutral-white pt-2 pb-6 ${
-      scrolled ? "hidden" : ""
-     }`}>
+    {/* BreadCrumb and title */}
+    <div className="w-full bg-neutral-white pt-2 pb-6">
      <div className="main-container">
       <BreadCrumb />
       <h2 className="text-[28px] text-[#054A86] leading-[36px] font-[700] tracking-[0.1px]">
@@ -634,7 +638,8 @@ const VendingMenu = () => {
         animate={{ x: 0 }}
         exit={{ x: "100%" }}
         transition={{ type: "spring", stiffness: 250, damping: 30 }}
-        className="bg-white w-full px-8 py-4 max-w-[522px] h-full shadow-2xl flex flex-col overflow-y-auto">
+        className="bg-white w-full px-8 py-4 max-w-[522px] h-full shadow-2xl flex flex-col overflow-y-auto"
+        data-lenis-prevent="true">
         <div className="flex items-center justify-between pb-[16px]">
          <h2 className="text-[28px] leading-[36px] font-[700]">
           {selectedItem.name}

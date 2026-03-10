@@ -41,11 +41,11 @@ const OrderedItem: React.FC<OrderedItemProps> = ({
                         <div className="mt-2 flex items-center gap-2">
                             {item.status === "READY" ? (
                                 <span className="bg-[#E6F9F0] text-[#1ABF70] text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
-                                    Ready for Pickup
+                                    Ready
                                 </span>
                             ) : item.status === "PREPARING" ? (
                                 <span className="bg-[#FFF8E6] text-[#FFA800] text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
-                                    Preparing in Kitchen
+                                    Preparing
                                 </span>
                             ) : (
                                 <span className="bg-[#F0F2F5] text-[#83859C] text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">

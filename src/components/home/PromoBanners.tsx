@@ -24,7 +24,7 @@ const PromoBanners = () => {
  const isInView = useInView(sectionRef, { once: true, margin: "-80px" });
 
  return (
-  <section className="bg-neutral-white lg:pt-[120px]  pt-[24px] pb-[48px]">
+  <section className="bg-neutral-white lg:pt-[120px] pt-[24px] pb-[48px] overflow-hidden">
    <div className="main-container" ref={sectionRef}>
     <div className="w-full flex flex-col md:flex-row justify-center items-center md:items-stretch gap-[20px] md:gap-[30px]">
      {promoData.map((promo, index) => (

@@ -602,6 +602,7 @@ const Menu: React.FC<MenuProps> = ({
         animate={{ x: 0 }}
         exit={{ x: "100%" }}
         transition={{ type: "spring", stiffness: 250, damping: 30 }}
+        data-lenis-prevent="true"
         className="bg-white w-full md:px-8 md:py-4 px-[15px] py-6 max-w-[522px] h-full shadow-2xl flex flex-col overflow-y-auto">
         <div className="flex items-center justify-between pb-[40px] md:pb-[16px]">
          <h2 className="text-[28px] leading-[36px] font-[700]">
@@ -717,6 +718,7 @@ const Menu: React.FC<MenuProps> = ({
          animate={{ x: 0 }}
          exit={{ x: "100%" }}
          transition={{ type: "spring", stiffness: 250, damping: 30 }}
+         data-lenis-prevent="true"
          className="bg-white w-full md:px-8 md:py-4 px-[15px] py-6 max-w-[522px] h-full shadow-2xl flex flex-col overflow-y-auto">
          <div className="flex items-center gap-4 pb-[24px] md:pb-[16px]">
           <img src="/images/icons/info_icon.svg" alt="alert" />

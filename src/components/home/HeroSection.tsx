@@ -64,11 +64,11 @@ const HeroSection = () => {
  };
 
  return (
-  <section className="relative  lg:min-h-[623px] sm:min-h-[732px] md:min-h-[653px] max-md:pt-[15px] max-md:pb-48 flex items-start  justify-center  sm:py-0 bg-primary-dark">
+  <section className="relative lg:min-h-[623px] sm:min-h-[732px] md:min-h-[653px] max-md:pt-[15px] max-md:pb-48 flex items-start justify-center sm:py-0 bg-primary-dark overflow-hidden">
    {/* React Slick Carousel */}
    <Slider {...settings} className=" main-container max-md:px-4">
     {/* Render the same card 4 times for now */}
-        
+
     {SliderData.map((item, index) => (
      <div
       key={index}

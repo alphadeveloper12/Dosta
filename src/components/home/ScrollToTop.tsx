@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 function ScrollToTop() {
@@ -6,12 +6,8 @@ function ScrollToTop() {
  const { pathname } = useLocation();
 
  // This hook runs every time the 'pathname' changes
- useEffect(() => {
-  window.scrollTo({
-   top: 0,
-   left: 0,
-   behavior: "smooth",
-  });
+ useLayoutEffect(() => {
+  window.scrollTo(0, 0);
  }, [pathname]);
 
  // This component doesn't render anything

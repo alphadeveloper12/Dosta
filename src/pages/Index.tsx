@@ -9,10 +9,10 @@ import MobileFooterNav from "@/components/home/MobileFooterNav";
 
 const Index = () => {
  return (
-  <div className="min-h-screen flex flex-col relative">
+  <div className="min-h-screen flex flex-col relative overflow-x-hidden">
    <Header />
 
-   <main className="flex-1 relative">
+   <main className="flex-1 relative overflow-x-hidden">
     <HeroSection />
     <ShowCase />
     <PromoBanners />

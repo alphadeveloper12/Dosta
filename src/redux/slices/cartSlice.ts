@@ -13,9 +13,20 @@ export const fetchCartData = createAsyncThunk(
   "cart/fetchCartData",
   async (_, { rejectWithValue }) => {
     try {
+      const token = (sessionStorage.getItem("authToken") || localStorage.getItem("authToken"));
+      if (!token) {
+        // If no token, we load from localStorage instead of API
+        const localCart = localStorage.getItem("guestCart");
+        if (localCart) {
+          return JSON.parse(localCart);
+        }
+        return { items: [], total_price: "0.00" };
+      }
+
       const baseUrl = getBaseUrl();
-      const res = await axios.get(`${baseUrl}/api/vending/cart/`, getHeaders());
-      // API returns structure matching CartAPI in CartPage.tsx
+      const res = await axios.get(`${baseUrl}/api/vending/cart/`, {
+        headers: { Authorization: `Token ${token}` }
+      });
       return res.data;
     } catch (err: any) {
       console.error("Error fetching cart from API", err);
@@ -25,8 +36,6 @@ export const fetchCartData = createAsyncThunk(
 );
 
 interface CartState {
-  // We keep orderData generic or matching API structure if needed,
-  // but primarily we care about 'items' and 'totalQuantity' for the header.
   items: any[];
   totalQuantity: number;
   loading: boolean;
@@ -48,7 +57,20 @@ const cartSlice = createSlice({
       state.items = [];
       state.totalQuantity = 0;
       state.error = null;
+      localStorage.removeItem("guestCart");
     },
+    // NEW: Action to add to cart locally (for guests or immediate UI feedback)
+    syncLocalCart: (state, action: PayloadAction<any[]>) => {
+      state.items = action.payload;
+      state.totalQuantity = action.payload.reduce(
+        (acc: number, item: any) => acc + (item.quantity || 1),
+        0
+      );
+      const token = sessionStorage.getItem("authToken") || localStorage.getItem("authToken");
+      if (!token) {
+        localStorage.setItem("guestCart", JSON.stringify({ items: state.items }));
+      }
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -61,7 +83,6 @@ const cartSlice = createSlice({
         const apiCart = action.payload;
         state.items = apiCart?.items || [];
 
-        // Calculate total quantity from API items
         if (state.items.length > 0) {
           state.totalQuantity = state.items.reduce(
             (acc: number, item: any) => acc + (item.quantity || 1),
@@ -70,21 +91,15 @@ const cartSlice = createSlice({
         } else {
           state.totalQuantity = 0;
         }
-        console.log(
-          "🛒 Redux: API Sync Complete. Total Items:",
-          state.totalQuantity
-        );
       })
       .addCase(fetchCartData.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
-        // Assumed empty/error state
-        console.log("🛒 Redux: Fetch failed or empty");
       });
   },
 });
 
-export const { clearCart } = cartSlice.actions;
+export const { clearCart, syncLocalCart } = cartSlice.actions;
 
 export const selectTotalCartItems = (state: any) => state.cart.totalQuantity;
 export const selectCartLoading = (state: any) => state.cart.loading;

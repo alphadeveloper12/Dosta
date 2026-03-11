@@ -23,6 +23,9 @@ const SweetsMenu: React.FC = () => {
  const [selectedVariation, setSelectedVariation] =
   useState<SweetsItemVariation | null>(null);
  const [toaster, setToaster] = useState<boolean>(false);
+ const [showDeliveryModal, setShowDeliveryModal] = useState<boolean>(false);
+ const [deliveryAddress, setDeliveryAddress] = useState<string>("");
+ const [phoneNumber, setPhoneNumber] = useState<string>("");
 
  const dispatch = useDispatch();
  const navigate = useNavigate();
@@ -121,6 +124,23 @@ const SweetsMenu: React.FC = () => {
    }
    return prevCart;
   });
+ };
+
+ const submitDeliveryInfo = async () => {
+  if (!deliveryAddress.trim() || !phoneNumber.trim()) {
+   return;
+  }
+
+  localStorage.setItem(
+   "sweetsDeliveryInfo",
+   JSON.stringify({
+    address: deliveryAddress,
+    phone: phoneNumber,
+   }),
+  );
+
+  setShowDeliveryModal(false);
+  await handleConfirmOrder();
  };
 
  const handleConfirmOrder = async () => {
@@ -339,7 +359,7 @@ const SweetsMenu: React.FC = () => {
      </div>
 
      <Button
-      onClick={handleConfirmOrder}
+      onClick={() => setShowDeliveryModal(true)}
       disabled={cart.length === 0}
       className={`w-full py-4 h-14 rounded-xl text-base font-bold shadow-lg transition-all
               ${
@@ -446,6 +466,86 @@ const SweetsMenu: React.FC = () => {
          className="w-full bg-[#054A86] text-white rounded-xl py-3 font-bold shadow-lg shadow-[#054A86]/20 transition-transform active:scale-95">
          Add to selection
         </button>
+       </div>
+      </motion.div>
+     </motion.div>
+    )}
+   </AnimatePresence>
+
+   {/* Delivery Info Modal Sheet */}
+   <AnimatePresence>
+    {showDeliveryModal && (
+     <motion.div
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 backdrop-blur-sm p-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={() => setShowDeliveryModal(false)}>
+      <motion.div
+       initial={{ scale: 0.95, opacity: 0 }}
+       animate={{ scale: 1, opacity: 1 }}
+       exit={{ scale: 0.95, opacity: 0 }}
+       transition={{ type: "spring", stiffness: 300, damping: 25 }}
+       onClick={(e) => e.stopPropagation()}
+       className="bg-white w-full max-w-[400px] rounded-[24px] shadow-2xl flex flex-col overflow-hidden">
+       <div className="p-6 md:p-8">
+        <div className="flex items-center justify-between mb-6">
+         <h2 className="text-[22px] md:text-[24px] font-[700] text-[#2B2B43]">
+          Delivery Details
+         </h2>
+         <button
+          onClick={() => setShowDeliveryModal(false)}
+          className="p-2 rounded-full hover:bg-gray-100 transition-colors">
+          <X className="w-5 h-5 text-gray-500" />
+         </button>
+        </div>
+
+        <p className="text-[#545563] text-[14px] mb-6">
+         Please provide your delivery address and phone number to complete your
+         Sweets order.
+        </p>
+
+        <div className="space-y-4">
+         <div>
+          <label className="block text-sm font-bold text-[#2B2B43] mb-2">
+           Phone Number
+          </label>
+          <input
+           type="tel"
+           placeholder="e.g. +971 50 123 4567"
+           value={phoneNumber}
+           onChange={(e) => setPhoneNumber(e.target.value)}
+           className="w-full h-12 px-4 rounded-xl border border-[#EDEEF2] focus:border-[#054A86] focus:ring-1 focus:ring-[#054A86] outline-none transition-all text-[#2B2B43]"
+          />
+         </div>
+
+         <div>
+          <label className="block text-sm font-bold text-[#2B2B43] mb-2">
+           Delivery Address
+          </label>
+          <textarea
+           placeholder="Appt, Building, Street, Area"
+           value={deliveryAddress}
+           onChange={(e) => setDeliveryAddress(e.target.value)}
+           rows={3}
+           className="w-full p-4 rounded-xl border border-[#EDEEF2] focus:border-[#054A86] focus:ring-1 focus:ring-[#054A86] outline-none transition-all text-[#2B2B43] resize-none"
+          />
+         </div>
+        </div>
+
+        <div className="mt-8 pt-4 border-t border-gray-100 gap-3 flex flex-col sm:flex-row">
+         <button
+          onClick={() => setShowDeliveryModal(false)}
+          className="w-full sm:w-[30%] border-2 border-[#EBEBEB] text-[#545563] hover:border-[#054A86] hover:text-[#054A86] rounded-xl py-3 font-bold transition-colors">
+          Cancel
+         </button>
+         <button
+          onClick={submitDeliveryInfo}
+          disabled={!deliveryAddress.trim() || !phoneNumber.trim()}
+          className="w-full sm:w-[70%] bg-[#054A86] text-white disabled:bg-[#C7C8D2] disabled:shadow-none disabled:cursor-not-allowed rounded-xl py-3 font-bold shadow-lg shadow-[#054A86]/20 transition-all active:scale-95">
+          Continue
+         </button>
+        </div>
        </div>
       </motion.div>
      </motion.div>

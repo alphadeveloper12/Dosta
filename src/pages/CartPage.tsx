@@ -102,6 +102,19 @@ const CartPage: React.FC = () => {
  const [heatingChoices, setHeatingChoices] = useState<
   Record<number, "yes" | "no">
  >({});
+ const [sweetsDeliveryInfo, setSweetsDeliveryInfo] = useState<{
+  address: string;
+  phone: string;
+ } | null>(null);
+
+ useEffect(() => {
+  const info = localStorage.getItem("sweetsDeliveryInfo");
+  if (info) {
+   try {
+    setSweetsDeliveryInfo(JSON.parse(info));
+   } catch (e) {}
+  }
+ }, []);
 
  const [showPaymentModal, setShowPaymentModal] = useState<boolean>(false);
  const [paymentError, setPaymentError] = useState<string | null>(null);
@@ -291,7 +304,20 @@ const CartPage: React.FC = () => {
          plan_subtype: it.plan_subtype,
         }));
 
-        const orderPayload = {
+        // Read directly from localStorage in this callback since state might not be fully initialized
+        let deliveryAdd = "";
+        let custPhone = "";
+        if (currentCart.plan_type === "SWEETS") {
+         try {
+          const sdi = JSON.parse(
+           localStorage.getItem("sweetsDeliveryInfo") || "{}",
+          );
+          deliveryAdd = sdi.address || "";
+          custPhone = sdi.phone || "";
+         } catch (e) {}
+        }
+
+        const orderPayload: any = {
          location_id: currentCart.location?.id,
          plan_type: currentCart.plan_type,
          plan_subtype: currentCart.plan_subtype,
@@ -301,6 +327,11 @@ const CartPage: React.FC = () => {
          items: checkoutItems,
          is_payment_verified: true, // SPECIAL FLAG
         };
+
+        if (deliveryAdd && custPhone) {
+         orderPayload.delivery_address = deliveryAdd;
+         orderPayload.customer_phone = custPhone;
+        }
 
         console.log("📝 Creating Deferred Order Record...");
         const orderRes = await axios.post(
@@ -591,9 +622,16 @@ const CartPage: React.FC = () => {
 
    // --- 2. Initiate Payment Session (DO NOT CREATE ORDER YET) ---
    console.log("💳 Initiating Payment Session for Cart...");
+
+   const initPayload: any = { location_id: cartData.location?.id };
+   if (cartData.plan_type === "SWEETS" && sweetsDeliveryInfo) {
+    initPayload.delivery_address = sweetsDeliveryInfo.address;
+    initPayload.customer_phone = sweetsDeliveryInfo.phone;
+   }
+
    const payRes = await axios.post(
     `${baseUrl}/api/vending/payment/initiate/`,
-    { location_id: cartData.location?.id },
+    initPayload,
     { headers: { Authorization: `Token ${token}` } },
    );
 
@@ -1327,15 +1365,39 @@ const CartPage: React.FC = () => {
         </div>
        )}
        {getGroupedCartItems().map((group, idx) => (
-        <OrderList
-         key={idx}
-         title={group.title}
-         items={group.items}
-         groupedItems={group.groupedItems}
-         onQuantityChange={handleQuantityChange}
-         onDeleteItem={handleDeleteItem}
-         onHeatingChange={handleHeatingChange}
-        />
+        <div key={idx} className="flex flex-col gap-4">
+         {group.title === "Dosta Sweets" && sweetsDeliveryInfo && (
+          <div className="bg-[#F8FAFC] border border-[#EDEEF2] rounded-[16px] p-5 flex flex-col gap-2 shadow-sm">
+           <h3 className="text-[18px] font-[700] text-[#054A86] mb-1">
+            Delivery Details
+           </h3>
+           <div className="flex items-start gap-2">
+            <span className="text-[#83859C] text-sm font-medium w-20">
+             Address:
+            </span>
+            <span className="text-[#2B2B43] text-sm font-bold flex-1">
+             {sweetsDeliveryInfo.address}
+            </span>
+           </div>
+           <div className="flex items-start gap-2">
+            <span className="text-[#83859C] text-sm font-medium w-20">
+             Phone:
+            </span>
+            <span className="text-[#2B2B43] text-sm font-bold flex-1">
+             {sweetsDeliveryInfo.phone}
+            </span>
+           </div>
+          </div>
+         )}
+         <OrderList
+          title={group.title}
+          items={group.items}
+          groupedItems={group.groupedItems}
+          onQuantityChange={handleQuantityChange}
+          onDeleteItem={handleDeleteItem}
+          onHeatingChange={handleHeatingChange}
+         />
+        </div>
        ))}
        {items.length === 0 && (
         <div className="bg-white rounded-lg shadow-md p-10 text-center">

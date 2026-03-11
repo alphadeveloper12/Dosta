@@ -8,7 +8,11 @@ import { useNavigate } from "react-router-dom";
 import { syncLocalCart } from "@/redux/slices/cartSlice";
 import { Button } from "@/components/ui/button";
 import Shrimmer from "../ui/Shrimmer";
-import SweetsCard, { SweetsItemType, SelectedSweetsItem } from "./SweetsCard";
+import SweetsCard, {
+ SweetsItemType,
+ SelectedSweetsItem,
+ SweetsItemVariation,
+} from "./SweetsCard";
 
 const SweetsMenu: React.FC = () => {
  const [sweetsData, setSweetsData] = useState<SweetsItemType[]>([]);
@@ -16,6 +20,8 @@ const SweetsMenu: React.FC = () => {
  const [loading, setLoading] = useState<boolean>(true);
  const [error, setError] = useState<string | null>(null);
  const [selectedItem, setSelectedItem] = useState<SweetsItemType | null>(null);
+ const [selectedVariation, setSelectedVariation] =
+  useState<SweetsItemVariation | null>(null);
  const [toaster, setToaster] = useState<boolean>(false);
 
  const dispatch = useDispatch();
@@ -41,6 +47,7 @@ const SweetsMenu: React.FC = () => {
      price: `AED ${parseFloat(it.price).toFixed(2)}`,
      imgSrc: it.image_url,
      imgAlt: `sweets-${it.id}`,
+     variations: it.variations,
     }));
     setSweetsData(items);
    } catch (err) {
@@ -59,28 +66,58 @@ const SweetsMenu: React.FC = () => {
   return sum + priceNum * item.quantity;
  }, 0);
 
- const handleCardClick = (item: SweetsItemType) => {
+ const handleCardClick = (
+  item: SweetsItemType,
+  variation?: SweetsItemVariation,
+ ) => {
   setSelectedItem(item);
+  setSelectedVariation(
+   variation ||
+    (item.variations && item.variations.length > 0 ? item.variations[0] : null),
+  );
  };
 
  const handleQuantityChange = (
   e: React.MouseEvent,
   item: SweetsItemType,
   delta: number,
+  variation?: SweetsItemVariation,
  ) => {
   e.stopPropagation();
+
   setCart((prevCart) => {
-   const existing = prevCart.find((i) => i.id === item.id);
-   if (existing) {
+   // Use a unique ID for variation or just the item ID if no variations
+   const variationId = variation?.id || 0;
+   const cartItemId = `${item.id}-${variationId}`;
+
+   const existingIndex = prevCart.findIndex(
+    (i) => `${i.id}-${i.selectedVariation?.id || 0}` === cartItemId,
+   );
+
+   if (existingIndex > -1) {
+    const existing = prevCart[existingIndex];
     const newQ = existing.quantity + delta;
+
     if (newQ <= 0) {
-     return prevCart.filter((i) => i.id !== item.id);
+     return prevCart.filter((_, idx) => idx !== existingIndex);
     }
-    return prevCart.map((i) =>
-     i.id === item.id ? { ...i, quantity: newQ } : i,
-    );
+
+    const newCart = [...prevCart];
+    newCart[existingIndex] = { ...existing, quantity: newQ };
+    return newCart;
    } else if (delta > 0) {
-    return [...prevCart, { ...item, quantity: delta }];
+    const itemPrice = variation
+     ? `AED ${parseFloat(variation.price).toFixed(2)}`
+     : item.price;
+    return [
+     ...prevCart,
+     {
+      ...item,
+      price: itemPrice,
+      quantity: delta,
+      selectedVariation: variation,
+     },
+    ];
    }
    return prevCart;
   });
@@ -94,13 +131,17 @@ const SweetsMenu: React.FC = () => {
    menu_item_id: item.id,
    menu_item: {
     id: item.id,
-    name: item.heading,
+    name: item.selectedVariation
+     ? `${item.heading} (${item.selectedVariation.weight})`
+     : item.heading,
     price: item.price.replace("AED ", ""),
     image_url: item.imgSrc,
     heating: "no",
     description: item.description,
    },
-   heading: item.heading,
+   heading: item.selectedVariation
+    ? `${item.heading} (${item.selectedVariation.weight})`
+    : item.heading,
    imgSrc: item.imgSrc,
    price: parseFloat(item.price.replace("AED ", "")),
    quantity: item.quantity,
@@ -134,6 +175,7 @@ const SweetsMenu: React.FC = () => {
    items: cart.map((item) => ({
     id: item.id, // ENSURE ID IS PRESENT AT TOP LEVEL
     menu_item_id: item.id,
+    variation_id: item.selectedVariation?.id || null,
     quantity: item.quantity || 1,
     day_of_week: null,
     week_number: null,
@@ -142,7 +184,9 @@ const SweetsMenu: React.FC = () => {
     plan_subtype: "SWEETS",
     menu_item: {
      id: item.id,
-     name: item.heading,
+     name: item.selectedVariation
+      ? `${item.heading} (${item.selectedVariation.weight})`
+      : item.heading,
      price: item.price.toString().replace("AED ", ""),
      image_url: item.imgSrc,
      description: item.description || "",
@@ -163,7 +207,6 @@ const SweetsMenu: React.FC = () => {
    }
   } catch (err) {
    console.error("❌ Sweets Cart sync error:", err);
-   // Even if API fails, local redux is active, so we navigate anyway.
   }
 
   setToaster(true);
@@ -200,12 +243,11 @@ const SweetsMenu: React.FC = () => {
     ) : (
      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
       {sweetsData.map((item) => {
-       const itemInCart = cart.find((i) => i.id === item.id);
        return (
         <SweetsCard
          key={item.id}
          data={item}
-         itemInCart={itemInCart}
+         cartItems={cart}
          handleCardClick={handleCardClick}
          handleQuantityChange={handleQuantityChange}
         />
@@ -227,13 +269,18 @@ const SweetsMenu: React.FC = () => {
 
      <div className="flex flex-col gap-4 mb-8 max-h-[50vh] overflow-y-auto pr-2">
       {cart.length > 0 ? (
-       cart.map((item) => (
+       cart.map((item, idx) => (
         <div
-         key={item.id}
+         key={`${item.id}-${item.selectedVariation?.id || idx}`}
          className="flex justify-between items-start gap-4 pb-4 border-b border-gray-100 last:border-0">
          <div className="flex flex-col gap-1 flex-1">
           <span className="text-[#2B2B43] text-[14px] font-[600] line-clamp-1">
            {item.heading}
+           {item.selectedVariation && (
+            <span className="text-[10px] text-[#83859C] ml-1">
+             ({item.selectedVariation.weight})
+            </span>
+           )}
           </span>
           <span className="text-sm font-bold text-[#054A86]">{item.price}</span>
          </div>
@@ -241,7 +288,9 @@ const SweetsMenu: React.FC = () => {
          {/* Quantity Stepper for Sidebar */}
          <div className="flex items-center bg-[#EDEEF2] rounded-[6px] p-0.5">
           <button
-           onClick={(e) => handleQuantityChange(e, item, -1)}
+           onClick={(e) =>
+            handleQuantityChange(e, item, -1, item.selectedVariation)
+           }
            className="p-1 px-[6px]">
            <MinusIcon className="w-3 h-3 text-black" />
           </button>
@@ -249,7 +298,9 @@ const SweetsMenu: React.FC = () => {
            {item.quantity}
           </span>
           <button
-           onClick={(e) => handleQuantityChange(e, item, 1)}
+           onClick={(e) =>
+            handleQuantityChange(e, item, 1, item.selectedVariation)
+           }
            className="p-1 px-[6px]">
            <PlusIcon className="w-3 h-3 text-black" />
           </button>
@@ -342,8 +393,37 @@ const SweetsMenu: React.FC = () => {
         <p className="text-[#545563] text-[15px] leading-relaxed">
          {selectedItem.description || "A delicious sweet treat."}
         </p>
+
+        {/* Weight Selection in Modal */}
+        {selectedItem.variations && selectedItem.variations.length > 0 && (
+         <div className="pt-4">
+          <h4 className="text-sm font-bold text-[#2B2B43] mb-3">
+           Select Weight
+          </h4>
+          <div className="flex flex-wrap gap-2">
+           {selectedItem.variations.map((v) => (
+            <button
+             key={v.id}
+             onClick={() => setSelectedVariation(v)}
+             className={`px-4 py-2 rounded-xl border-2 font-bold transition-all ${
+              selectedVariation?.id === v.id
+               ? "border-[#054A86] bg-[#054A86]/5 text-[#054A86]"
+               : "border-[#EDEEF2] text-[#545563] hover:border-[#054A86]/30"
+             }`}>
+             <div className="text-sm">{v.weight}</div>
+             <div className="text-xs opacity-70">
+              AED {parseFloat(v.price).toFixed(2)}
+             </div>
+            </button>
+           ))}
+          </div>
+         </div>
+        )}
+
         <h3 className="text-[26px] leading-[32px] font-[800] tracking-[0.1px] text-[#054A86] pt-2">
-         {selectedItem.price}
+         {selectedVariation
+          ? `AED ${parseFloat(selectedVariation.price).toFixed(2)}`
+          : selectedItem.price}
         </h3>
        </div>
 
@@ -355,7 +435,12 @@ const SweetsMenu: React.FC = () => {
         </button>
         <button
          onClick={(e) => {
-          handleQuantityChange(e, selectedItem, 1);
+          handleQuantityChange(
+           e,
+           selectedItem,
+           1,
+           selectedVariation || undefined,
+          );
           setSelectedItem(null);
          }}
          className="w-full bg-[#054A86] text-white rounded-xl py-3 font-bold shadow-lg shadow-[#054A86]/20 transition-transform active:scale-95">

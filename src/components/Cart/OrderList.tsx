@@ -86,7 +86,7 @@ const OrderList: React.FC<OrderListProps> = ({
 
    <Link
     className="mt-6 flex items-center gap-2 text-[#054A86] font-medium hover:text-blue-800 transition-colors"
-    to={"/vending-home/order-now"}>
+    to={title === "Dosta Sweets" ? "/dosta-sweets" : "/vending-home/order-now"}>
     <PlusIcon className="w-5 h-5" />
     <span>Add More Meals</span>
    </Link>

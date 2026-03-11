@@ -59,7 +59,6 @@ const cartSlice = createSlice({
       state.error = null;
       localStorage.removeItem("guestCart");
     },
-    // NEW: Action to add to cart locally (for guests or immediate UI feedback)
     syncLocalCart: (state, action: PayloadAction<any[]>) => {
       state.items = action.payload;
       state.totalQuantity = action.payload.reduce(
@@ -68,7 +67,15 @@ const cartSlice = createSlice({
       );
       const token = sessionStorage.getItem("authToken") || localStorage.getItem("authToken");
       if (!token) {
-        localStorage.setItem("guestCart", JSON.stringify({ items: state.items }));
+        // Read existing guest cart to preserve location_id, plan_type, etc.
+        const existingData = localStorage.getItem("guestCart");
+        let guestCartObj = { items: state.items };
+        if (existingData) {
+          try {
+            guestCartObj = { ...JSON.parse(existingData), items: state.items };
+          } catch (err) { }
+        }
+        localStorage.setItem("guestCart", JSON.stringify(guestCartObj));
       }
     }
   },

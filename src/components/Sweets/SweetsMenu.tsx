@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import Shrimmer from "../ui/Shrimmer";
 import SweetsCard, {
  SweetsItemType,
+ SweetsItemImage,
  SelectedSweetsItem,
  SweetsItemVariation,
 } from "./SweetsCard";
@@ -26,6 +27,7 @@ const SweetsMenu: React.FC = () => {
  const [showDeliveryModal, setShowDeliveryModal] = useState<boolean>(false);
  const [deliveryAddress, setDeliveryAddress] = useState<string>("");
  const [phoneNumber, setPhoneNumber] = useState<string>("");
+ const [modalImgIndex, setModalImgIndex] = useState<number>(0);
 
  const dispatch = useDispatch();
  const navigate = useNavigate();
@@ -49,6 +51,7 @@ const SweetsMenu: React.FC = () => {
      description: it.description,
      price: `AED ${parseFloat(it.price).toFixed(2)}`,
      imgSrc: it.image_url,
+     images: it.images || [],
      imgAlt: `sweets-${it.id}`,
      variations: it.variations,
     }));
@@ -74,6 +77,7 @@ const SweetsMenu: React.FC = () => {
   variation?: SweetsItemVariation,
  ) => {
   setSelectedItem(item);
+  setModalImgIndex(0);
   setSelectedVariation(
    variation ||
     (item.variations && item.variations.length > 0 ? item.variations[0] : null),
@@ -237,7 +241,7 @@ const SweetsMenu: React.FC = () => {
  };
 
  return (
-  <div className="w-full flex-1 relative flex flex-col lg:flex-row gap-6 lg:gap-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in-up">
+  <div className="w-full flex-1 relative flex flex-col lg:flex-row gap-6 lg:gap-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-44 lg:pb-8 animate-fade-in-up">
    {/* Left Area: Main Menu */}
    <div className="flex-1">
     <div className="mb-6">
@@ -277,9 +281,38 @@ const SweetsMenu: React.FC = () => {
     )}
    </div>
 
+   {/* Mobile Sticky Confirm Bar */}
+   {cart.length > 0 && (
+    <div className="fixed bottom-[82px] left-0 right-0 z-40 bg-white border-t border-[#EDEEF2] px-4 py-3 shadow-[0px_-4px_20px_0px_rgba(0,0,0,0.08)] md:hidden">
+     <div className="flex items-center justify-between gap-4 max-w-7xl mx-auto">
+      <div className="flex flex-col">
+       <span className="text-xs text-[#83859C]">{totalQuantity} items</span>
+       <span className="text-lg font-bold text-[#2B2B43]">
+        AED {totalPrice.toFixed(2)}
+       </span>
+       {totalPrice < 100 && (
+        <span className="text-[10px] text-red-500 font-semibold">
+         Min. order AED 100
+        </span>
+       )}
+      </div>
+      <Button
+       onClick={() => setShowDeliveryModal(true)}
+       disabled={totalPrice < 100}
+       className={`rounded-xl px-6 py-3 h-12 text-sm font-bold shadow-lg ${
+        totalPrice >= 100
+         ? "bg-[#054A86] text-white hover:bg-[#054A86]/90 shadow-[#054A86]/25"
+         : "bg-[#C7C8D2] text-white shadow-none cursor-not-allowed"
+       }`}>
+       Confirm Selection
+      </Button>
+     </div>
+    </div>
+   )}
+
    {/* Right Sidebar: Selected Items & Checkout */}
    <div className="w-full lg:w-[340px] flex-shrink-0">
-    <div className="bg-white rounded-[20px] p-6 sticky top-24 border border-[#EDEEF2] shadow-[0px_4px_20px_0px_rgba(0,0,0,0.05)]">
+    <div className="bg-white rounded-[20px] p-6 sticky top-20 border border-[#EDEEF2] shadow-[0px_4px_20px_0px_rgba(0,0,0,0.05)]">
      <h3 className="text-xl font-bold text-[#2B2B43] mb-6 flex justify-between items-center">
       <span>Your Sweets</span>
       <span className="text-[#054A86] bg-[#054A86]/10 px-3 py-1 rounded-full text-sm">
@@ -351,16 +384,37 @@ const SweetsMenu: React.FC = () => {
       )}
      </div>
 
-     <div className="flex justify-between items-center border-t border-gray-100 pt-4 mb-6">
+     <div className="flex justify-between items-center border-t border-gray-100 pt-4 mb-4">
       <span className="text-[#545563] font-medium">Total</span>
       <span className="text-[20px] font-bold text-[#2B2B43]">
        AED {totalPrice.toFixed(2)}
       </span>
      </div>
 
+     {cart.length > 0 && totalPrice < 100 && (
+      <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-xl px-3 py-2 mb-4">
+       <svg
+        className="w-4 h-4 text-red-500 flex-shrink-0"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor">
+        <path
+         strokeLinecap="round"
+         strokeLinejoin="round"
+         strokeWidth={2}
+         d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
+        />
+       </svg>
+       <span className="text-red-600 text-xs font-semibold">
+        Minimum order is AED 100.00 (AED {(100 - totalPrice).toFixed(2)} more
+        needed)
+       </span>
+      </div>
+     )}
+
      <Button
       onClick={() => setShowDeliveryModal(true)}
-      disabled={cart.length === 0}
+      disabled={cart.length === 0 || totalPrice < 100}
       className={`w-full py-4 h-14 rounded-xl text-base font-bold shadow-lg transition-all
               ${
                cart.length > 0
@@ -401,13 +455,120 @@ const SweetsMenu: React.FC = () => {
         </button>
        </div>
 
-       <div className="relative aspect-[4/3] w-full rounded-[16px] overflow-hidden mb-6 bg-gray-100">
-        <img
-         src={selectedItem.imgSrc || "https://placehold.co/800x600?text=Sweets"}
-         alt={selectedItem.imgAlt}
-         className="w-full h-full object-cover"
-        />
+       <div
+        className="relative aspect-[4/3] md:aspect-[3/2.5] w-full rounded-[16px] overflow-hidden mb-2 bg-gray-100"
+        style={{ touchAction: "pan-y" }}
+        onTouchStart={(e) => {
+         (e.currentTarget as any)._touchX = e.touches[0].clientX;
+        }}
+        onTouchEnd={(e) => {
+         const startX = (e.currentTarget as any)._touchX;
+         if (startX == null) return;
+         const modalImages =
+          selectedItem.images && selectedItem.images.length > 0
+           ? selectedItem.images
+           : null;
+         if (!modalImages || modalImages.length <= 1) return;
+         const diff = startX - e.changedTouches[0].clientX;
+         if (Math.abs(diff) > 30) {
+          if (diff > 0) {
+           setModalImgIndex((prev) =>
+            prev === modalImages.length - 1 ? 0 : prev + 1,
+           );
+          } else {
+           setModalImgIndex((prev) =>
+            prev === 0 ? modalImages.length - 1 : prev - 1,
+           );
+          }
+         }
+        }}>
+        {(() => {
+         const modalImages =
+          selectedItem.images && selectedItem.images.length > 0
+           ? selectedItem.images.map((img) => img.image_url)
+           : [
+              selectedItem.imgSrc || "https://placehold.co/800x600?text=Sweets",
+             ];
+         return (
+          <>
+           <img
+            src={modalImages[modalImgIndex] || modalImages[0]}
+            alt={selectedItem.imgAlt}
+            className="w-full h-full object-cover transition-opacity duration-300"
+           />
+           {modalImages.length > 1 && (
+            <>
+             <button
+              onClick={() =>
+               setModalImgIndex((prev) =>
+                prev === 0 ? modalImages.length - 1 : prev - 1,
+               )
+              }
+              className="absolute left-2 top-1/2 -translate-y-1/2 bg-white hover:bg-gray-50 rounded-full p-2 shadow-md z-10">
+              <svg
+               className="w-5 h-5 text-[#2B2B43]"
+               fill="none"
+               viewBox="0 0 24 24"
+               stroke="currentColor">
+               <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+               />
+              </svg>
+             </button>
+             <button
+              onClick={() =>
+               setModalImgIndex((prev) =>
+                prev === modalImages.length - 1 ? 0 : prev + 1,
+               )
+              }
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-white hover:bg-gray-50 rounded-full p-2 shadow-md z-10">
+              <svg
+               className="w-5 h-5 text-[#2B2B43]"
+               fill="none"
+               viewBox="0 0 24 24"
+               stroke="currentColor">
+               <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+               />
+              </svg>
+             </button>
+             <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs font-medium px-2 py-0.5 rounded-full">
+              {modalImgIndex + 1}/{modalImages.length}
+             </div>
+            </>
+           )}
+          </>
+         );
+        })()}
        </div>
+
+       {/* Thumbnail strip */}
+       {selectedItem.images && selectedItem.images.length > 1 && (
+        <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
+         {selectedItem.images.map((img, idx) => (
+          <button
+           key={img.id}
+           onClick={() => setModalImgIndex(idx)}
+           className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
+            idx === modalImgIndex
+             ? "border-[#054A86] ring-1 ring-[#054A86]/30"
+             : "border-transparent opacity-60 hover:opacity-100"
+           }`}>
+           <img
+            src={img.image_url}
+            alt={img.alt_text || `${selectedItem.heading} ${idx + 1}`}
+            className="w-full h-full object-cover"
+           />
+          </button>
+         ))}
+        </div>
+       )}
 
        <div className="flex-1 space-y-4">
         <p className="text-[#545563] text-[15px] leading-relaxed">
@@ -447,7 +608,7 @@ const SweetsMenu: React.FC = () => {
         </h3>
        </div>
 
-       <div className="mt-8 pt-4 border-t border-gray-100 flex flex-col sm:flex-row gap-3 md:pb-6">
+       <div className="mt-8 pt-4 border-t border-gray-100 flex flex-col-reverse sm:flex-row gap-3 md:pb-6">
         <button
          onClick={() => setSelectedItem(null)}
          className="w-full border-2 border-[#EBEBEB] text-[#545563] hover:border-[#054A86] hover:text-[#054A86] rounded-xl py-3 font-bold transition-colors">
@@ -512,11 +673,32 @@ const SweetsMenu: React.FC = () => {
           </label>
           <input
            type="tel"
-           placeholder="e.g. +971 50 123 4567"
+           placeholder="05X XXX XXXX"
+           maxLength={10}
            value={phoneNumber}
-           onChange={(e) => setPhoneNumber(e.target.value)}
-           className="w-full h-12 px-4 rounded-xl border border-[#EDEEF2] focus:border-[#054A86] focus:ring-1 focus:ring-[#054A86] outline-none transition-all text-[#2B2B43]"
+           onChange={(e) => {
+            const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 10);
+            setPhoneNumber(val);
+           }}
+           className={`w-full h-12 px-4 rounded-xl border outline-none transition-all text-[#2B2B43] ${
+            phoneNumber.length > 0 &&
+            (phoneNumber.length < 10 || !phoneNumber.startsWith("05"))
+             ? "border-red-400 focus:border-red-500 focus:ring-1 focus:ring-red-400"
+             : "border-[#EDEEF2] focus:border-[#054A86] focus:ring-1 focus:ring-[#054A86]"
+           }`}
           />
+          {phoneNumber.length > 0 && !phoneNumber.startsWith("05") && (
+           <p className="text-red-500 text-xs mt-1">
+            Number must start with 05
+           </p>
+          )}
+          {phoneNumber.length > 0 &&
+           phoneNumber.startsWith("05") &&
+           phoneNumber.length < 10 && (
+            <p className="text-red-500 text-xs mt-1">
+             Enter all 10 digits (e.g. 0501234567)
+            </p>
+           )}
          </div>
 
          <div>
@@ -531,9 +713,33 @@ const SweetsMenu: React.FC = () => {
            className="w-full p-4 rounded-xl border border-[#EDEEF2] focus:border-[#054A86] focus:ring-1 focus:ring-[#054A86] outline-none transition-all text-[#2B2B43] resize-none"
           />
          </div>
+
+         <div className="flex items-center gap-2 bg-[#054A86]/5 border border-[#054A86]/20 rounded-xl px-4 py-3">
+          <svg
+           className="w-4 h-4 text-[#054A86] flex-shrink-0"
+           fill="none"
+           viewBox="0 0 24 24"
+           stroke="currentColor">
+           <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+           />
+           <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+           />
+          </svg>
+          <span className="text-[#054A86] text-xs font-semibold">
+           Delivery available in Dubai only
+          </span>
+         </div>
         </div>
 
-        <div className="mt-8 pt-4 border-t border-gray-100 gap-3 flex flex-col sm:flex-row">
+        <div className="mt-8 pt-4 border-t border-gray-100 gap-3 flex flex-col-reverse sm:flex-row">
          <button
           onClick={() => setShowDeliveryModal(false)}
           className="w-full sm:w-[30%] border-2 border-[#EBEBEB] text-[#545563] hover:border-[#054A86] hover:text-[#054A86] rounded-xl py-3 font-bold transition-colors">
@@ -541,7 +747,11 @@ const SweetsMenu: React.FC = () => {
          </button>
          <button
           onClick={submitDeliveryInfo}
-          disabled={!deliveryAddress.trim() || !phoneNumber.trim()}
+          disabled={
+           !deliveryAddress.trim() ||
+           phoneNumber.length !== 10 ||
+           !phoneNumber.startsWith("05")
+          }
           className="w-full sm:w-[70%] bg-[#054A86] text-white disabled:bg-[#C7C8D2] disabled:shadow-none disabled:cursor-not-allowed rounded-xl py-3 font-bold shadow-lg shadow-[#054A86]/20 transition-all active:scale-95">
           Continue
          </button>

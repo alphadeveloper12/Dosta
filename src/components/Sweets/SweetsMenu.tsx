@@ -198,10 +198,10 @@ const SweetsMenu: React.FC = () => {
    const selectedLocation = JSON.parse(
     localStorage.getItem("selectedLocation") || "{}",
    );
-   locId = selectedLocation?.location?.id || 1;
-  } catch (e) {
-   locId = 1;
-  }
+   locId = Number(selectedLocation?.location?.id) || 1;
+   } catch (e) {
+    locId = 1;
+   }
 
   const payload = {
    location_id: locId,

@@ -201,7 +201,7 @@ const buildConfirmPayload = ({
   };
 
   return {
-    location_id: locationId,
+    location_id: Number(locationId),
     plan_type: plan_type_map[orderType] || "ORDER_NOW",
     plan_subtype:
       orderType === "Start a Plan"
@@ -211,7 +211,7 @@ const buildConfirmPayload = ({
         : "NONE",
     pickup_type,
     pickup_date: new Date().toISOString().split("T")[0],
-    pickup_slot_id: selectedSlot?.id || null,
+    pickup_slot_id: selectedSlot?.id ? Number(selectedSlot.id) : null,
     items: formatItems(menuData, planType),
   };
 };
@@ -598,7 +598,7 @@ const OrderNow = () => {
         const selectedLocation = JSON.parse(
           localStorage.getItem("selectedLocation") || "{}",
         );
-        const locId = selectedLocation?.location?.id || 1;
+        const locId = Number(selectedLocation?.location?.id) || 1;
 
         const res = await axios.get(
           `${baseUrl}/api/vending/pickup-options/?location_id=${locId}`,
@@ -752,9 +752,11 @@ const OrderNow = () => {
     let locId = 1;
     try {
       const selectedLocation = JSON.parse(
-        localStorage.getItem("selectedLocation") || "{}",
+        localStorage.getItem("selectedLocation") || 
+        sessionStorage.getItem("selectedLocation") || 
+        "{}"
       );
-      locId = selectedLocation?.location?.id || 1;
+      locId = Number(selectedLocation?.location?.id) || 1;
     } catch (e) {
       locId = 1;
     }
@@ -831,7 +833,7 @@ const OrderNow = () => {
     const nextStep = activeStep + 1;
 
     const payload: any = {
-      location_id: locId,
+      location_id: Number(locId),
       plan_type:
         orderType === "Start a Plan"
           ? "START_PLAN"
@@ -850,7 +852,8 @@ const OrderNow = () => {
           : "TODAY",
       pickup_date: new Date().toISOString().split("T")[0],
       pickup_slot_id:
-        timeSlots.find((slot: any) => slot.label === time)?.id || null,
+        timeSlots.find((slot: any) => slot.label === time)?.id ? 
+        Number(timeSlots.find((slot: any) => slot.label === time).id) : null,
       items: itemsToSend,
       current_step: nextStep,
     };

@@ -341,7 +341,7 @@ const VendingMenu = () => {
      const selectedLocation = JSON.parse(
       localStorage.getItem("selectedLocation") || "{}",
      );
-     locationId = selectedLocation?.location?.id || 1;
+     locationId = Number(selectedLocation?.location?.id) || 1;
     }
    } catch (e) {
     const selectedLocation = JSON.parse(

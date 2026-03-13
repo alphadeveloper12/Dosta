@@ -1,6 +1,7 @@
 // src/components/cart/CartPage.tsx
 import React, { useState, useMemo, useEffect } from "react";
 import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
 import OrderList from "@/components/Cart/OrderList";
 import OrderSummary from "@/components/Cart/OrderSummary";
 import Footer from "@/components/layout/Footer";
@@ -1366,8 +1367,41 @@ const CartPage: React.FC = () => {
        )}
        {getGroupedCartItems().map((group, idx) => (
         <div key={idx} className="flex flex-col gap-4">
+         {group.title === "Dosta Sweets" && (
+          <div className="mb-4 overflow-hidden rounded-[16px] bg-[#054A86] relative h-12 flex items-center shadow-lg">
+           <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[#054A86] to-transparent z-10" />
+           <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[#054A86] to-transparent z-10" />
+
+           <motion.div
+            className="flex whitespace-nowrap gap-12 text-white font-[700] text-[15px] items-center"
+            animate={{ x: ["0%", "-50%"] }}
+            transition={{
+             repeat: Infinity,
+             duration: 20,
+             ease: "linear",
+            }}>
+            <div className="flex items-center gap-2">
+             <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
+             Your Dosta Sweets order will be delivered within 24 hours
+            </div>
+            <div className="flex items-center gap-2">
+             <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
+             Your Dosta Sweets order will be delivered within 24 hours
+            </div>
+            {/* Duplicated for smooth loop */}
+            <div className="flex items-center gap-2">
+             <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
+             Your Dosta Sweets order will be delivered within 24 hours
+            </div>
+            <div className="flex items-center gap-2">
+             <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
+             Your Dosta Sweets order will be delivered within 24 hours
+            </div>
+           </motion.div>
+          </div>
+         )}
          {group.title === "Dosta Sweets" && sweetsDeliveryInfo && (
-          <div className="bg-[#F8FAFC] border border-[#EDEEF2] rounded-[16px] p-5 flex flex-col gap-2 shadow-sm">
+          <div className="bg-[#F8FAFC] border border-[#EDEEF2] rounded-[16px] p-5 flex flex-col gap-2 shadow-sm mb-4">
            <h3 className="text-[18px] font-[700] text-[#054A86] mb-1">
             Delivery Details
            </h3>

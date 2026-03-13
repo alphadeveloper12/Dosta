@@ -34,16 +34,18 @@ const CartItem: React.FC<CartItemProps> = ({
        {item.notes}
       </p>
      )}
-     {item.pickupLocation && item.pickupLocation !== "Unknown Location" && (
-      <div className="">
-       <span className="text-[12px] leading-[16px] font-[600] text-neutral-gray-dark">
-        pick up at:{" "}
-       </span>
-       <span className="text-[12px] leading-[16px] font-[600] text-neutral-black">
-        {item.pickupLocation}
-       </span>
-      </div>
-     )}
+     {item.pickupLocation &&
+      item.pickupLocation !== "Unknown Location" &&
+      item.planType !== "SWEETS" && (
+       <div className="">
+        <span className="text-[12px] leading-[16px] font-[600] text-neutral-gray-dark">
+         pick up at:{" "}
+        </span>
+        <span className="text-[12px] leading-[16px] font-[600] text-neutral-black">
+         {item.pickupLocation}
+        </span>
+       </div>
+      )}
      {item.heating === "yes" && (
       <div className="mt-2 flex items-center gap-2">
        <span className="text-[12px] font-semibold text-neutral-gray-dark">

@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { syncLocalCart } from "@/redux/slices/cartSlice";
 import { Button } from "@/components/ui/button";
 import Shrimmer from "../ui/Shrimmer";
+import ImageWithShimmer from "../ui/ImageWithShimmer";
 import SweetsCard, {
  SweetsItemType,
  SweetsItemImage,
@@ -71,6 +72,19 @@ const SweetsMenu: React.FC = () => {
   const priceNum = parseFloat(item.price.replace("AED ", ""));
   return sum + priceNum * item.quantity;
  }, 0);
+
+ // Preload all images when modal opens
+ useEffect(() => {
+  if (!selectedItem) return;
+  const urls =
+   selectedItem.images && selectedItem.images.length > 0
+    ? selectedItem.images.map((img) => img.image_url)
+    : [];
+  urls.forEach((url) => {
+   const img = new Image();
+   img.src = url;
+  });
+ }, [selectedItem]);
 
  const handleCardClick = (
   item: SweetsItemType,
@@ -456,7 +470,7 @@ const SweetsMenu: React.FC = () => {
        </div>
 
        <div
-        className="relative aspect-[4/3] md:aspect-[3/2.5] w-full rounded-[16px] overflow-hidden mb-2 bg-gray-100"
+        className="relative aspect-[3/3] md:aspect-[4/3.5] w-full rounded-[16px] overflow-hidden mb-2 bg-gray-100"
         style={{ touchAction: "pan-y" }}
         onTouchStart={(e) => {
          (e.currentTarget as any)._touchX = e.touches[0].clientX;
@@ -491,10 +505,12 @@ const SweetsMenu: React.FC = () => {
              ];
          return (
           <>
-           <img
+           <ImageWithShimmer
+            key={modalImgIndex}
             src={modalImages[modalImgIndex] || modalImages[0]}
             alt={selectedItem.imgAlt}
-            className="w-full h-full object-cover transition-opacity duration-300"
+            wrapperClassName="w-full h-full"
+            className="w-full h-full object-cover"
            />
            {modalImages.length > 1 && (
             <>
@@ -547,28 +563,6 @@ const SweetsMenu: React.FC = () => {
          );
         })()}
        </div>
-
-       {/* Thumbnail strip */}
-       {selectedItem.images && selectedItem.images.length > 1 && (
-        <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
-         {selectedItem.images.map((img, idx) => (
-          <button
-           key={img.id}
-           onClick={() => setModalImgIndex(idx)}
-           className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
-            idx === modalImgIndex
-             ? "border-[#054A86] ring-1 ring-[#054A86]/30"
-             : "border-transparent opacity-60 hover:opacity-100"
-           }`}>
-           <img
-            src={img.image_url}
-            alt={img.alt_text || `${selectedItem.heading} ${idx + 1}`}
-            className="w-full h-full object-cover"
-           />
-          </button>
-         ))}
-        </div>
-       )}
 
        <div className="flex-1 space-y-4">
         <p className="text-[#545563] text-[15px] leading-relaxed">

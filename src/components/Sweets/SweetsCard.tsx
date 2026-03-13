@@ -121,9 +121,10 @@ const SweetsCard: React.FC<SweetsCardProps> = ({
      }
     }}>
     <ImageWithShimmer
+     key={currentImgIndex}
      src={allImages[currentImgIndex]}
      alt={data.imgAlt}
-     wrapperClassName="w-full h-[120px] md:h-[180px] rounded-[12px] sm:rounded-[16px] object-cover"
+     wrapperClassName="w-full h-[160px] md:h-[220px] rounded-[12px] sm:rounded-[16px] object-cover"
      className="w-full h-full object-cover"
     />
     {allImages.length > 1 && (
@@ -169,7 +170,9 @@ const SweetsCard: React.FC<SweetsCardProps> = ({
    </div>
 
    <div className="flex-1 flex flex-col pt-3">
-    <h3 className="text-[14px] leading-[20px] md:text-[24px] pb-1 md:leading-[32px] font-[700] tracking-[0.1px] text-[#2B2B43] line-clamp-1">
+    <h3
+     title={data.heading}
+     className="text-[14px] leading-[20px] md:text-[24px] pb-1 md:leading-[32px] font-[700] tracking-[0.1px] text-[#2B2B43] line-clamp-1">
      {data.heading}
     </h3>
     <p className="flex-1 text-[11px] md:text-[14px] line-clamp-2 leading-[16px] md:leading-[20px] font-[400] tracking-[0.2px] text-[#83859C]">

@@ -43,7 +43,7 @@ const steps = [
   link: "/catering", // Special link for catering
  },
  {
-  icon: "images/header/card4.svg", // Replace with your actual image path
+  icon: "images/header/card3.jpeg", // Replace with your actual image path
   title: "Delightfull Sweets for Happy Occasions",
   description: "Dosta Sweets offers a wide range of sweets for any occasion.",
   tag: "DOSTA SWEETS",

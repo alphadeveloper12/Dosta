@@ -14,6 +14,7 @@ import { useGoogleLogin, useGoogleOneTapLogin } from "@react-oauth/google";
 import MobileFooterNav from "@/components/home/MobileFooterNav";
 import { Trash2, Info } from "lucide-react";
 import AuthPromptModal from "@/components/common/AuthPromptModal";
+import { trackPurchase } from "@/utils/metaPixel";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -296,6 +297,16 @@ const CartPage: React.FC = () => {
               const currentCart = cartRes.data;
 
               if (currentCart && currentCart.items) {
+                const purchaseValue =
+                  Number(currentCart.total_price) ||
+                  currentCart.items.reduce(
+                    (acc: number, item: any) =>
+                      acc + Number(item.menu_item?.price || 0) * Number(item.quantity || 0),
+                    0,
+                  );
+
+                trackPurchase(purchaseValue, "AED");
+
                 const checkoutItems = currentCart.items.map((it: any) => ({
                   menu_item_id: it.menu_item?.id,
                   quantity: it.quantity,

@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 import ImageWithShimmer from "../ui/ImageWithShimmer";
+import { trackAddToCart, trackViewContent } from "@/utils/metaPixel";
 
 /** ---------------- Types ---------------- */
 export interface FoodItem {
@@ -174,6 +175,11 @@ const GrabMenu: React.FC<GrabMenuProps> = ({
  initialCart = [],
  availableItems,
 }) => {
+ const parseItemPrice = (price: string) => {
+  const amount = Number((price || "").replace(/[^\d.]/g, ""));
+  return Number.isFinite(amount) ? amount : 0;
+ };
+
  const [openDialouge, setOpenDialouge] = useState(false);
  const [selectedItem, setSelectedItem] = useState<FoodItem | null>(null);
  const [toaster, setToaster] = useState(false);
@@ -208,6 +214,7 @@ const GrabMenu: React.FC<GrabMenuProps> = ({
  };
 
  const handleCardClick = (item: FoodItem) => {
+  trackViewContent(item.heading, parseItemPrice(item.price), "AED");
   setSelectedItem(item);
  };
 
@@ -236,6 +243,9 @@ const GrabMenu: React.FC<GrabMenuProps> = ({
      // Limit to totalAvailable instead of hardcoded 3
      return prev;
     } else {
+      if (change > 0) {
+       trackAddToCart(parseItemPrice(foodItem.price), "AED");
+      }
      next[idx] = { ...next[idx], quantity: newQty };
     }
     return next;
@@ -244,6 +254,7 @@ const GrabMenu: React.FC<GrabMenuProps> = ({
    // Not in cart and we are adding
    if (change > 0) {
     if (totalAvailable <= 0) return next;
+    trackAddToCart(parseItemPrice(foodItem.price), "AED");
     return [...next, { ...foodItem, quantity: 1 }];
    }
 

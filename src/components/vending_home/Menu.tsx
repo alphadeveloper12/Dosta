@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 import Shrimmer from "../ui/Shrimmer";
 import MenuCard from "./MenuCard";
+import { trackAddToCart, trackViewContent } from "@/utils/metaPixel";
 
 interface FoodItem {
  imgSrc: string;
@@ -39,6 +40,11 @@ const Menu: React.FC<MenuProps> = ({
  machineGoods,
  machineShelves,
 }) => {
+ const parseItemPrice = (price: string) => {
+  const amount = Number((price || "").replace(/[^\d.]/g, ""));
+  return Number.isFinite(amount) ? amount : 0;
+ };
+
  const [openDialouge, setOpenDialouge] = useState(false);
  const [scrolled, setScrolled] = useState(false);
  const [selectedItem, setSelectedItem] = useState<FoodItem | null>(null);
@@ -189,6 +195,7 @@ const Menu: React.FC<MenuProps> = ({
   }, [foodData, machineGoods, machineShelves]);
 
  const handleCardClick = (item: FoodItem) => {
+  trackViewContent(item.heading, parseItemPrice(item.price), "AED");
   setSelectedItem(item);
   setIsSheetOpen(true);
  };
@@ -348,6 +355,9 @@ const Menu: React.FC<MenuProps> = ({
      // Limit to total available stock
      newCart = prevCart;
     } else {
+      if (delta > 0) {
+       trackAddToCart(parseItemPrice(item.price), "AED");
+      }
      newCart = prevCart.map((i) =>
       i.imgAlt === item.imgAlt ? { ...i, quantity: newQuantity } : i,
      );
@@ -356,6 +366,7 @@ const Menu: React.FC<MenuProps> = ({
     if (delta > totalAvailable) {
      newCart = prevCart;
     } else {
+      trackAddToCart(parseItemPrice(item.price), "AED");
      newCart = [...prevCart, { ...item, quantity: delta }];
     }
    } else {

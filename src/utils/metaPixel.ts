@@ -4,7 +4,8 @@ declare global {
  }
 }
 
-const isFbqReady = () => typeof window !== "undefined" && typeof window.fbq === "function";
+const isFbqReady = () =>
+ typeof window !== "undefined" && typeof window.fbq === "function";
 
 const toNumber = (value: unknown) => {
  const parsed = Number(value);
@@ -33,7 +34,11 @@ export const trackAddToCart = (value?: unknown, currency = "AED") => {
  });
 };
 
-export const trackViewContent = (contentName?: string, value?: unknown, currency = "AED") => {
+export const trackViewContent = (
+ contentName?: string,
+ value?: unknown,
+ currency = "AED",
+) => {
  if (!isFbqReady()) return;
 
  const payload: Record<string, any> = {};

@@ -243,9 +243,9 @@ const GrabMenu: React.FC<GrabMenuProps> = ({
      // Limit to totalAvailable instead of hardcoded 3
      return prev;
     } else {
-      if (change > 0) {
-       trackAddToCart(parseItemPrice(foodItem.price), "AED");
-      }
+     if (change > 0) {
+      trackAddToCart(parseItemPrice(foodItem.price), "AED");
+     }
      next[idx] = { ...next[idx], quantity: newQty };
     }
     return next;

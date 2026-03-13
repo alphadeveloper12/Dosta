@@ -355,9 +355,9 @@ const Menu: React.FC<MenuProps> = ({
      // Limit to total available stock
      newCart = prevCart;
     } else {
-      if (delta > 0) {
-       trackAddToCart(parseItemPrice(item.price), "AED");
-      }
+     if (delta > 0) {
+      trackAddToCart(parseItemPrice(item.price), "AED");
+     }
      newCart = prevCart.map((i) =>
       i.imgAlt === item.imgAlt ? { ...i, quantity: newQuantity } : i,
      );
@@ -366,7 +366,7 @@ const Menu: React.FC<MenuProps> = ({
     if (delta > totalAvailable) {
      newCart = prevCart;
     } else {
-      trackAddToCart(parseItemPrice(item.price), "AED");
+     trackAddToCart(parseItemPrice(item.price), "AED");
      newCart = [...prevCart, { ...item, quantity: delta }];
     }
    } else {

@@ -49,11 +49,13 @@ const GetApp = () => {
          <p className="text-white text-sm sm:text-base font-semibold max-w-xs sm:max-w-sm leading-snug">
           Manage your deliveries from anywhere, anytime.
          </p>
-         <button
-          type="button"
-          className="bg-white text-[#545563] text-xs sm:text-sm font-extrabold py-2 px-4 rounded-full w-fit">
-          Download App
-         </button>
+         <a href="https://play.google.com/store/apps/details?id=com.dosta.app">
+          <button
+           type="button"
+           className="bg-white text-[#545563] text-xs sm:text-sm font-extrabold py-2 px-4 rounded-full w-fit">
+           Download App
+          </button>
+         </a>
         </div>
 
         <div className="flex-1 sm:max-w-[45%] md:max-w-[40%] lg:max-w-[45%]">

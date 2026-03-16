@@ -1147,10 +1147,10 @@ const CartPage: React.FC = () => {
   const total = Math.max(0, subtotal + vat - discount + deliveryCharge);
   
   const isSweets = cartData?.plan_type === "SWEETS";
-  const isMinimumMet = !isSweets || subtotal >= 100;
-  
   // Only show city/delivery if items actually exist
   const city = items.length > 0 ? (cartData?.city || sweetsDeliveryInfo?.city) : undefined;
+  
+  const isMinimumMet = !isSweets || city === "Dubai" || subtotal >= 100;
   
   // FOOLPROOF: Derive charge from city if it's a sweets cart
   let effectiveCharge = parseFloat(cartData?.delivery_charge || "0");
@@ -1310,7 +1310,7 @@ const CartPage: React.FC = () => {
          </button>
         </div>
        )}
-       {summary.isSweets && !summary.isMinimumMet && (
+       {summary.isSweets && !summary.isMinimumMet && summary.city !== "Dubai" && (
           <div className="bg-orange-50 border border-orange-200 rounded-[16px] p-4 mb-6 flex items-start gap-3 shadow-sm">
             <div className="bg-orange-100 p-2 rounded-full">
               <Info className="w-5 h-5 text-orange-600" />

@@ -26,7 +26,10 @@ const SweetsMenu: React.FC = () => {
   useState<SweetsItemVariation | null>(null);
  const [toaster, setToaster] = useState<boolean>(false);
  const [showDeliveryModal, setShowDeliveryModal] = useState<boolean>(false);
- const [deliveryAddress, setDeliveryAddress] = useState<string>("");
+ const [showMinOrderError, setShowMinOrderError] = useState<boolean>(false);
+ const [appt, setAppt] = useState<string>("");
+ const [building, setBuilding] = useState<string>("");
+ const [street, setStreet] = useState<string>("");
  const [phoneNumber, setPhoneNumber] = useState<string>("");
  const [selectedCity, setSelectedCity] = useState<string>("Dubai");
  const [modalImgIndex, setModalImgIndex] = useState<number>(0);
@@ -154,15 +157,28 @@ const SweetsMenu: React.FC = () => {
   });
  };
 
+ useEffect(() => {
+  if (cart.length === 0) {
+   dispatch(syncLocalCart([]));
+  }
+ }, [cart.length, dispatch]);
+
  const submitDeliveryInfo = async () => {
-  if (!deliveryAddress.trim() || !phoneNumber.trim()) {
+  const combinedAddress = `${appt.trim()}, ${building.trim()}, ${street.trim()}`;
+  if (!appt.trim() || !building.trim() || !street.trim() || !phoneNumber.trim()) {
+   return;
+  }
+
+  if (selectedCity !== "Dubai" && subtotal < 100) {
+   setShowDeliveryModal(false);
+   setShowMinOrderError(true);
    return;
   }
 
   localStorage.setItem(
    "sweetsDeliveryInfo",
    JSON.stringify({
-    address: deliveryAddress,
+    address: combinedAddress,
     phone: phoneNumber,
     city: selectedCity,
    }),
@@ -319,7 +335,7 @@ const SweetsMenu: React.FC = () => {
        <span className="text-lg font-bold text-[#2B2B43]">
         AED {totalPrice.toFixed(2)}
        </span>
-       {totalPrice < 100 && (
+       {selectedCity !== "Dubai" && subtotal < 100 && (
         <span className="text-[10px] text-red-500 font-semibold">
          Min. order AED 100
         </span>
@@ -327,9 +343,9 @@ const SweetsMenu: React.FC = () => {
       </div>
       <Button
        onClick={() => setShowDeliveryModal(true)}
-       disabled={totalPrice < 100}
+       disabled={selectedCity !== "Dubai" && subtotal < 100}
        className={`rounded-xl px-6 py-3 h-12 text-sm font-bold shadow-lg ${
-        totalPrice >= 100
+        selectedCity === "Dubai" || subtotal >= 100
          ? "bg-[#054A86] text-white hover:bg-[#054A86]/90 shadow-[#054A86]/25"
          : "bg-[#C7C8D2] text-white shadow-none cursor-not-allowed"
        }`}>
@@ -432,7 +448,7 @@ const SweetsMenu: React.FC = () => {
        </div>
       </div>
 
-     {cart.length > 0 && totalPrice < 100 && (
+     {cart.length > 0 && selectedCity !== "Dubai" && subtotal < 100 && (
       <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-xl px-3 py-2 mb-4">
        <svg
         className="w-4 h-4 text-red-500 flex-shrink-0"
@@ -447,7 +463,7 @@ const SweetsMenu: React.FC = () => {
         />
        </svg>
        <span className="text-red-600 text-xs font-semibold">
-        Minimum order is AED 100.00 (AED {(100 - totalPrice).toFixed(2)} more
+        Minimum order is AED 100.00 (AED {(100 - subtotal).toFixed(2)} more
         needed)
        </span>
       </div>
@@ -455,10 +471,10 @@ const SweetsMenu: React.FC = () => {
 
      <Button
       onClick={() => setShowDeliveryModal(true)}
-      disabled={cart.length === 0 || totalPrice < 100}
+      disabled={cart.length === 0 || (selectedCity !== "Dubai" && subtotal < 100)}
       className={`w-full py-4 h-14 rounded-xl text-base font-bold shadow-lg transition-all
               ${
-               cart.length > 0
+               cart.length > 0 && (selectedCity === "Dubai" || subtotal >= 100)
                 ? "bg-[#054A86] text-white hover:bg-[#054A86]/90 shadow-[#054A86]/25"
                 : "bg-[#F7F7F9] text-[#C7C8D2] shadow-none cursor-not-allowed"
               }
@@ -771,17 +787,43 @@ const SweetsMenu: React.FC = () => {
           )}
          </div>
 
-         <div>
-          <label className="block text-sm font-bold text-[#2B2B43] mb-2">
-           Delivery Address
-          </label>
-          <textarea
-           placeholder="Appt, Building, Street, Area"
-           value={deliveryAddress}
-           onChange={(e) => setDeliveryAddress(e.target.value)}
-           rows={3}
-           className="w-full p-4 rounded-xl border border-[#EDEEF2] focus:border-[#054A86] focus:ring-1 focus:ring-[#054A86] outline-none transition-all text-[#2B2B43] resize-none"
-          />
+         <div className="grid grid-cols-2 gap-4">
+          <div className="col-span-2">
+           <label className="block text-sm font-bold text-[#2B2B43] mb-2">
+            Building
+           </label>
+           <input
+            type="text"
+            placeholder="Building Name/Number"
+            value={building}
+            onChange={(e) => setBuilding(e.target.value)}
+            className="w-full h-12 px-4 rounded-xl border border-[#EDEEF2] focus:border-[#054A86] focus:ring-1 focus:ring-[#054A86] outline-none transition-all text-[#2B2B43]"
+           />
+          </div>
+          <div>
+           <label className="block text-sm font-bold text-[#2B2B43] mb-2">
+            Street
+           </label>
+           <input
+            type="text"
+            placeholder="Street Name"
+            value={street}
+            onChange={(e) => setStreet(e.target.value)}
+            className="w-full h-12 px-4 rounded-xl border border-[#EDEEF2] focus:border-[#054A86] focus:ring-1 focus:ring-[#054A86] outline-none transition-all text-[#2B2B43]"
+           />
+          </div>
+          <div>
+           <label className="block text-sm font-bold text-[#2B2B43] mb-2">
+            Appt
+           </label>
+           <input
+            type="text"
+            placeholder="Appt Number"
+            value={appt}
+            onChange={(e) => setAppt(e.target.value)}
+            className="w-full h-12 px-4 rounded-xl border border-[#EDEEF2] focus:border-[#054A86] focus:ring-1 focus:ring-[#054A86] outline-none transition-all text-[#2B2B43]"
+           />
+          </div>
          </div>
         </div>
 
@@ -794,7 +836,9 @@ const SweetsMenu: React.FC = () => {
          <button
           onClick={submitDeliveryInfo}
           disabled={
-           !deliveryAddress.trim() ||
+           !building.trim() ||
+           !street.trim() ||
+           !appt.trim() ||
            phoneNumber.length !== 10 ||
            !phoneNumber.startsWith("05")
           }
@@ -834,6 +878,48 @@ const SweetsMenu: React.FC = () => {
      </span>
     </div>
    )}
+
+   {/* Minimum Order Error Modal */}
+   <AnimatePresence>
+    {showMinOrderError && (
+     <motion.div
+      className="fixed inset-0 z-[120] flex items-center justify-center bg-black/75 backdrop-blur-sm p-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={() => setShowMinOrderError(false)}>
+      <motion.div
+       initial={{ scale: 0.95, opacity: 0, y: 20 }}
+       animate={{ scale: 1, opacity: 1, y: 0 }}
+       exit={{ scale: 0.95, opacity: 0, y: 20 }}
+       transition={{ type: "spring", stiffness: 300, damping: 25 }}
+       onClick={(e) => e.stopPropagation()}
+       className="bg-white w-full max-w-[420px] rounded-[24px] shadow-2xl flex flex-col items-center overflow-hidden p-8 text-center">
+       
+       <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-6">
+        <svg className="w-8 h-8 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+        </svg>
+       </div>
+       
+       <h2 className="text-[22px] font-[800] text-[#2B2B43] mb-3">
+        Minimum Order Not Met
+       </h2>
+       
+       <p className="text-[#545563] text-[15px] leading-relaxed mb-8">
+        The minimum order requirement for delivery to <span className="font-bold text-[#054A86]">{selectedCity}</span> is AED 100.00. 
+        Please add <span className="font-bold text-orange-600">AED {(100 - subtotal).toFixed(2)}</span> more to your cart to proceed with checkout.
+       </p>
+       
+       <button
+        onClick={() => setShowMinOrderError(false)}
+        className="w-full bg-[#054A86] text-white rounded-xl py-3.5 font-bold shadow-lg shadow-[#054A86]/20 transition-transform active:scale-95">
+        Add More Sweets
+       </button>
+      </motion.div>
+     </motion.div>
+    )}
+   </AnimatePresence>
   </div>
  );
 };

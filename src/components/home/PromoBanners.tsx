@@ -51,7 +51,10 @@ const PromoBanners = () => {
           variant="secondary"
           size="sm"
           className="bg-neutral-white text-neutral-gray-dark hover:bg-neutral-white/90 text-[12px] leading-[18px] tracking-[0.6px] font-[800] !h-[30px] rounded-[16px]">
-          {promo.buttonText}
+          <a href="https://play.google.com/store/apps/details?id=com.dosta.app">
+           {" "}
+           {promo.buttonText}
+          </a>
          </Button>
         </div>
         <div className="w-[120px] md:w-[50%] h-full flex items-center flex-shrink-0">

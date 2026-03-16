@@ -28,7 +28,9 @@ const SweetsMenu: React.FC = () => {
  const [showDeliveryModal, setShowDeliveryModal] = useState<boolean>(false);
  const [deliveryAddress, setDeliveryAddress] = useState<string>("");
  const [phoneNumber, setPhoneNumber] = useState<string>("");
+ const [selectedCity, setSelectedCity] = useState<string>("Dubai");
  const [modalImgIndex, setModalImgIndex] = useState<number>(0);
+ const [modalQuantity, setModalQuantity] = useState<number>(1);
 
  const dispatch = useDispatch();
  const navigate = useNavigate();
@@ -67,11 +69,13 @@ const SweetsMenu: React.FC = () => {
   fetchSweetsMenu();
  }, [baseUrl, token]);
 
- const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
- const totalPrice = cart.reduce((sum, item) => {
-  const priceNum = parseFloat(item.price.replace("AED ", ""));
-  return sum + priceNum * item.quantity;
- }, 0);
+  const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const subtotal = cart.reduce((sum, item) => {
+   const priceNum = parseFloat(item.price.replace("AED ", ""));
+   return sum + priceNum * item.quantity;
+  }, 0);
+  const deliveryCharge = selectedCity === "Dubai" ? 0 : 40;
+  const totalPrice = subtotal + (cart.length > 0 ? deliveryCharge : 0);
 
  // Preload all images when modal opens
  useEffect(() => {
@@ -92,22 +96,28 @@ const SweetsMenu: React.FC = () => {
  ) => {
   setSelectedItem(item);
   setModalImgIndex(0);
-  setSelectedVariation(
+  const variationToSet =
    variation ||
-    (item.variations && item.variations.length > 0 ? item.variations[0] : null),
+   (item.variations && item.variations.length > 0 ? item.variations[0] : null);
+  setSelectedVariation(variationToSet);
+
+  // Sync modal quantity with cart if already exists
+  const itemInCart = cart.find(
+   (i) => i.id === item.id && i.selectedVariation?.id === (variationToSet?.id || 0),
   );
+  setModalQuantity(itemInCart?.quantity || 1);
  };
 
  const handleQuantityChange = (
-  e: React.MouseEvent,
+  e: React.MouseEvent | null,
   item: SweetsItemType,
   delta: number,
   variation?: SweetsItemVariation,
+  absolute?: boolean,
  ) => {
-  e.stopPropagation();
+  e?.stopPropagation();
 
   setCart((prevCart) => {
-   // Use a unique ID for variation or just the item ID if no variations
    const variationId = variation?.id || 0;
    const cartItemId = `${item.id}-${variationId}`;
 
@@ -117,7 +127,7 @@ const SweetsMenu: React.FC = () => {
 
    if (existingIndex > -1) {
     const existing = prevCart[existingIndex];
-    const newQ = existing.quantity + delta;
+    const newQ = absolute ? delta : existing.quantity + delta;
 
     if (newQ <= 0) {
      return prevCart.filter((_, idx) => idx !== existingIndex);
@@ -154,6 +164,7 @@ const SweetsMenu: React.FC = () => {
    JSON.stringify({
     address: deliveryAddress,
     phone: phoneNumber,
+    city: selectedCity,
    }),
   );
 
@@ -203,6 +214,8 @@ const SweetsMenu: React.FC = () => {
     locId = 1;
    }
 
+  const deliveryCharge = selectedCity === "Dubai" ? 0 : 40;
+
   const payload = {
    location_id: locId,
    plan_type: "SWEETS",
@@ -210,6 +223,8 @@ const SweetsMenu: React.FC = () => {
    pickup_type: "TODAY",
    pickup_date: new Date().toISOString().split("T")[0],
    pickup_slot_id: null,
+   city: selectedCity,
+   delivery_charge: deliveryCharge,
    items: cart.map((item) => ({
     id: item.id, // ENSURE ID IS PRESENT AT TOP LEVEL
     menu_item_id: item.id,
@@ -398,12 +413,24 @@ const SweetsMenu: React.FC = () => {
       )}
      </div>
 
-     <div className="flex justify-between items-center border-t border-gray-100 pt-4 mb-4">
-      <span className="text-[#545563] font-medium">Total</span>
-      <span className="text-[20px] font-bold text-[#2B2B43]">
-       AED {totalPrice.toFixed(2)}
-      </span>
-     </div>
+      <div className="space-y-2 border-t border-gray-100 pt-4 mb-4">
+       <div className="flex justify-between items-center">
+        <span className="text-[#545563] text-sm">Subtotal</span>
+        <span className="text-[#2B2B43] font-medium">AED {subtotal.toFixed(2)}</span>
+       </div>
+       {cart.length > 0 && selectedCity !== "Dubai" && (
+        <div className="flex justify-between items-center text-[#054A86]">
+         <span className="text-sm">Delivery ({selectedCity})</span>
+         <span className="font-medium">+ AED 40.00</span>
+        </div>
+       )}
+       <div className="flex justify-between items-center pt-2 border-t border-gray-50">
+        <span className="text-[#545563] font-bold">Total</span>
+        <span className="text-[20px] font-bold text-[#2B2B43]">
+         AED {totalPrice.toFixed(2)}
+        </span>
+       </div>
+      </div>
 
      {cart.length > 0 && totalPrice < 100 && (
       <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-xl px-3 py-2 mb-4">
@@ -595,12 +622,34 @@ const SweetsMenu: React.FC = () => {
          </div>
         )}
 
-        <h3 className="text-[26px] leading-[32px] font-[800] tracking-[0.1px] text-[#054A86] pt-2">
-         {selectedVariation
-          ? `AED ${parseFloat(selectedVariation.price).toFixed(2)}`
-          : selectedItem.price}
-        </h3>
-       </div>
+         <div className="flex items-center justify-between mt-4 bg-gray-50 p-4 rounded-2xl">
+          <span className="text-[#545563] font-bold">Quantity</span>
+          <div className="flex items-center gap-4">
+           <button
+            onClick={() => setModalQuantity((q) => Math.max(1, q - 1))}
+            className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-gray-200 text-[#054A86] hover:bg-gray-50 transition-colors">
+            <MinusIcon className="w-5 h-5" />
+           </button>
+           <span className="text-[20px] font-bold text-[#054A86] w-8 text-center">
+            {modalQuantity}
+           </span>
+           <button
+            onClick={() => setModalQuantity((q) => q + 1)}
+            className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-gray-200 text-[#054A86] hover:bg-gray-50 transition-colors">
+            <PlusIcon className="w-5 h-5" />
+           </button>
+          </div>
+         </div>
+
+         <div className="flex justify-between items-center pt-6 border-t border-gray-100 mt-6">
+          <span className="text-[#545563] text-sm font-medium">Subtotal</span>
+          <h3 className="text-[24px] font-[800] text-[#054A86]">
+           AED {(
+            parseFloat((selectedVariation?.price || selectedItem.price).toString().replace("AED ", "")) * modalQuantity
+           ).toFixed(2)}
+          </h3>
+         </div>
+        </div>
 
        <div className="mt-8 pt-4 border-t border-gray-100 flex flex-col-reverse sm:flex-row gap-3 md:pb-6">
         <button
@@ -608,16 +657,17 @@ const SweetsMenu: React.FC = () => {
          className="w-full border-2 border-[#EBEBEB] text-[#545563] hover:border-[#054A86] hover:text-[#054A86] rounded-xl py-3 font-bold transition-colors">
          Close
         </button>
-        <button
-         onClick={(e) => {
-          handleQuantityChange(
-           e,
-           selectedItem,
-           1,
-           selectedVariation || undefined,
-          );
-          setSelectedItem(null);
-         }}
+         <button
+          onClick={() => {
+           handleQuantityChange(
+            null,
+            selectedItem,
+            modalQuantity,
+            selectedVariation || undefined,
+            true
+           );
+           setSelectedItem(null);
+          }}
          className="w-full bg-[#054A86] text-white rounded-xl py-3 font-bold shadow-lg shadow-[#054A86]/20 transition-transform active:scale-95">
          Add to selection
         </button>
@@ -697,6 +747,32 @@ const SweetsMenu: React.FC = () => {
 
          <div>
           <label className="block text-sm font-bold text-[#2B2B43] mb-2">
+           Select City
+          </label>
+          <div className="grid grid-cols-3 gap-2">
+           {["Dubai", "Sharjah", "Ajman"].map((city) => (
+            <button
+             key={city}
+             onClick={() => setSelectedCity(city)}
+             className={`py-2 rounded-xl border-2 font-bold transition-all text-xs ${
+              selectedCity === city
+               ? "border-[#054A86] bg-[#054A86]/5 text-[#054A86]"
+               : "border-[#EDEEF2] text-[#545563] hover:border-[#054A86]/30"
+             }`}
+            >
+             {city}
+            </button>
+           ))}
+          </div>
+          {selectedCity !== "Dubai" && (
+           <p className="text-[#054A86] text-[10px] font-bold mt-1">
+            + AED 40.00 Delivery Charge
+           </p>
+          )}
+         </div>
+
+         <div>
+          <label className="block text-sm font-bold text-[#2B2B43] mb-2">
            Delivery Address
           </label>
           <textarea
@@ -706,30 +782,6 @@ const SweetsMenu: React.FC = () => {
            rows={3}
            className="w-full p-4 rounded-xl border border-[#EDEEF2] focus:border-[#054A86] focus:ring-1 focus:ring-[#054A86] outline-none transition-all text-[#2B2B43] resize-none"
           />
-         </div>
-
-         <div className="flex items-center gap-2 bg-[#054A86]/5 border border-[#054A86]/20 rounded-xl px-4 py-3">
-          <svg
-           className="w-4 h-4 text-[#054A86] flex-shrink-0"
-           fill="none"
-           viewBox="0 0 24 24"
-           stroke="currentColor">
-           <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-           />
-           <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-           />
-          </svg>
-          <span className="text-[#054A86] text-xs font-semibold">
-           Delivery available in Dubai only
-          </span>
          </div>
         </div>
 

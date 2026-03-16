@@ -65,6 +65,8 @@ interface CartAPI {
  pickup_date: string | null;
  pickup_slot: { id: number; label: string } | null;
  total_price: string;
+ city?: string;
+ delivery_charge?: string;
  items: CartItemAPI[];
 }
 
@@ -107,6 +109,7 @@ const CartPage: React.FC = () => {
  const [sweetsDeliveryInfo, setSweetsDeliveryInfo] = useState<{
   address: string;
   phone: string;
+  city?: string;
  } | null>(null);
 
  useEffect(() => {
@@ -146,6 +149,7 @@ const CartPage: React.FC = () => {
     const guestCartData = localStorage.getItem("guestCart");
     if (guestCartData) {
      const payload = JSON.parse(guestCartData);
+     // Ensure city and delivery_charge are passed to the backend if they exist in the guest cart
      await axios.post(`${baseUrl}/api/vending/cart/`, payload, {
       headers: { Authorization: `Token ${tokenResult}` },
      });
@@ -184,6 +188,7 @@ const CartPage: React.FC = () => {
     const guestCartData = localStorage.getItem("guestCart");
     if (guestCartData) {
      const payload = JSON.parse(guestCartData);
+     // Ensure city and delivery_charge are passed to the backend if they exist in the guest cart
      await axios.post(`${baseUrl}/api/vending/cart/`, payload, {
       headers: { Authorization: `Token ${tokenResult}` },
      });
@@ -346,6 +351,8 @@ const CartPage: React.FC = () => {
         if (deliveryAdd && custPhone) {
          orderPayload.delivery_address = deliveryAdd;
          orderPayload.customer_phone = custPhone;
+         orderPayload.city = currentCart.city;
+         orderPayload.delivery_charge = currentCart.delivery_charge;
         }
 
         console.log("📝 Creating Deferred Order Record...");
@@ -641,6 +648,8 @@ const CartPage: React.FC = () => {
    if (cartData.plan_type === "SWEETS" && sweetsDeliveryInfo) {
     initPayload.delivery_address = sweetsDeliveryInfo.address;
     initPayload.customer_phone = sweetsDeliveryInfo.phone;
+    initPayload.city = cartData.city;
+    initPayload.delivery_charge = cartData.delivery_charge;
    }
 
    const payRes = await axios.post(
@@ -918,6 +927,14 @@ const CartPage: React.FC = () => {
    });
 
   setItems(mapped);
+
+  if (cart.city && cart.plan_type === "SWEETS") {
+   setSweetsDeliveryInfo((prev) => ({
+    address: prev?.address || "",
+    phone: prev?.phone || "",
+    city: cart.city || prev?.city,
+   }));
+  }
  };
 
  const handleHeatingChange = (id: number, choice: "yes" | "no") => {
@@ -949,7 +966,7 @@ const CartPage: React.FC = () => {
   const itemToUpdate = items.find((i) => i.id === id);
   if (!itemToUpdate) return;
 
-  let maxStock = 3;
+  let maxStock = 99; // Default for Sweets/Plans
   if (
    itemToUpdate.planType === "ORDER_NOW" ||
    itemToUpdate.planType === "SMART_GRAB"
@@ -1126,9 +1143,35 @@ const CartPage: React.FC = () => {
   );
   const vat = subtotal * 0.05;
   const discount = coupon.toUpperCase() === "DOSTA25" ? 25.0 : 0;
-  const total = Math.max(0, subtotal + vat - discount);
-  return { subtotal, vat, discount, total };
- }, [items, coupon]);
+  const deliveryCharge = parseFloat(cartData?.delivery_charge || "0");
+  const total = Math.max(0, subtotal + vat - discount + deliveryCharge);
+  
+  const isSweets = cartData?.plan_type === "SWEETS";
+  const isMinimumMet = !isSweets || subtotal >= 100;
+  
+  // Only show city/delivery if items actually exist
+  const city = items.length > 0 ? (cartData?.city || sweetsDeliveryInfo?.city) : undefined;
+  
+  // FOOLPROOF: Derive charge from city if it's a sweets cart
+  let effectiveCharge = parseFloat(cartData?.delivery_charge || "0");
+  if (isSweets && city && city !== "Dubai") {
+    effectiveCharge = 40;
+  }
+  
+  const activeDeliveryCharge = items.length > 0 ? effectiveCharge : 0;
+  const finalTotal = Math.max(0, subtotal + vat - discount + activeDeliveryCharge);
+
+  return { 
+    subtotal, 
+    vat, 
+    discount, 
+    deliveryCharge: activeDeliveryCharge, 
+    total: finalTotal, 
+    isMinimumMet, 
+    isSweets, 
+    city 
+  };
+ }, [items, coupon, cartData?.delivery_charge, cartData?.plan_type, cartData?.city, sweetsDeliveryInfo?.city]);
 
  const handleClearCart = async () => {
   try {
@@ -1267,6 +1310,20 @@ const CartPage: React.FC = () => {
          </button>
         </div>
        )}
+       {summary.isSweets && !summary.isMinimumMet && (
+          <div className="bg-orange-50 border border-orange-200 rounded-[16px] p-4 mb-6 flex items-start gap-3 shadow-sm">
+            <div className="bg-orange-100 p-2 rounded-full">
+              <Info className="w-5 h-5 text-orange-600" />
+            </div>
+            <div>
+              <h4 className="text-orange-800 font-bold text-[16px]">Minimum Order Requirement</h4>
+              <p className="text-orange-700 text-sm">
+                Dosta Sweets orders require a minimum subtotal of **AED 100.00**. 
+                Current subtotal: **AED {summary.subtotal.toFixed(2)}**.
+              </p>
+            </div>
+          </div>
+        )}
        {stockAlerts.length > 0 && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
          <h4 className="text-yellow-800 font-bold mb-2">Stock Updates</h4>
@@ -1362,11 +1419,13 @@ const CartPage: React.FC = () => {
         subtotal={summary.subtotal}
         vat={summary.vat}
         discount={summary.discount}
+        deliveryCharge={summary.deliveryCharge}
+        city={summary.city}
         total={summary.total}
         coupon={coupon}
         setCoupon={setCoupon}
         onCheckout={async () => {
-         if (!cartData || isCheckingOut) return;
+         if (!cartData || isCheckingOut || !summary.isMinimumMet) return;
          const token =
           sessionStorage.getItem("authToken") ||
           localStorage.getItem("authToken");
@@ -1378,7 +1437,7 @@ const CartPage: React.FC = () => {
          setShowPaymentModal(true);
         }}
         loading={isCheckingOut}
-        disabled={items.length === 0}
+        disabled={items.length === 0 || !summary.isMinimumMet}
        />
       </div>
      </div>

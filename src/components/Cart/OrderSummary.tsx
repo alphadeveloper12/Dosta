@@ -6,6 +6,8 @@ interface OrderSummaryProps {
  subtotal: number;
  vat: number;
  discount: number;
+ deliveryCharge?: number;
+ city?: string;
  total: number;
 
  // Newer API-style props
@@ -21,6 +23,8 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
  subtotal,
  vat,
  discount,
+ deliveryCharge = 0,
+ city,
  total,
  coupon = "",
  setCoupon,
@@ -75,6 +79,13 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
      <span className="text-[#545563]">VAT</span>
      <span className="font-medium">AED{vat.toFixed(2)}</span>
     </div>
+ 
+    {city && (
+     <div className="flex justify-between text-indigo-600 font-bold text-sm">
+      <span>Delivery Charge ({city})</span>
+      <span>{city === "Dubai" ? "FREE" : `+ AED${deliveryCharge.toFixed(2)}`}</span>
+     </div>
+    )}
 
     {isCouponApplied && (
      <div className="flex justify-between text-[#056AC1]">

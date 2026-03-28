@@ -416,6 +416,30 @@ const OrderNow = () => {
                 });
               });
               setWeekMenu(weekObj);
+            } else if (
+              cart.plan_type === "START_PLAN" &&
+              String(cart.plan_subtype).toUpperCase() === "MONTHLY"
+            ) {
+              const weekObjs: any = { 1: {}, 2: {}, 3: {}, 4: {} };
+              (cart.items || []).forEach((it: any) => {
+                const wn = it.week_number || 1;
+                const d = it.day_of_week;
+                if (!weekObjs[wn]) weekObjs[wn] = {};
+                if (!weekObjs[wn][d]) weekObjs[wn][d] = [];
+                weekObjs[wn][d].push({
+                  ...it.menu_item,
+                  heading: it.menu_item.name,
+                  imgAlt: `food-${it.menu_item.id}`,
+                  imgSrc: it.menu_item.image_url || "/images/placeholder_food.png",
+                  quantity: it.quantity,
+                  id: it.menu_item.id,
+                  price: `AED ${parseFloat(it.menu_item.price).toFixed(2)}`,
+                });
+              });
+              setWeekMenu1(weekObjs[1]);
+              setWeekMenu2(weekObjs[2]);
+              setWeekMenu3(weekObjs[3]);
+              setWeekMenu4(weekObjs[4]);
             }
 
             // restore slots
@@ -431,6 +455,9 @@ const OrderNow = () => {
               }
             });
             setDayPickupSlots(restoredSlots);
+
+            // Sync badge count
+            dispatch(syncLocalCart(cart.items || []));
           }
         }
       } catch (err) {

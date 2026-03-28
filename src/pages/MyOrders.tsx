@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import locationimg from "@/assets/../../public/images/icons/locaion-icon.svg";
 import calendar from "@/assets/../../public/images/icons/calendar.svg";
 import { Button } from "./catering/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import VendingHeader from "@/components/vending_home/VendingHeader";
 import Footer from "@/components/layout/Footer";
 import BreadCrumb from "@/components/home/BreadCrumb";
 import OrderedItem from "@/components/Cart/OrderedItem"; // Use new OrderedItem
@@ -12,7 +11,6 @@ import Header from "./catering/components/layout/Header";
 import VendingMap from "@/components/vending_home/VendingMap";
 import axios from "axios";
 import { CartItemType } from "@/pages/CartPage";
-import { Loader2 } from "lucide-react";
 import Shrimmer from "@/components/ui/Shrimmer";
 
 // Types corresponding to Backend Order Serializer
@@ -36,7 +34,7 @@ interface OrderItemAPI {
 
 interface OrderAPI {
   id: number;
-  status: string; // PENDING, CONFIRMED, etc.
+  status: string; // PENDING, CONFIRMED, READY, COMPLETED, PENDING_FULFILLMENT, etc.
   created_at: string;
   total_amount: string;
   location: {
@@ -56,6 +54,8 @@ interface OrderAPI {
   } | null;
   pickup_code: string | null;
   qr_code_url: string | null;
+  qr_used: boolean;
+  fulfillment_attempts: number;
   items: OrderItemAPI[];
 }
 
@@ -66,6 +66,36 @@ const MyOrders = () => {
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<OrderAPI | null>(null);
   const [imageMap, setImageMap] = useState<Record<string, string>>({});
+  const [retrying, setRetrying] = useState(false);
+  const [retryError, setRetryError] = useState<string | null>(null);
+
+  const handleRetryFulfillment = async (orderId: number) => {
+    const token = sessionStorage.getItem("authToken") || localStorage.getItem("authToken");
+    setRetrying(true);
+    setRetryError(null);
+    try {
+      const res = await axios.post(
+        `${baseUrl}/api/vending/order/${orderId}/retry-fulfillment/`,
+        {},
+        { headers: { Authorization: `Token ${token}` } },
+      );
+      // Refresh orders list to reflect the new pickup code / status
+      const ordersRes = await axios.get(`${baseUrl}/api/vending/orders/`, {
+        headers: { Authorization: `Token ${token}` },
+      });
+      setOrders(ordersRes.data);
+      const updated = ordersRes.data.find((o: OrderAPI) => o.id === orderId);
+      if (updated) setSelectedOrder(updated);
+      if (!res.data.pickup_code) {
+        setRetryError("Still could not generate pickup code. Please try again or contact support.");
+      }
+    } catch (err: any) {
+      const msg = err.response?.data?.error || "Retry failed. Please try again.";
+      setRetryError(msg);
+    } finally {
+      setRetrying(false);
+    }
+  };
 
   // Derive step from selected order status
   const getStepFromStatus = (status: string) => {
@@ -76,10 +106,6 @@ const MyOrders = () => {
   const currentStep = selectedOrder
     ? getStepFromStatus(selectedOrder.status)
     : 1;
-
-  const [notificationsEnabled, setNotificationsEnabled] = useState(() => {
-    return localStorage.getItem("notificationsEnabled") === "true";
-  });
 
   const [stopPolling, setStopPolling] = useState(false);
 
@@ -319,13 +345,16 @@ const MyOrders = () => {
                     <div className="flex justify-between items-start mb-2">
                       <span className="font-bold text-[#2B2B43]">Order #{order.id}</span>
                       <span
-                        className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${order.status === "COMPLETED" ||
-                            order.status === "PICKED_UP" ||
-                            order.status === "READY"
+                        className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${
+                          order.status === "COMPLETED" || order.status === "PICKED_UP" || order.qr_used
                             ? "bg-green-100 text-green-700"
+                            : order.status === "READY"
+                            ? "bg-blue-100 text-blue-700"
+                            : order.status === "PENDING_FULFILLMENT"
+                            ? "bg-orange-100 text-orange-700"
                             : "bg-blue-100 text-blue-700"
-                          }`}>
-                        {order.status}
+                        }`}>
+                        {order.status === "PENDING_FULFILLMENT" ? "⚠️ Action Needed" : order.qr_used ? "Delivered" : order.status}
                       </span>
                     </div>
                     <p className="text-[11px] text-[#83859C]">
@@ -396,7 +425,96 @@ const MyOrders = () => {
                   {/* Info note */}
                   {/* Info note removed */}
 
-                  {(selectedOrder.qr_code_url || selectedOrder.pickup_code) && (
+                  {/* Stuck PENDING / CONFIRMED — payment likely taken but order never advanced to READY */}
+                  {(selectedOrder.status === "PENDING" || selectedOrder.status === "CONFIRMED") && !selectedOrder.pickup_code && (
+                    <div className="flex flex-col items-center md:py-[40px] py-[24px] border-t border-yellow-100 mt-4 px-4 bg-yellow-50 rounded-b-2xl">
+                      <div className="text-4xl mb-3">⏳</div>
+                      <p className="text-[16px] font-[700] text-yellow-800 text-center mb-1">
+                        Order Processing
+                      </p>
+                      <p className="text-sm text-yellow-700 text-center mb-5 max-w-sm">
+                        Your order is still being processed. If you have already paid, tap the button below to generate your pickup code.
+                      </p>
+                      {retryError && (
+                        <p className="text-sm text-red-600 font-semibold mb-3 text-center">{retryError}</p>
+                      )}
+                      <button
+                        onClick={() => handleRetryFulfillment(selectedOrder.id)}
+                        disabled={retrying || selectedOrder.fulfillment_attempts >= 5}
+                        className="bg-[#054A86] hover:bg-blue-800 disabled:opacity-50 text-white font-bold px-6 py-3 rounded-xl transition-colors">
+                        {retrying ? "Processing..." : "🔄 Get My Pickup Code"}
+                      </button>
+                      {selectedOrder.fulfillment_attempts >= 5 && (
+                        <p className="text-xs text-gray-500 mt-2 text-center">
+                          Maximum retries reached. Please contact support.
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Pending Fulfillment — payment taken but pickup code not yet generated */}
+                  {selectedOrder.status === "PENDING_FULFILLMENT" && (
+                    <div className="flex flex-col items-center md:py-[40px] py-[24px] border-t border-orange-100 mt-4 px-4 bg-orange-50 rounded-b-2xl">
+                      <div className="text-4xl mb-3">⚠️</div>
+                      <p className="text-[16px] font-[700] text-orange-700 text-center mb-1">
+                        Payment Confirmed — Pickup Code Pending
+                      </p>
+                      <p className="text-sm text-orange-600 text-center mb-5 max-w-sm">
+                        Your payment was successful but we couldn't generate your pickup code automatically. You can retry below or contact support.
+                      </p>
+                      {retryError && (
+                        <p className="text-sm text-red-600 font-semibold mb-3 text-center">{retryError}</p>
+                      )}
+                      <Button
+                        onClick={() => handleRetryFulfillment(selectedOrder.id)}
+                        disabled={retrying || selectedOrder.fulfillment_attempts >= 5}
+                        className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-6 py-2 rounded-xl disabled:opacity-50">
+                        {retrying ? "Retrying..." : "🔄 Retry Pickup Code"}
+                      </Button>
+                      {selectedOrder.fulfillment_attempts >= 5 && (
+                        <p className="text-xs text-gray-500 mt-2 text-center">
+                          Maximum retries reached. Please contact support.
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Delivered — QR used, show delivery confirmation instead of QR */}
+                  {(selectedOrder.qr_used || selectedOrder.status === "COMPLETED") && (
+                    <div className="flex flex-col justify-center items-center md:py-[40px] py-[24px] border-t border-green-100 mt-4 px-4 bg-green-50 rounded-b-2xl">
+                      <div className="text-5xl mb-3">✅</div>
+                      <p className="text-[18px] font-[700] text-green-700 text-center mb-2">
+                        Order Delivered!
+                      </p>
+                      <p className="text-sm text-green-600 text-center mb-4">
+                        Your food has been collected. Enjoy your meal!
+                      </p>
+                      <div className="w-full max-w-xs bg-white rounded-xl border border-green-200 p-4 space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-[#83859C]">Order ID</span>
+                          <span className="font-bold text-[#054A86]">#{selectedOrder.id}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-[#83859C]">Location</span>
+                          <span className="font-semibold">{selectedOrder.location?.name}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-[#83859C]">Total Paid</span>
+                          <span className="font-bold">AED {parseFloat(selectedOrder.total_amount).toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-[#83859C]">Date</span>
+                          <span className="font-semibold">{formatDate(selectedOrder.created_at)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Active QR — pickup code ready, not yet used */}
+                  {(selectedOrder.qr_code_url || selectedOrder.pickup_code) &&
+                    !selectedOrder.qr_used &&
+                    selectedOrder.status !== "COMPLETED" &&
+                    selectedOrder.status !== "PENDING_FULFILLMENT" && (
                     <div className="flex flex-col justify-center items-center md:py-[40px] py-[24px] border-t border-gray-50 mt-4 px-4">
                       <p className="text-[16px] leading-[24px] font-[700] tracking-[0.1px] text-center">
                         {currentStep === 2 ? "Woohoo! Your order is ready for pickup!" : "Your Pickup Details"}

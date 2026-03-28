@@ -1,5 +1,5 @@
 // src/components/cart/CartPage.tsx
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import OrderList from "@/components/Cart/OrderList";
@@ -9,6 +9,8 @@ import BreadCrumb from "@/components/home/BreadCrumb";
 import Header from "./catering/components/layout/Header";
 
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { syncLocalCart } from "@/redux/slices/cartSlice";
 import { useNavigate, Link } from "react-router-dom";
 import { useGoogleLogin, useGoogleOneTapLogin } from "@react-oauth/google";
 import MobileFooterNav from "@/components/home/MobileFooterNav";
@@ -93,6 +95,12 @@ export interface CartItemType {
 }
 
 const CartPage: React.FC = () => {
+ // Capture payment-return state at render time — before any replaceState clears the URL
+ const isPaymentReturn = useRef(
+  new URLSearchParams(window.location.search).get("payment_success") === "true"
+ );
+
+ const dispatch = useDispatch();
  const [cartData, setCartData] = useState<CartAPI | null>(null);
  const [items, setItems] = useState<CartItemType[]>([]);
  const [coupon, setCoupon] = useState<string>("");
@@ -111,6 +119,9 @@ const CartPage: React.FC = () => {
   phone: string;
   city?: string;
  } | null>(null);
+ const [confirmedOrder, setConfirmedOrder] = useState<any | null>(null);
+ const [retrying, setRetrying] = useState(false);
+ const [retryError, setRetryError] = useState<string | null>(null);
 
  useEffect(() => {
   const info = localStorage.getItem("sweetsDeliveryInfo");
@@ -365,19 +376,26 @@ const CartPage: React.FC = () => {
         const newOrder = orderRes.data.order;
         if (newOrder) {
          console.log("✅ Order Record Created:", newOrder.id);
-         // Fulfillment is now handled by the backend ConfirmOrderView
+         // Belt-and-suspenders: also explicitly clear backend cart
+         try {
+          await axios.post(
+           `${baseUrl}/api/vending/cart/`,
+           { clear_all: true },
+           { headers: { Authorization: `Token ${token}` } },
+          );
+         } catch (_) { /* non-critical */ }
+         // Clear frontend state
+         setItems([]);
+         setCartData(null);
+         dispatch(syncLocalCart([]));
+         toast.success("Payment Successful! Order Confirmed.");
+         setConfirmedOrder(newOrder);
+         return; // Stay on page — show QR or retry panel
         }
        }
 
-       // Clear Backend Cart
-       await axios.post(
-        `${baseUrl}/api/vending/cart/`,
-        { clear_all: true },
-        { headers: { Authorization: `Token ${token}` } },
-       );
-       setItems([]);
-
-       toast.success("Payment Successful! Order Confirmed.");
+       // Fallback if order wasn't returned
+       toast.success("Payment Successful! Redirecting...");
        navigate("/vending-home/my-orders");
       } catch (e) {
        console.error("Order creation after payment failed", e);
@@ -687,6 +705,9 @@ const CartPage: React.FC = () => {
 
  useEffect(() => {
   const fetchMenuAndCart = async () => {
+   // Skip if this is a payment return — verifyPaymentReturn handles state instead
+   if (isPaymentReturn.current) return;
+
    try {
     setLoading(true);
     const token =
@@ -927,6 +948,7 @@ const CartPage: React.FC = () => {
    });
 
   setItems(mapped);
+  dispatch(syncLocalCart(mapped));
 
   if (cart.city && cart.plan_type === "SWEETS") {
    setSweetsDeliveryInfo((prev) => ({
@@ -966,7 +988,7 @@ const CartPage: React.FC = () => {
   const itemToUpdate = items.find((i) => i.id === id);
   if (!itemToUpdate) return;
 
-  let maxStock = 99; // Default for Sweets/Plans
+  let maxStock = 99; // Default for Sweets
   if (
    itemToUpdate.planType === "ORDER_NOW" ||
    itemToUpdate.planType === "SMART_GRAB"
@@ -984,6 +1006,8 @@ const CartPage: React.FC = () => {
      maxStock = 10;
     }
    }
+  } else if (itemToUpdate.planType === "START_PLAN") {
+   maxStock = 3;
   }
 
   const newQ = Math.min(maxStock, Math.max(1, itemToUpdate.quantity + delta));
@@ -1070,6 +1094,7 @@ const CartPage: React.FC = () => {
 
   const updatedAllItems = items.filter((i) => i.id !== id);
   setItems(updatedAllItems);
+  dispatch(syncLocalCart(updatedAllItems));
 
   const token =
    sessionStorage.getItem("authToken") || localStorage.getItem("authToken");
@@ -1183,6 +1208,7 @@ const CartPage: React.FC = () => {
     { headers: { Authorization: `Token ${token}` } },
    );
    setItems([]);
+   dispatch(syncLocalCart([]));
   } catch (err) {
    console.error("Failed to clear cart", err);
   }
@@ -1239,6 +1265,105 @@ const CartPage: React.FC = () => {
 
   return groups;
  };
+
+ const handleRetryFulfillment = async () => {
+  if (!confirmedOrder) return;
+  const token = sessionStorage.getItem("authToken") || localStorage.getItem("authToken");
+  setRetrying(true);
+  setRetryError(null);
+  try {
+   const res = await axios.post(
+    `${baseUrl}/api/vending/order/${confirmedOrder.id}/retry-fulfillment/`,
+    {},
+    { headers: { Authorization: `Token ${token}` } },
+   );
+   const updatedOrder = { ...confirmedOrder, ...res.data };
+   // Fetch fresh order to get latest status/pickup_code
+   const orderRes = await axios.get(`${baseUrl}/api/vending/orders/`, {
+    headers: { Authorization: `Token ${token}` },
+   });
+   const fresh = (orderRes.data as any[]).find((o: any) => o.id === confirmedOrder.id);
+   setConfirmedOrder(fresh || updatedOrder);
+   if (!fresh?.pickup_code && !res.data.pickup_code) {
+    setRetryError("Still couldn't generate pickup code. Please try again or contact support.");
+   }
+  } catch (err: any) {
+   setRetryError(err.response?.data?.error || "Retry failed. Please try again.");
+  } finally {
+   setRetrying(false);
+  }
+ };
+
+ // POST-PAYMENT PANEL: show QR or retry instead of cart when order is confirmed
+ if (confirmedOrder) {
+  const isPendingFulfillment = confirmedOrder.status === "PENDING_FULFILLMENT";
+  const isReady = confirmedOrder.status === "READY" || !!confirmedOrder.pickup_code;
+
+  return (
+   <div className="bg-gray-50 min-h-screen max-md:pb-[82px]">
+    <Header />
+    <div className="w-full bg-white pt-2 pb-6">
+     <div className="main-container">
+      <BreadCrumb />
+      <h2 className="text-[28px] text-[#054A86] leading-[36px] font-[700] tracking-[0.1px]">Order Confirmed</h2>
+     </div>
+    </div>
+    <div className="main-container py-10 flex flex-col items-center">
+     <div className="bg-white rounded-2xl border border-[#EDEEF2] w-full max-w-md p-8 shadow-sm text-center">
+      <p className="text-[13px] text-[#83859C] mb-1 uppercase tracking-wider font-semibold">Order #{confirmedOrder.id}</p>
+
+      {isReady && !isPendingFulfillment ? (
+       <>
+        <div className="text-4xl mb-3">🎉</div>
+        <p className="text-[20px] font-[700] text-[#054A86] mb-1">Your order is ready!</p>
+        <p className="text-sm text-[#83859C] mb-6">Scan the QR code at the vending machine to collect your food.</p>
+        <div className="flex justify-center mb-4">
+         <div className="rounded-[16px] border border-[#83859C] w-[180px] h-[180px] p-3 bg-white shadow-sm flex items-center justify-center">
+          <img
+           src={confirmedOrder.qr_code_url || `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${confirmedOrder.pickup_code}`}
+           alt="QR Code"
+           className="w-full h-full object-contain"
+          />
+         </div>
+        </div>
+        <p className="text-sm text-[#83859C] font-semibold uppercase tracking-wider mb-1">Pickup Code</p>
+        <p className="text-[32px] font-bold text-[#054A86] mb-6">{confirmedOrder.pickup_code}</p>
+       </>
+      ) : (
+       <>
+        <div className="text-4xl mb-3">⚠️</div>
+        <p className="text-[18px] font-[700] text-orange-700 mb-1">Payment Confirmed</p>
+        <p className="text-sm text-orange-600 mb-5">
+         Your payment was successful but we couldn't generate your pickup code automatically.
+         You can retry below or check My Orders later.
+        </p>
+        {retryError && (
+         <p className="text-sm text-red-600 font-semibold mb-3">{retryError}</p>
+        )}
+        <button
+         onClick={handleRetryFulfillment}
+         disabled={retrying || (confirmedOrder.fulfillment_attempts >= 5)}
+         className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white font-bold py-3 rounded-xl mb-3 transition-colors">
+         {retrying ? "Retrying..." : "🔄 Retry Pickup Code"}
+        </button>
+        {confirmedOrder.fulfillment_attempts >= 5 && (
+         <p className="text-xs text-gray-500 mb-3">Maximum retries reached. Please contact support.</p>
+        )}
+       </>
+      )}
+
+      <button
+       onClick={() => navigate("/vending-home/my-orders")}
+       className="w-full border border-[#054A86] text-[#054A86] font-semibold py-3 rounded-xl hover:bg-[#F6FBFF] transition-colors">
+       View My Orders
+      </button>
+     </div>
+    </div>
+    <MobileFooterNav />
+    <Footer />
+   </div>
+  );
+ }
 
  return (
   <div className="bg-gray-50 min-h-screen max-md:pb-[82px]">

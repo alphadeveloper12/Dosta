@@ -56,7 +56,7 @@ const VendingMap = ({
 
   const { isLoaded, loadError } = useJsApiLoader({
     id: "google-map-script",
-    googleMapsApiKey: "AIzaSyCYAsBPyik1DZcOH3jcR-awecFjyYXr5Qw",
+    googleMapsApiKey: "AIzaSyDSFQyDq5VpsbAXjsie3xZKvah0__PCyBc",
   });
 
   const [selected, setSelected] = useState<any>(null);

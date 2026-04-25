@@ -110,6 +110,7 @@ const CartPage: React.FC = () => {
  const navigate = useNavigate();
  const baseUrl = import.meta.env.VITE_API_URL;
  const [stockMap, setStockMap] = useState<Record<string, number>>({});
+ const [stockLoaded, setStockLoaded] = useState<boolean>(false);
  const [stockAlerts, setStockAlerts] = useState<string[]>([]);
  const [heatingChoices, setHeatingChoices] = useState<
   Record<number, "yes" | "no">
@@ -869,13 +870,18 @@ const CartPage: React.FC = () => {
      goodsData.shelves.forEach((shelf: any) => {
       if (!shelf.spots) return;
       shelf.spots.forEach((spot: any) => {
-       if (spot.goods && spot.presentNumber > 0 && !spot.goods.locked) {
-        const count = spot.presentNumber;
-        const uuid = spot.goods.uuid;
-        const name = normalizeName(spot.goods.goodsName);
+       if (!spot.goods || !spot.goods.uuid) return;
+       const uuid = spot.goods.uuid;
+       const name = normalizeName(spot.goods.goodsName);
 
-        if (uuid) freshStockMap[uuid] = (freshStockMap[uuid] || 0) + count;
-        if (name) freshStockMap[name] = (freshStockMap[name] || 0) + count;
+       // Initialize to 0 so all items are recognized (avoids fallback)
+       if (!(uuid in freshStockMap)) freshStockMap[uuid] = 0;
+       if (name && !(name in freshStockMap)) freshStockMap[name] = 0;
+
+       // Count unlocked spots — lock status is the only availability signal
+       if (!spot.goods.locked) {
+        freshStockMap[uuid] += 1;
+        if (name) freshStockMap[name] += 1;
         loadedCount++;
        }
       });
@@ -885,16 +891,17 @@ const CartPage: React.FC = () => {
     if (loadedCount === 0 && goodsData.data) {
      const allGoods = goodsData.data.flatMap((cat: any) => cat.goodsList || []);
      allGoods.forEach((good: any) => {
-      if (good.locked) return;
       const name = normalizeName(good.goodsName);
-      const val = good.presentNumber || 0;
+      const val = good.locked ? 0 : 1;
       freshStockMap[name] = val;
       if (good.uuid) freshStockMap[good.uuid] = val;
      });
     }
 
     applyStockToItems(freshStockMap, "API");
+    setStockLoaded(true);
    } catch (error) {
+    setStockLoaded(true); // Allow interaction even if stock check fails
     console.error("Error checking stock API:", error);
    }
   };
@@ -1002,8 +1009,15 @@ const CartPage: React.FC = () => {
     const normName = normalizeName(itemToUpdate.name);
     if (stockMap[normName] !== undefined) {
      maxStock = stockMap[normName];
+    } else if (!stockLoaded) {
+     // Stock not yet loaded — block increases
+     if (delta > 0) {
+      toast.info("Checking stock availability...");
+      return;
+     }
+     maxStock = itemToUpdate.quantity;
     } else {
-     maxStock = 10;
+     maxStock = 0; // Stock loaded but uuid/name not found → treat as out of stock
     }
    }
   } else if (itemToUpdate.planType === "START_PLAN") {

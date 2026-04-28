@@ -10,6 +10,7 @@ import { trackAddToCart, trackViewContent } from "@/utils/metaPixel";
 
 interface FoodItem {
  imgSrc: string;
+ imgSrc2?: string; // Detail/sidebar image (image2)
  heading: string;
  imgAlt: string;
  description: string;
@@ -48,7 +49,8 @@ const Menu: React.FC<MenuProps> = ({
  const [openDialouge, setOpenDialouge] = useState(false);
  const [scrolled, setScrolled] = useState(false);
  const [selectedItem, setSelectedItem] = useState<FoodItem | null>(null);
- const [isSheetOpen, setIsSheetOpen] = useState(false); // This state is set but not used
+ const [isSheetOpen, setIsSheetOpen] = useState(false);
+ const [lightboxOpen, setLightboxOpen] = useState(false);
  const [toaster, setToaster] = useState<boolean>(false);
 
  // --- NEW: Single state for the cart. Initialize from prop ---
@@ -251,6 +253,7 @@ const Menu: React.FC<MenuProps> = ({
       allItems.push({
        imgSrc:
         imageMap[it.name] || it.image_url || "/images/placeholder_food.png",
+       imgSrc2: it.image2_url || imageMap[it.name] || it.image_url || "/images/placeholder_food.png",
        heading: it.name,
        imgAlt: `food-${it.id}`,
        description: it.description,
@@ -626,11 +629,24 @@ const Menu: React.FC<MenuProps> = ({
          </button>
         </div>
 
-        <img
-         src={selectedItem.imgSrc}
-         alt={selectedItem.imgAlt}
-         className="w-full object-cover h-60 md:h-[343px] rounded-[16px]"
-        />
+        {/* Sidebar image (image2) — clickable to open full preview */}
+        <button
+         onClick={() => setLightboxOpen(true)}
+         className="relative w-full group focus:outline-none cursor-zoom-in"
+         title="Click to view full image"
+        >
+         <img
+          src={selectedItem.imgSrc2 || selectedItem.imgSrc}
+          alt={selectedItem.imgAlt}
+          className="w-full object-cover h-60 md:h-[343px] rounded-[16px] transition-transform duration-200 group-hover:scale-[1.01]"
+         />
+         <span className="absolute inset-0 flex items-end justify-end p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-[16px]">
+          <span className="bg-black/60 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
+           <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16zm3-8H8m4-4v8" /></svg>
+           Full preview
+          </span>
+         </span>
+        </button>
 
         <div className="flex-1 p-5 space-y-4">
          <p className="text-gray-600 text-sm">{selectedItem.description}</p>
@@ -676,6 +692,39 @@ const Menu: React.FC<MenuProps> = ({
          </button>
         </div>
        </motion.div>
+      </motion.div>
+     )}
+    </AnimatePresence>
+
+    {/* Lightbox — full-screen image preview */}
+    <AnimatePresence>
+     {lightboxOpen && selectedItem && (
+      <motion.div
+       className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90"
+       initial={{ opacity: 0 }}
+       animate={{ opacity: 1 }}
+       exit={{ opacity: 0 }}
+       onClick={() => setLightboxOpen(false)}>
+       <motion.div
+        initial={{ scale: 0.85, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.85, opacity: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 28 }}
+        className="relative max-w-[90vw] max-h-[90vh] flex items-center justify-center"
+        onClick={(e) => e.stopPropagation()}>
+        <img
+         src={selectedItem.imgSrc2 || selectedItem.imgSrc}
+         alt={selectedItem.imgAlt}
+         className="max-w-[90vw] max-h-[90vh] rounded-[16px] object-contain shadow-2xl"
+        />
+        <button
+         onClick={() => setLightboxOpen(false)}
+         className="absolute -top-4 -right-4 bg-white text-gray-800 rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors"
+         title="Close preview">
+         <X className="w-5 h-5" />
+        </button>
+       </motion.div>
+       <p className="absolute bottom-6 text-white/60 text-sm">Click anywhere to close</p>
       </motion.div>
      )}
     </AnimatePresence>

@@ -23,6 +23,7 @@ interface FoodItem {
  offer: string;
  terms_and_conditions: string;
  image_url: string;
+ image2_url?: string; // Detail/sidebar image (falls back to image_url)
  vendingGoodUuid?: string; // Optional for matching
  locked?: boolean; // Track locked status
 }
@@ -90,6 +91,7 @@ const VendingMenu = () => {
  const [selectedItem, setSelectedItem] = useState<FoodItem | null>(null);
  const [selectedItems, setSelectedItems] = useState<FoodItem[]>([]);
  const [isSheetOpen, setIsSheetOpen] = useState(false);
+ const [lightboxOpen, setLightboxOpen] = useState(false);
  const [tab, setTab] = useState<number>(0);
  const [weeklyMenu, setWeeklyMenu] = useState<any>(null);
  const [loading, setLoading] = useState(true);
@@ -264,6 +266,7 @@ const VendingMenu = () => {
           quantity: 1,
           availableQuantity: spot.presentNumber,
           image_url: menuItem.image_url || "/images/placeholder_food.png",
+          image2_url: menuItem.image2_url || menuItem.image_url || "/images/placeholder_food.png",
           locked: spot.goods.locked || false,
          },
         };
@@ -579,6 +582,7 @@ const VendingMenu = () => {
                  ...data,
                  imgAlt: data.name,
                  image_url: data.image_url || "/images/placeholder_food.png",
+                 image2_url: data.image2_url || data.image_url || "/images/placeholder_food.png",
                 }}
                 quantity={spot.presentNumber}
                 onClick={() =>
@@ -586,6 +590,7 @@ const VendingMenu = () => {
                   ...data,
                   imgAlt: data.name,
                   image_url: data.image_url || "/images/placeholder_food.png",
+                  image2_url: data.image2_url || data.image_url || "/images/placeholder_food.png",
                  })
                 }
                />
@@ -605,12 +610,14 @@ const VendingMenu = () => {
             ...data,
             imgAlt: data.name,
             image_url: data.image_url || "/images/placeholder_food.png",
+            image2_url: data.image2_url || data.image_url || "/images/placeholder_food.png",
            }}
            onClick={() =>
             handleCardClick({
              ...data,
              imgAlt: data.name,
              image_url: data.image_url || "/images/placeholder_food.png",
+             image2_url: data.image2_url || data.image_url || "/images/placeholder_food.png",
             })
            }
           />
@@ -632,14 +639,16 @@ const VendingMenu = () => {
        className="fixed inset-0 z-50 flex justify-end bg-black/75"
        initial={{ opacity: 0 }}
        animate={{ opacity: 1 }}
-       exit={{ opacity: 0 }}>
+       exit={{ opacity: 0 }}
+       onClick={() => setSelectedItem(null)}>
        <motion.div
         initial={{ x: "100%" }}
         animate={{ x: 0 }}
         exit={{ x: "100%" }}
         transition={{ type: "spring", stiffness: 250, damping: 30 }}
         className="bg-white w-full px-8 py-4 max-w-[522px] h-full shadow-2xl flex flex-col overflow-y-auto"
-        data-lenis-prevent="true">
+        data-lenis-prevent="true"
+        onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between pb-[16px]">
          <h2 className="text-[28px] leading-[36px] font-[700]">
           {selectedItem.name}
@@ -650,11 +659,27 @@ const VendingMenu = () => {
           <X className="w-5 h-5" />
          </button>
         </div>
-        <img
-         src={selectedItem.image_url}
-         alt={selectedItem.imgAlt}
-         className="w-full object-cover h-60 md:h-[343px] rounded-[16px]"
-        />
+
+        {/* Sidebar image (image2) — clickable to open full preview */}
+        <button
+         onClick={() => setLightboxOpen(true)}
+         className="relative w-full group focus:outline-none cursor-zoom-in"
+         title="Click to view full image"
+        >
+         <img
+          src={selectedItem.image2_url || selectedItem.image_url}
+          alt={selectedItem.imgAlt}
+          className="w-full object-cover h-60 md:h-[343px] rounded-[16px] transition-transform duration-200 group-hover:scale-[1.01]"
+         />
+         {/* Zoom hint overlay */}
+         <span className="absolute inset-0 flex items-end justify-end p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-[16px]">
+          <span className="bg-black/60 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
+           <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16zm3-8H8m4-4v8" /></svg>
+           Full preview
+          </span>
+         </span>
+        </button>
+
         <div className="flex-1 p-5 space-y-4">
          <p className="text-gray-600 text-sm">{selectedItem.description}</p>
          <div className="text-lg font-semibold">{selectedItem.price}</div>
@@ -686,6 +711,40 @@ const VendingMenu = () => {
          </button>
         </div>
        </motion.div>
+      </motion.div>
+     )}
+    </AnimatePresence>
+
+    {/* Lightbox — full-screen image preview */}
+    <AnimatePresence>
+     {lightboxOpen && selectedItem && (
+      <motion.div
+       className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90"
+       initial={{ opacity: 0 }}
+       animate={{ opacity: 1 }}
+       exit={{ opacity: 0 }}
+       onClick={() => setLightboxOpen(false)}>
+       <motion.div
+        initial={{ scale: 0.85, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.85, opacity: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 28 }}
+        className="relative max-w-[90vw] max-h-[90vh] flex items-center justify-center"
+        onClick={(e) => e.stopPropagation()}>
+        <img
+         src={selectedItem.image2_url || selectedItem.image_url}
+         alt={selectedItem.imgAlt}
+         className="max-w-[90vw] max-h-[90vh] rounded-[16px] object-contain shadow-2xl"
+        />
+        <button
+         onClick={() => setLightboxOpen(false)}
+         className="absolute -top-4 -right-4 bg-white text-gray-800 rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors"
+         title="Close preview">
+         <X className="w-5 h-5" />
+        </button>
+       </motion.div>
+       {/* Close hint */}
+       <p className="absolute bottom-6 text-white/60 text-sm">Click anywhere to close</p>
       </motion.div>
      )}
     </AnimatePresence>

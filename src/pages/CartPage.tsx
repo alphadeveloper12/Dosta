@@ -93,11 +93,10 @@ export interface CartItemType {
  status?: string; // Fulfillment status
  pickupCode?: string | null; // Item-specific pickup code
 }
-
 const CartPage: React.FC = () => {
  // Capture payment-return state at render time — before any replaceState clears the URL
  const isPaymentReturn = useRef(
-  new URLSearchParams(window.location.search).get("payment_success") === "true"
+  new URLSearchParams(window.location.search).get("payment_success") === "true",
  );
 
  const dispatch = useDispatch();
@@ -136,6 +135,7 @@ const CartPage: React.FC = () => {
  const [showPaymentModal, setShowPaymentModal] = useState<boolean>(false);
  const [paymentError, setPaymentError] = useState<string | null>(null);
  const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
+ const [showOrderTimeModal, setShowOrderTimeModal] = useState<boolean>(false);
 
  const token =
   sessionStorage.getItem("authToken") || localStorage.getItem("authToken");
@@ -384,7 +384,9 @@ const CartPage: React.FC = () => {
            { clear_all: true },
            { headers: { Authorization: `Token ${token}` } },
           );
-         } catch (_) { /* non-critical */ }
+         } catch (_) {
+          /* non-critical */
+         }
          // Clear frontend state
          setItems([]);
          setCartData(null);
@@ -563,6 +565,27 @@ const CartPage: React.FC = () => {
  const processCheckout = async () => {
   if (!cartData) return;
   const serialNumber = cartData.location?.serial_number;
+
+  // ── UAE Order Time Restriction (WEEKLY / MONTHLY / SWEETS) ──────────
+  const isTimedPlan =
+   cartData.plan_subtype === "WEEKLY" ||
+   cartData.plan_subtype === "MONTHLY" ||
+   cartData.plan_type === "SWEETS";
+
+  if (isTimedPlan) {
+   // Calculate current UAE time (UTC+4)
+   const now = new Date();
+   const uaeHour = new Date(
+    now.getTime() + (now.getTimezoneOffset() + 4 * 60) * 60000,
+   ).getHours();
+   // Allow 7:00 (inclusive) → before 18:00 (exclusive)
+   if (uaeHour < 7 || uaeHour >= 18) {
+    setShowPaymentModal(false);
+    setShowOrderTimeModal(true);
+    return;
+   }
+  }
+  // ─────────────────────────────────────────────────────────────────────
 
   // Auth check — show modal for guests
   const token =
@@ -1184,33 +1207,44 @@ const CartPage: React.FC = () => {
   const discount = coupon.toUpperCase() === "DOSTA25" ? 25.0 : 0;
   const deliveryCharge = parseFloat(cartData?.delivery_charge || "0");
   const total = Math.max(0, subtotal + vat - discount + deliveryCharge);
-  
+
   const isSweets = cartData?.plan_type === "SWEETS";
   // Only show city/delivery if items actually exist
-  const city = items.length > 0 ? (cartData?.city || sweetsDeliveryInfo?.city) : undefined;
-  
+  const city =
+   items.length > 0 ? cartData?.city || sweetsDeliveryInfo?.city : undefined;
+
   const isMinimumMet = !isSweets || city === "Dubai" || subtotal >= 100;
-  
+
   // FOOLPROOF: Derive charge from city if it's a sweets cart
   let effectiveCharge = parseFloat(cartData?.delivery_charge || "0");
   if (isSweets && city && city !== "Dubai") {
-    effectiveCharge = 40;
+   effectiveCharge = 40;
   }
-  
-  const activeDeliveryCharge = items.length > 0 ? effectiveCharge : 0;
-  const finalTotal = Math.max(0, subtotal + vat - discount + activeDeliveryCharge);
 
-  return { 
-    subtotal, 
-    vat, 
-    discount, 
-    deliveryCharge: activeDeliveryCharge, 
-    total: finalTotal, 
-    isMinimumMet, 
-    isSweets, 
-    city 
+  const activeDeliveryCharge = items.length > 0 ? effectiveCharge : 0;
+  const finalTotal = Math.max(
+   0,
+   subtotal + vat - discount + activeDeliveryCharge,
+  );
+
+  return {
+   subtotal,
+   vat,
+   discount,
+   deliveryCharge: activeDeliveryCharge,
+   total: finalTotal,
+   isMinimumMet,
+   isSweets,
+   city,
   };
- }, [items, coupon, cartData?.delivery_charge, cartData?.plan_type, cartData?.city, sweetsDeliveryInfo?.city]);
+ }, [
+  items,
+  coupon,
+  cartData?.delivery_charge,
+  cartData?.plan_type,
+  cartData?.city,
+  sweetsDeliveryInfo?.city,
+ ]);
 
  const handleClearCart = async () => {
   try {
@@ -1282,7 +1316,8 @@ const CartPage: React.FC = () => {
 
  const handleRetryFulfillment = async () => {
   if (!confirmedOrder) return;
-  const token = sessionStorage.getItem("authToken") || localStorage.getItem("authToken");
+  const token =
+   sessionStorage.getItem("authToken") || localStorage.getItem("authToken");
   setRetrying(true);
   setRetryError(null);
   try {
@@ -1296,13 +1331,19 @@ const CartPage: React.FC = () => {
    const orderRes = await axios.get(`${baseUrl}/api/vending/orders/`, {
     headers: { Authorization: `Token ${token}` },
    });
-   const fresh = (orderRes.data as any[]).find((o: any) => o.id === confirmedOrder.id);
+   const fresh = (orderRes.data as any[]).find(
+    (o: any) => o.id === confirmedOrder.id,
+   );
    setConfirmedOrder(fresh || updatedOrder);
    if (!fresh?.pickup_code && !res.data.pickup_code) {
-    setRetryError("Still couldn't generate pickup code. Please try again or contact support.");
+    setRetryError(
+     "Still couldn't generate pickup code. Please try again or contact support.",
+    );
    }
   } catch (err: any) {
-   setRetryError(err.response?.data?.error || "Retry failed. Please try again.");
+   setRetryError(
+    err.response?.data?.error || "Retry failed. Please try again.",
+   );
   } finally {
    setRetrying(false);
   }
@@ -1311,7 +1352,8 @@ const CartPage: React.FC = () => {
  // POST-PAYMENT PANEL: show QR or retry instead of cart when order is confirmed
  if (confirmedOrder) {
   const isPendingFulfillment = confirmedOrder.status === "PENDING_FULFILLMENT";
-  const isReady = confirmedOrder.status === "READY" || !!confirmedOrder.pickup_code;
+  const isReady =
+   confirmedOrder.status === "READY" || !!confirmedOrder.pickup_code;
 
   return (
    <div className="bg-gray-50 min-h-screen max-md:pb-[82px]">
@@ -1319,49 +1361,68 @@ const CartPage: React.FC = () => {
     <div className="w-full bg-white pt-2 pb-6">
      <div className="main-container">
       <BreadCrumb />
-      <h2 className="text-[28px] text-[#054A86] leading-[36px] font-[700] tracking-[0.1px]">Order Confirmed</h2>
+      <h2 className="text-[28px] text-[#054A86] leading-[36px] font-[700] tracking-[0.1px]">
+       Order Confirmed
+      </h2>
      </div>
     </div>
     <div className="main-container py-10 flex flex-col items-center">
      <div className="bg-white rounded-2xl border border-[#EDEEF2] w-full max-w-md p-8 shadow-sm text-center">
-      <p className="text-[13px] text-[#83859C] mb-1 uppercase tracking-wider font-semibold">Order #{confirmedOrder.id}</p>
+      <p className="text-[13px] text-[#83859C] mb-1 uppercase tracking-wider font-semibold">
+       Order #{confirmedOrder.id}
+      </p>
 
       {isReady && !isPendingFulfillment ? (
        <>
         <div className="text-4xl mb-3">🎉</div>
-        <p className="text-[20px] font-[700] text-[#054A86] mb-1">Your order is ready!</p>
-        <p className="text-sm text-[#83859C] mb-6">Scan the QR code at the vending machine to collect your food.</p>
+        <p className="text-[20px] font-[700] text-[#054A86] mb-1">
+         Your order is ready!
+        </p>
+        <p className="text-sm text-[#83859C] mb-6">
+         Scan the QR code at the vending machine to collect your food.
+        </p>
         <div className="flex justify-center mb-4">
          <div className="rounded-[16px] border border-[#83859C] w-[180px] h-[180px] p-3 bg-white shadow-sm flex items-center justify-center">
           <img
-           src={confirmedOrder.qr_code_url || `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${confirmedOrder.pickup_code}`}
+           src={
+            confirmedOrder.qr_code_url ||
+            `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${confirmedOrder.pickup_code}`
+           }
            alt="QR Code"
            className="w-full h-full object-contain"
           />
          </div>
         </div>
-        <p className="text-sm text-[#83859C] font-semibold uppercase tracking-wider mb-1">Pickup Code</p>
-        <p className="text-[32px] font-bold text-[#054A86] mb-6">{confirmedOrder.pickup_code}</p>
+        <p className="text-sm text-[#83859C] font-semibold uppercase tracking-wider mb-1">
+         Pickup Code
+        </p>
+        <p className="text-[32px] font-bold text-[#054A86] mb-6">
+         {confirmedOrder.pickup_code}
+        </p>
        </>
       ) : (
        <>
         <div className="text-4xl mb-3">⚠️</div>
-        <p className="text-[18px] font-[700] text-orange-700 mb-1">Payment Confirmed</p>
+        <p className="text-[18px] font-[700] text-orange-700 mb-1">
+         Payment Confirmed
+        </p>
         <p className="text-sm text-orange-600 mb-5">
-         Your payment was successful but we couldn't generate your pickup code automatically.
-         You can retry below or check My Orders later.
+         Your payment was successful but we couldn't generate your pickup code
+         automatically. You can retry below or check My Orders later.
         </p>
         {retryError && (
          <p className="text-sm text-red-600 font-semibold mb-3">{retryError}</p>
         )}
         <button
          onClick={handleRetryFulfillment}
-         disabled={retrying || (confirmedOrder.fulfillment_attempts >= 5)}
+         disabled={retrying || confirmedOrder.fulfillment_attempts >= 5}
          className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white font-bold py-3 rounded-xl mb-3 transition-colors">
          {retrying ? "Retrying..." : "🔄 Retry Pickup Code"}
         </button>
         {confirmedOrder.fulfillment_attempts >= 5 && (
-         <p className="text-xs text-gray-500 mb-3">Maximum retries reached. Please contact support.</p>
+         <p className="text-xs text-gray-500 mb-3">
+          Maximum retries reached. Please contact support.
+         </p>
         )}
        </>
       )}
@@ -1449,19 +1510,23 @@ const CartPage: React.FC = () => {
          </button>
         </div>
        )}
-       {summary.isSweets && !summary.isMinimumMet && summary.city !== "Dubai" && (
-          <div className="bg-orange-50 border border-orange-200 rounded-[16px] p-4 mb-6 flex items-start gap-3 shadow-sm">
-            <div className="bg-orange-100 p-2 rounded-full">
-              <Info className="w-5 h-5 text-orange-600" />
-            </div>
-            <div>
-              <h4 className="text-orange-800 font-bold text-[16px]">Minimum Order Requirement</h4>
-              <p className="text-orange-700 text-sm">
-                Dosta Sweets orders require a minimum subtotal of **AED 100.00**. 
-                Current subtotal: **AED {summary.subtotal.toFixed(2)}**.
-              </p>
-            </div>
+       {summary.isSweets &&
+        !summary.isMinimumMet &&
+        summary.city !== "Dubai" && (
+         <div className="bg-orange-50 border border-orange-200 rounded-[16px] p-4 mb-6 flex items-start gap-3 shadow-sm">
+          <div className="bg-orange-100 p-2 rounded-full">
+           <Info className="w-5 h-5 text-orange-600" />
           </div>
+          <div>
+           <h4 className="text-orange-800 font-bold text-[16px]">
+            Minimum Order Requirement
+           </h4>
+           <p className="text-orange-700 text-sm">
+            Dosta Sweets orders require a minimum subtotal of **AED 100.00**.
+            Current subtotal: **AED {summary.subtotal.toFixed(2)}**.
+           </p>
+          </div>
+         </div>
         )}
        {stockAlerts.length > 0 && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
@@ -1623,6 +1688,83 @@ const CartPage: React.FC = () => {
     onClose={() => setShowAuthModal(false)}
     message="Please log in to proceed to checkout. Don't have an account? Sign up for free!"
    />
+
+   {/* ── Order Time Restriction Modal (WEEKLY / MONTHLY) ── */}
+   {showOrderTimeModal && (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+     <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      {/* Header gradient */}
+      <div className="bg-gradient-to-br from-[#054A86] to-indigo-700 px-6 pt-8 pb-10 text-white text-center relative">
+       <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_top_right,_#ffffff_0%,_transparent_60%)]"></div>
+       <div className="relative">
+        <div className="w-16 h-16 rounded-2xl bg-white/15 flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
+         <svg
+          className="w-8 h-8 text-white"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24">
+          <path
+           strokeLinecap="round"
+           strokeLinejoin="round"
+           strokeWidth={2}
+           d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+         </svg>
+        </div>
+        <h3 className="text-xl font-extrabold tracking-tight mb-1">
+         Ordering Hours
+        </h3>
+        <p className="text-white/75 text-sm">Plan orders have a daily window</p>
+       </div>
+      </div>
+
+      {/* Overlap card */}
+      <div className="-mt-6 mx-4 bg-white rounded-2xl shadow-lg border border-gray-100 px-5 pt-10 pb-6 text-center mb-2">
+       <p className="text-3xl font-black text-[#054A86] tracking-tight">
+        7:00 AM – 6:00 PM
+       </p>
+       <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mt-1">
+        UAE Time (UTC+4)
+       </p>
+      </div>
+
+      {/* Body */}
+      <div className="px-6 pt-2 pb-6 text-center space-y-3">
+       <p className="text-gray-600 text-sm leading-relaxed">
+        <strong className="text-gray-800">Weekly, Monthly & Sweets</strong>{" "}
+        orders can only be placed between 7:00 AM and 6:00 PM UAE time.
+       </p>
+       <p className="text-gray-500 text-xs">
+        Your current UAE time is{" "}
+        <span className="font-bold text-gray-700">
+         {new Date(
+          new Date().getTime() +
+           (new Date().getTimezoneOffset() + 4 * 60) * 60000,
+         ).toLocaleTimeString("en-AE", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+         })}
+        </span>
+       </p>
+       <p className="text-gray-400 text-xs">
+        <span className="font-medium text-gray-500">Order Now</span>
+        items are available at any time.
+       </p>
+
+       <button
+        type="button"
+        onClick={(e) => {
+         e.preventDefault();
+         setShowOrderTimeModal(false);
+        }}
+        className="w-full cursor-pointer mt-2 py-3 rounded-2xl bg-[#054A86] text-white font-bold text-sm hover:bg-indigo-700 transition-colors shadow-md shadow-blue-200 active:scale-[0.98]">
+        Got it, I'll come back later
+       </button>
+      </div>
+     </div>
+    </div>
+   )}
   </div>
  );
 };

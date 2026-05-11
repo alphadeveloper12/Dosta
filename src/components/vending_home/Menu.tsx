@@ -218,10 +218,15 @@ const Menu: React.FC<MenuProps> = ({
    setError(null);
 
    try {
+    const selectedLocation = JSON.parse(
+     localStorage.getItem("selectedLocation") || "{}",
+    );
+    const locId = Number(selectedLocation?.location?.id) || 1;
+
     const token =
      sessionStorage.getItem("authToken") || localStorage.getItem("authToken");
     const res = await fetch(
-     `${import.meta.env.VITE_API_URL || ""}/api/vending/menu/ORDER_NOW/`,
+     `${import.meta.env.VITE_API_URL || ""}/api/vending/menu/ORDER_NOW/?location_id=${locId}`,
      {
       headers: {
        "Content-Type": "application/json",

@@ -521,20 +521,6 @@ const OrderNow = () => {
           return;
         }
 
-        const cacheKey = `machine_goods_${serialNumber}`;
-        const cachedData = localStorage.getItem(cacheKey);
-
-        if (cachedData) {
-          const { goods, shelves, timestamp } = JSON.parse(cachedData);
-          const isExpired = Date.now() - timestamp > 5 * 60 * 1000;
-
-          if (goods && goods.length > 0) {
-            setMachineGoods(goods);
-            if (shelves) setMachineShelves(shelves);
-            if (!isExpired) return;
-          }
-        }
-
         const response = await fetch(
           `${baseUrl}/api/vending/external/machine-goods/?machineUuid=${serialNumber}`,
         );
@@ -548,15 +534,6 @@ const OrderNow = () => {
           if (data.shelves) {
             setMachineShelves(data.shelves);
           }
-
-          localStorage.setItem(
-            cacheKey,
-            JSON.stringify({
-              goods: allGoods,
-              shelves: data.shelves || null,
-              timestamp: Date.now(),
-            }),
-          );
         } else {
           setMachineGoods([]);
         }
@@ -665,15 +642,20 @@ const OrderNow = () => {
       try {
         if (orderType !== "Start a Plan") return;
 
+        const selectedLocation = JSON.parse(
+          localStorage.getItem("selectedLocation") || "{}",
+        );
+        const locId = Number(selectedLocation?.location?.id) || 1;
+
         if (planType === "weekly") {
           const res = await axios.get(
-            `${baseUrl}/api/vending/menu/plan/WEEKLY/`,
+            `${baseUrl}/api/vending/menu/plan/WEEKLY/?location_id=${locId}`,
             authHeaders,
           );
           setApiWeeklyMenu(res.data?.week_menu || null);
         } else if (planType === "monthly") {
           const res = await axios.get(
-            `${baseUrl}/api/vending/menu/plan/MONTHLY/`,
+            `${baseUrl}/api/vending/menu/plan/MONTHLY/?location_id=${locId}`,
             authHeaders,
           );
           setApiMonthlyMenu(res.data?.month_menu || null);

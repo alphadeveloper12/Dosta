@@ -92,6 +92,7 @@ export interface CartItemType {
  heatingChoice?: "yes" | "no"; // User selection
  status?: string; // Fulfillment status
  pickupCode?: string | null; // Item-specific pickup code
+ qrCodeUrl?: string | null; // Item-specific QR code
 }
 const CartPage: React.FC = () => {
  // Capture payment-return state at render time — before any replaceState clears the URL
@@ -741,8 +742,13 @@ const CartPage: React.FC = () => {
     const newImageMap: Record<string, string> = {};
     try {
      if (token) {
+      const selectedLocation = JSON.parse(
+       localStorage.getItem("selectedLocation") || "{}",
+      );
+      const locId = Number(selectedLocation?.location?.id) || 1;
+
       const menuRes = await axios.get(
-       `${baseUrl}/api/vending/menu/ORDER_NOW/`,
+       `${baseUrl}/api/vending/menu/ORDER_NOW/?location_id=${locId}`,
        {
         headers: { Authorization: `Token ${token}` },
        },

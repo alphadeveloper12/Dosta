@@ -5,7 +5,6 @@ import {
  Linkedin,
  MessageCircle,
 } from "lucide-react";
-import { a } from "node_modules/framer-motion/dist/types.d-BJcRxCew";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
@@ -38,7 +37,7 @@ const Footer = () => {
   {
    src: "https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg",
    alt: "Download on App Store",
-   link: "#",
+   link: "https://apps.apple.com/us/app/dosta-kitchen/id6760654080",
   },
   {
    src: "https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg",

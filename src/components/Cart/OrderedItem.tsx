@@ -57,13 +57,24 @@ const OrderedItem: React.FC<OrderedItemProps> = ({
 
                     </div>
 
-                    <div className="text-right flex gap-[26px]">
-                        <span className="text-[16px] leading-[24px] font-[500] text-[#83859C]">
-                            x {item.quantity}
-                        </span>
-                        <p className="text-[16px] leading-[24px] font-[700] text-[#2B2B43]">
-                            AED{item.price.toFixed(2)}
-                        </p>
+                    <div className="text-right flex items-center gap-[26px]">
+                        {item.qrCodeUrl && (
+                            <div className="w-[60px] h-[60px] p-1 bg-white border border-[#E0E0E0] rounded-lg">
+                                <img
+                                    src={item.qrCodeUrl}
+                                    alt="Item QR"
+                                    className="w-full h-full object-contain"
+                                />
+                            </div>
+                        )}
+                        <div className="flex flex-col items-end">
+                            <span className="text-[16px] leading-[24px] font-[500] text-[#83859C]">
+                                x {item.quantity}
+                            </span>
+                            <p className="text-[16px] leading-[24px] font-[700] text-[#2B2B43]">
+                                AED{item.price.toFixed(2)}
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

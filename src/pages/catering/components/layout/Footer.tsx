@@ -32,10 +32,12 @@ const Footer = () => {
   {
    src: "https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg",
    alt: "Download on App Store",
+   link: "https://apps.apple.com/us/app/dosta-kitchen/id6760654080",
   },
   {
-   src: "https://play.google.com/store/apps/details?id=com.dosta.app",
+   src: "https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg",
    alt: "Get it on Google Play",
+   link: "https://play.google.com/store/apps/details?id=com.dosta.app",
   },
  ];
 
@@ -79,12 +81,13 @@ const Footer = () => {
       </p>
       <div className="flex flex-col sm:flex-row justify-start gap-2">
        {appBadges.map((badge, idx) => (
-        <img
-         key={idx}
-         src={badge.src}
-         alt={badge.alt}
-         className="h-10 w-auto"
-        />
+        <a key={idx} href={badge.link}>
+         <img
+          src={badge.src}
+          alt={badge.alt}
+          className="h-10 w-auto"
+         />
+        </a>
        ))}
       </div>
      </div>

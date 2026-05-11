@@ -105,6 +105,11 @@ const VendingMenu = () => {
    setLoading(true);
    try {
     const baseUrl = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+    const selectedLocation = JSON.parse(
+     localStorage.getItem("selectedLocation") || "{}",
+    );
+    const locId = Number(selectedLocation?.location?.id) || 1;
+
     const authToken =
      sessionStorage.getItem("authToken") || localStorage.getItem("authToken");
     const headers: any = {};
@@ -112,7 +117,7 @@ const VendingMenu = () => {
      headers["Authorization"] = `Token ${authToken}`;
     }
 
-    const response = await fetch(`${baseUrl}/api/vending/menu/plan/WEEKLY/`, {
+    const response = await fetch(`${baseUrl}/api/vending/menu/plan/WEEKLY/?location_id=${locId}`, {
      method: "GET",
      headers: headers,
     });
@@ -134,7 +139,7 @@ const VendingMenu = () => {
  }, []);
 
  // Fetch Machine Goods (for availability check)
- useEffect(() => {
+  useEffect(() => {
   const fetchMachineGoods = async () => {
    try {
     const baseUrl = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
@@ -148,20 +153,6 @@ const VendingMenu = () => {
      return;
     }
 
-    const cacheKey = `machine_goods_${serialNumber}`;
-    const cachedData = localStorage.getItem(cacheKey);
-
-    if (cachedData) {
-     const { goods, shelves, timestamp } = JSON.parse(cachedData);
-     const isExpired = Date.now() - timestamp > 5 * 60 * 1000; // 5 min cache
-
-     if (goods && goods.length > 0) {
-      setMachineGoods(goods);
-      if (shelves) setMachineShelves(shelves);
-      if (!isExpired) return;
-     }
-    }
-
     const response = await fetch(
      `${baseUrl}/api/vending/external/machine-goods/?machineUuid=${serialNumber}`,
     );
@@ -173,15 +164,6 @@ const VendingMenu = () => {
      );
      setMachineGoods(allGoods);
      if (data.shelves) setMachineShelves(data.shelves);
-
-     localStorage.setItem(
-      cacheKey,
-      JSON.stringify({
-       goods: allGoods,
-       shelves: data.shelves || null,
-       timestamp: Date.now(),
-      }),
-     );
     } else {
      setMachineGoods([]);
     }

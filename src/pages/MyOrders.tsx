@@ -28,6 +28,7 @@ interface OrderItemAPI {
   week_number: number | null;
   status: string;
   pickup_code: string | null;
+  qr_code_url: string | null;
   plan_type: string;
   plan_subtype: string;
 }
@@ -177,9 +178,14 @@ const MyOrders = () => {
   useEffect(() => {
     const fetchMenu = async () => {
       try {
+        const selectedLocation = JSON.parse(
+          localStorage.getItem("selectedLocation") || "{}",
+        );
+        const locId = Number(selectedLocation?.location?.id) || 1;
+
         const token =
           sessionStorage.getItem("authToken") || localStorage.getItem("authToken");
-        const res = await axios.get(`${baseUrl}/api/vending/menu/ORDER_NOW/`, {
+        const res = await axios.get(`${baseUrl}/api/vending/menu/ORDER_NOW/?location_id=${locId}`, {
           headers: { Authorization: `Token ${token}` },
         });
         const newImageMap: Record<string, string> = {};
@@ -244,6 +250,7 @@ const MyOrders = () => {
         planSubtype: apiItem.plan_subtype,
         status: apiItem.status,
         pickupCode: apiItem.pickup_code,
+        qrCodeUrl: apiItem.qr_code_url,
       };
     });
   };

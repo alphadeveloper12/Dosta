@@ -17,6 +17,7 @@ import MobileFooterNav from "@/components/home/MobileFooterNav";
 import { Trash2, Info } from "lucide-react";
 import AuthPromptModal from "@/components/common/AuthPromptModal";
 import { trackPurchase } from "@/utils/metaPixel";
+import { fetchMachineGoods } from "@/lib/machineGoods";
 import {
  AlertDialog,
  AlertDialogAction,
@@ -99,6 +100,12 @@ const CartPage: React.FC = () => {
  const isPaymentReturn = useRef(
   new URLSearchParams(window.location.search).get("payment_success") === "true",
  );
+
+ // Shared AbortController for in-flight /external/machine-goods/ calls.
+ // Aborted before each new call so we never have two retry loops running, and
+ // aborted on unmount so retries don't outlive the component.
+ const goodsCtrlRef = useRef<AbortController | null>(null);
+ useEffect(() => () => goodsCtrlRef.current?.abort(), []);
 
  const dispatch = useDispatch();
  const [cartData, setCartData] = useState<CartAPI | null>(null);
@@ -437,10 +444,11 @@ const CartPage: React.FC = () => {
 
    // --- 1. Fresh Stock Validation & Update ---
    console.log("🔍 Fulfillment: Fetching fresh stock for validation...");
-   const goodsResponse = await fetch(
-    `${baseUrl}/api/vending/external/machine-goods/?machineUuid=${serialNumber}`,
-   );
-   const goodsData = await goodsResponse.json();
+   goodsCtrlRef.current?.abort();
+   goodsCtrlRef.current = new AbortController();
+   const goodsData = await fetchMachineGoods(baseUrl, serialNumber, {
+    signal: goodsCtrlRef.current.signal,
+   });
    const shelves = goodsData.shelves || [];
 
    if (shelves.length > 0) {
@@ -611,10 +619,11 @@ const CartPage: React.FC = () => {
    if (serialNumber && hasOrderNowItems) {
     try {
      console.log("🔍 Checkout: Fetching fresh stock for validation...");
-     const goodsResponse = await fetch(
-      `${baseUrl}/api/vending/external/machine-goods/?machineUuid=${serialNumber}`,
-     );
-     const goodsData = await goodsResponse.json();
+     goodsCtrlRef.current?.abort();
+     goodsCtrlRef.current = new AbortController();
+     const goodsData = await fetchMachineGoods(baseUrl, serialNumber, {
+      signal: goodsCtrlRef.current.signal,
+     });
      const shelves = goodsData.shelves || [];
 
      if (shelves.length > 0) {
@@ -887,10 +896,11 @@ const CartPage: React.FC = () => {
 
    // Fetch Fresh Data
    try {
-    const goodsResponse = await fetch(
-     `${baseUrl}/api/vending/external/machine-goods/?machineUuid=${serialNumber}`,
-    );
-    const goodsData = await goodsResponse.json();
+    goodsCtrlRef.current?.abort();
+    goodsCtrlRef.current = new AbortController();
+    const goodsData = await fetchMachineGoods(baseUrl, serialNumber, {
+     signal: goodsCtrlRef.current.signal,
+    });
 
     const freshStockMap: Record<string, number> = {};
     let loadedCount = 0;

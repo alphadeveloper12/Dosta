@@ -12,6 +12,7 @@ import LazyLoad from "@/components/ui/LazyLoad";
 import { useDispatch, useSelector } from "react-redux";
 import MobileFooterNav from "@/components/home/MobileFooterNav";
 import AuthPromptModal from "@/components/common/AuthPromptModal";
+import { fetchMachineGoods } from "@/lib/machineGoods";
 
 // Define the interface for the food item
 interface FoodItem {
@@ -138,26 +139,22 @@ const VendingMenu = () => {
   fetchWeeklyMenu();
  }, []);
 
- // Fetch Machine Goods (for availability check)
-  useEffect(() => {
-  const fetchMachineGoods = async () => {
-   try {
-    const baseUrl = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
-    const selectedLocation = JSON.parse(
-     localStorage.getItem("selectedLocation") || "{}",
-    );
-    const serialNumber = selectedLocation?.location?.serial_number;
+ // Fetch Machine Goods (for availability check) — auto-retries on timeout/error.
+ useEffect(() => {
+  const baseUrl = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+  const selectedLocation = JSON.parse(
+   localStorage.getItem("selectedLocation") || "{}",
+  );
+  const serialNumber = selectedLocation?.location?.serial_number;
 
-    if (!serialNumber) {
-     setMachineGoods([]);
-     return;
-    }
+  if (!serialNumber) {
+   setMachineGoods([]);
+   return;
+  }
 
-    const response = await fetch(
-     `${baseUrl}/api/vending/external/machine-goods/?machineUuid=${serialNumber}`,
-    );
-    const data = await response.json();
-
+  const ctrl = new AbortController();
+  fetchMachineGoods(baseUrl, serialNumber, { signal: ctrl.signal })
+   .then((data) => {
     if (data?.data) {
      const allGoods = data.data.flatMap(
       (category: any) => category.goodsList || [],
@@ -167,13 +164,15 @@ const VendingMenu = () => {
     } else {
      setMachineGoods([]);
     }
-   } catch (error) {
-    console.error("Failed to fetch machine goods:", error);
-    setMachineGoods([]);
-   }
-  };
+   })
+   .catch((error: any) => {
+    if (error?.name !== "AbortError") {
+     console.error("Failed to fetch machine goods:", error);
+     setMachineGoods([]);
+    }
+   });
 
-  fetchMachineGoods();
+  return () => ctrl.abort();
  }, []);
 
  const userData = useSelector((state: any) => state?.user?.user);

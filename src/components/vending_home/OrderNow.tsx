@@ -21,6 +21,7 @@ import Menu from "./Menu";
 import GrabMenu from "./GrabMenu";
 import PlanWeekly from "./PlanWeekly";
 import AuthPromptModal from "@/components/common/AuthPromptModal";
+import { fetchMachineGoods } from "@/lib/machineGoods";
 
 type StepStatus = "completed" | "active" | "pending";
 
@@ -508,24 +509,20 @@ const OrderNow = () => {
     }
   }, []);
 
-  // --- Machine goods fetch with caching ---
+  // --- Machine goods fetch (with timeout + auto-retry until success or unmount) ---
   useEffect(() => {
-    const fetchMachineGoods = async () => {
-      try {
-        const selectedLocation = JSON.parse(
-          localStorage.getItem("selectedLocation") || "{}",
-        );
-        const serialNumber = selectedLocation?.location?.serial_number;
-        if (!serialNumber) {
-          setMachineGoods([]);
-          return;
-        }
+    const selectedLocation = JSON.parse(
+      localStorage.getItem("selectedLocation") || "{}",
+    );
+    const serialNumber = selectedLocation?.location?.serial_number;
+    if (!serialNumber) {
+      setMachineGoods([]);
+      return;
+    }
 
-        const response = await fetch(
-          `${baseUrl}/api/vending/external/machine-goods/?machineUuid=${serialNumber}`,
-        );
-        const data = await response.json();
-
+    const ctrl = new AbortController();
+    fetchMachineGoods(baseUrl, serialNumber, { signal: ctrl.signal })
+      .then((data) => {
         if (data?.data) {
           const allGoods = data.data.flatMap(
             (category: any) => category.goodsList || [],
@@ -537,13 +534,15 @@ const OrderNow = () => {
         } else {
           setMachineGoods([]);
         }
-      } catch (error) {
-        console.error("Failed to fetch machine goods:", error);
-        setMachineGoods([]);
-      }
-    };
+      })
+      .catch((error: any) => {
+        if (error?.name !== "AbortError") {
+          console.error("Failed to fetch machine goods:", error);
+          setMachineGoods([]);
+        }
+      });
 
-    fetchMachineGoods();
+    return () => ctrl.abort();
   }, [baseUrl]);
 
   // normalize name for matching

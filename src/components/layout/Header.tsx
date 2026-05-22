@@ -1,12 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
-
+import { useLocation } from "react-router-dom";
 const Header = () => {
  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+ const location = useLocation();
+ const currentPath = location.pathname;
  const navigate = useNavigate();
 
  // ✅ Check login state on mount + when token changes
@@ -61,9 +62,17 @@ const Header = () => {
      <div className="flex items-center gap-[40px]">
       <Link to="/" className="flex-shrink-0">
        <img
-        src="/images/nav/logo.svg"
+        src={
+         currentPath === "/beit-nahla"
+          ? "/images/header/nahla.png"
+          : "/images/nav/logo.svg"
+        }
         alt="logo"
-        className="h-[24px] w-[135px] sm:h-[24px] sm:w-[141px]"
+        className={
+         currentPath === "/beit-nahla"
+          ? "h-[24px] w-[135px] sm:h-16 sm:w-auto"
+          : "h-[24px] w-[135px] sm:h-[24px] sm:w-[141px]"
+        }
        />
       </Link>
 

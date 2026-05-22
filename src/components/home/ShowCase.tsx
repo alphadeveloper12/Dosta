@@ -4,16 +4,6 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 
 const steps = [
- // Commented out - Delivery card
- // {
- //   icon: "images/header/card1.svg", // Replace with your actual image path
- //   title: "25 Restaurants, One Easy Order",
- //   description:
- //     "Freshly prepared dishes delivered straight to your home or workspace",
- //   tag: "DOSTA DELIVERY",
- //   button: "Browse Menus",
- //   link: "/coming-soon", // Link for this button
- // },
  {
   icon: "images/header/card2.svg", // Replace with your actual image path
   title: "Meals on Your Schedule",
@@ -23,16 +13,6 @@ const steps = [
   button: "Start Planning",
   link: "/vending-home", // Link for this button
  },
- // Commented out - Wellness card
- // {
- //   icon: "images/header/card3.svg", // Replace with your actual image path
- //   title: "Wellness Meets Convenience",
- //   description:
- //     "Balanced meal plans tailored for your health goals, delivered or picked up.",
- //   tag: "DOSTA WELLNESS",
- //   button: "Explore Plans",
- //   link: "/coming-soon", // Link for this button
- // },
  {
   icon: "images/header/card4.svg", // Replace with your actual image path
   title: "Flavorful Catering for Any Event",
@@ -50,26 +30,14 @@ const steps = [
   button: "Browse Menu",
   link: "/dosta-sweets", // Special link for catering
  },
- // Commented out - Corporate card
- // {
- //   icon: "images/header/card5.svg", // Replace with your actual image path
- //   title: "Fuel Your Team, Elevate Productivity",
- //   description:
- //     "Office catering that's both delicious and professionally executed",
- //   tag: "DOSTA CORPORATE",
- //   button: "Order for Your Team",
- //   link: "/coming-soon", // Link for this button
- // },
- // Commented out - Giving card
- // {
- //   icon: "images/header/card6.svg", // Replace with your actual image path
- //   title: "Food with Heart and Purpose",
- //   description:
- //     "Partner with us to support food drives, community events, and local causes.",
- //   tag: "DOSTA GIVING",
- //   button: "Support the Mission",
- //   link: "/coming-soon", // Link for this button
- // },
+ {
+  icon: "images/header/nahla.png", // Replace with your actual image path
+  title: "Beit Nahla",
+  description: "Beit Nahla offers a wide range of meal boxes for any occasion.",
+  tag: "Beit Nahla",
+  button: "Browse Menu",
+  link: "/beit-nahla", // Special link for Bait Nahla
+ },
 ];
 
 const ShowCase = () => {

@@ -8,12 +8,11 @@ import { lazy, Suspense, useEffect } from "react";
 import { fetchCartData } from "./redux/slices/cartSlice";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { useDispatch } from "react-redux";
-
 import AuthMiddleware from "./middleware/AuthMiddleware";
 import GuestMiddleware from "./middleware/GuestMiddleware";
 import ScrollToTop from "./components/home/ScrollToTop";
 import ChatBot from "./components/common/ChatBot";
-import SmoothScroll from "./components/ui/smoothscroll";
+import BeitNahla from "./components/home/BeitNahla";
 
 // Lazy load pages
 const Index = lazy(() => import("./pages/Index"));
@@ -90,6 +89,7 @@ const App = () => (
        <Route path="/" element={<Index />} />
        <Route path="/dosta-sweets" element={<Sweets />} />
        <Route path="/vending-home" element={<VendingHome />} />
+       <Route path="/beit-nahla" element={<BeitNahla />} />
        <Route path="/about-us" element={<AboutUs />} />
        <Route path="/coming-soon" element={<ComingSoon />} />
        <Route path="/services" element={<Services />} />

@@ -103,8 +103,11 @@ const MainSection: React.FC = () => {
      }
     }
 
-    // ✅ redirect
-    navigate("/");
+    // Redirect to ?next= if provided (e.g. /vending-home/cart), else home.
+    {
+     const nextParam = new URLSearchParams(window.location.search).get("next");
+     navigate(nextParam ? decodeURIComponent(nextParam) : "/");
+    }
    } catch (err: any) {
     console.error("Backend Login Failed:", err);
     const errorData = err.response?.data;

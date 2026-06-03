@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 
-const PromoBanners = () => {
+const PromoBanners = ({ onDownloadClick }: { onDownloadClick?: () => void }) => {
  const promoData = [
   {
    title: "Top Deals",
@@ -47,15 +47,22 @@ const PromoBanners = () => {
          <p className="text-destructive-foreground/90 text-sm md:text-[16px] leading-[24px] tracking-[0.1px] font-[700] mb-3 md:mb-4">
           {promo.description}
          </p>
-         <Button
-          variant="secondary"
-          size="sm"
-          className="bg-neutral-white text-neutral-gray-dark hover:bg-neutral-white/90 text-[12px] leading-[18px] tracking-[0.6px] font-[800] !h-[30px] rounded-[16px]">
-          <a href="https://play.google.com/store/apps/details?id=com.dosta.app">
-           {" "}
+         {promo.buttonText === "Download App" ? (
+          <Button
+           variant="secondary"
+           size="sm"
+           onClick={onDownloadClick}
+           className="bg-neutral-white text-neutral-gray-dark hover:bg-neutral-white/90 text-[12px] leading-[18px] tracking-[0.6px] font-[800] !h-[30px] rounded-[16px] cursor-pointer">
            {promo.buttonText}
-          </a>
-         </Button>
+          </Button>
+         ) : (
+          <Button
+           variant="secondary"
+           size="sm"
+           className="bg-neutral-white text-neutral-gray-dark hover:bg-neutral-white/90 text-[12px] leading-[18px] tracking-[0.6px] font-[800] !h-[30px] rounded-[16px]">
+           {promo.buttonText}
+          </Button>
+         )}
         </div>
         <div className="w-[120px] md:w-[50%] h-full flex items-center flex-shrink-0">
          <img

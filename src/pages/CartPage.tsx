@@ -127,6 +127,22 @@ const CartPage: React.FC = () => {
   phone: string;
   city?: string;
  } | null>(null);
+ const [beitNahlaDeliveryInfo, setBeitNahlaDeliveryInfo] = useState<{
+  address: string;
+  phone: string;
+  name?: string;
+  building?: string;
+  street?: string;
+  appt?: string;
+  latitude?: number;
+  longitude?: number;
+  distance_km?: number;
+  service_charge?: number;
+  delivery_charge?: number;
+  total_extra?: number;
+  tier_label?: string | null;
+  mode?: "ORDER_NOW" | "WEEKLY";
+ } | null>(null);
  const [confirmedOrder, setConfirmedOrder] = useState<any | null>(null);
  const [retrying, setRetrying] = useState(false);
  const [retryError, setRetryError] = useState<string | null>(null);
@@ -136,6 +152,12 @@ const CartPage: React.FC = () => {
   if (info) {
    try {
     setSweetsDeliveryInfo(JSON.parse(info));
+   } catch (e) {}
+  }
+  const bnInfo = localStorage.getItem("beitNahlaDeliveryInfo");
+  if (bnInfo) {
+   try {
+    setBeitNahlaDeliveryInfo(JSON.parse(bnInfo));
    } catch (e) {}
   }
  }, []);
@@ -776,7 +798,7 @@ const CartPage: React.FC = () => {
     setImageMap(newImageMap);
 
     // 2. Fetch Cart
-    let cartResponseData = null;
+    let cartResponseData: any = null;
     if (token) {
      const cartRes = await axios.get(`${baseUrl}/api/vending/cart/`, {
       headers: { Authorization: `Token ${token}` },
@@ -787,6 +809,35 @@ const CartPage: React.FC = () => {
      if (localCartData) {
       cartResponseData = JSON.parse(localCartData);
      }
+    }
+
+    // Merge in Beit Nahla items. They live entirely client-side because
+    // the vending CartItem model has no FK for BEIT_NAHLA boxes. Without
+    // this merge, BeitNahla items vanish when the user signs in / signs up
+    // (the API has no record of them).
+    try {
+     const bnRaw = localStorage.getItem("beitNahlaCart");
+     if (bnRaw) {
+      const bn = JSON.parse(bnRaw);
+      const bnItems = Array.isArray(bn?.items) ? bn.items : [];
+      if (bnItems.length > 0) {
+       if (!cartResponseData) cartResponseData = { items: [] };
+       const seen = new Set(
+        (cartResponseData.items || []).map(
+         (i: any) => `${i.plan_type || ""}:${i.menu_item?.id || i.id}`,
+        ),
+       );
+       for (const item of bnItems) {
+        const k = `${item.plan_type || "BEIT_NAHLA"}:${item.menu_item?.id || item.id}`;
+        if (!seen.has(k)) {
+         cartResponseData.items = [...(cartResponseData.items || []), item];
+         seen.add(k);
+        }
+       }
+      }
+     }
+    } catch (e) {
+     console.warn("beitNahlaCart merge failed:", e);
     }
 
     if (cartResponseData) {
@@ -1224,23 +1275,48 @@ const CartPage: React.FC = () => {
   const deliveryCharge = parseFloat(cartData?.delivery_charge || "0");
   const total = Math.max(0, subtotal + vat - discount + deliveryCharge);
 
-  const isSweets = cartData?.plan_type === "SWEETS";
-  // Only show city/delivery if items actually exist
-  const city =
-   items.length > 0 ? cartData?.city || sweetsDeliveryInfo?.city : undefined;
+  // We treat the cart as Sweets ONLY when actual SWEETS items are
+  // present. Reading cartData.plan_type alone would mis-flag a Beit
+  // Nahla-only cart as Sweets if the backend cart record still has an
+  // old plan_type set, which would then render the misleading
+  // "Delivery Charge (Dubai) — FREE" line on a meal-box order.
+  const hasSweets = items.some((i) => i.planType === "SWEETS");
+  const isSweets = hasSweets;
+  // city only matters for the Sweets delivery scheme
+  const city = hasSweets
+   ? cartData?.city || sweetsDeliveryInfo?.city
+   : undefined;
 
-  const isMinimumMet = !isSweets || city === "Dubai" || subtotal >= 100;
+  const isMinimumMet = !hasSweets || city === "Dubai" || subtotal >= 100;
 
   // FOOLPROOF: Derive charge from city if it's a sweets cart
-  let effectiveCharge = parseFloat(cartData?.delivery_charge || "0");
-  if (isSweets && city && city !== "Dubai") {
+  let effectiveCharge = hasSweets
+   ? parseFloat(cartData?.delivery_charge || "0")
+   : 0;
+  if (hasSweets && city && city !== "Dubai") {
    effectiveCharge = 40;
   }
 
-  const activeDeliveryCharge = items.length > 0 ? effectiveCharge : 0;
+  // ── Beit Nahla fees ───────────────────────────────────────────────
+  // The Beit Nahla flow stored its calculated service + delivery charges
+  // in localStorage under beitNahlaDeliveryInfo. If there are Beit Nahla
+  // items in the cart, fold them into the totals.
+  const hasBeitNahla = items.some((i) => i.planType === "BEIT_NAHLA");
+  const bnServiceCharge =
+   hasBeitNahla && beitNahlaDeliveryInfo?.service_charge
+    ? Number(beitNahlaDeliveryInfo.service_charge)
+    : 0;
+  const bnDeliveryCharge =
+   hasBeitNahla && beitNahlaDeliveryInfo?.delivery_charge
+    ? Number(beitNahlaDeliveryInfo.delivery_charge)
+    : 0;
+
+  const activeDeliveryCharge =
+   items.length > 0 ? effectiveCharge + bnDeliveryCharge : 0;
+  const activeServiceCharge = items.length > 0 ? bnServiceCharge : 0;
   const finalTotal = Math.max(
    0,
-   subtotal + vat - discount + activeDeliveryCharge,
+   subtotal + vat - discount + activeDeliveryCharge + activeServiceCharge,
   );
 
   return {
@@ -1248,9 +1324,11 @@ const CartPage: React.FC = () => {
    vat,
    discount,
    deliveryCharge: activeDeliveryCharge,
+   serviceCharge: activeServiceCharge,
    total: finalTotal,
    isMinimumMet,
    isSweets,
+   hasBeitNahla,
    city,
   };
  }, [
@@ -1260,6 +1338,8 @@ const CartPage: React.FC = () => {
   cartData?.plan_type,
   cartData?.city,
   sweetsDeliveryInfo?.city,
+  beitNahlaDeliveryInfo?.service_charge,
+  beitNahlaDeliveryInfo?.delivery_charge,
  ]);
 
  const handleClearCart = async () => {
@@ -1295,6 +1375,11 @@ const CartPage: React.FC = () => {
   const sweetsItems = items.filter((i) => i.planType === "SWEETS");
   if (sweetsItems.length > 0) {
    groups.push({ title: "Dosta Sweets", items: sweetsItems });
+  }
+
+  const beitNahlaItems = items.filter((i) => i.planType === "BEIT_NAHLA");
+  if (beitNahlaItems.length > 0) {
+   groups.push({ title: "Beit Nahla", items: beitNahlaItems });
   }
 
   const weeklyItems = items.filter(
@@ -1640,12 +1725,13 @@ const CartPage: React.FC = () => {
         vat={summary.vat}
         discount={summary.discount}
         deliveryCharge={summary.deliveryCharge}
+        serviceCharge={summary.serviceCharge}
         city={summary.city}
         total={summary.total}
         coupon={coupon}
         setCoupon={setCoupon}
         onCheckout={async () => {
-         if (!cartData || isCheckingOut || !summary.isMinimumMet) return;
+         if (isCheckingOut || !summary.isMinimumMet) return;
          const token =
           sessionStorage.getItem("authToken") ||
           localStorage.getItem("authToken");
@@ -1653,6 +1739,85 @@ const CartPage: React.FC = () => {
           setShowAuthModal(true);
           return;
          }
+
+         // Beit Nahla checkout: post the order to the catering backend
+         // (it doesn't go through the vending payment gateway because
+         // it's not tied to a machine). After creation we clear the
+         // Beit Nahla cart and show a confirmation.
+         if (summary.hasBeitNahla) {
+          const bnItems = items.filter((i) => i.planType === "BEIT_NAHLA");
+          // Pull the original Beit Nahla cart snapshot for the
+          // selections_summary text (which mapCartToUI strips).
+          let bnRaw: any = { items: [] };
+          try {
+           bnRaw = JSON.parse(localStorage.getItem("beitNahlaCart") || "{}");
+          } catch {}
+          const summariesByMenuId: Record<number, string> = {};
+          (bnRaw.items || []).forEach((raw: any) => {
+           const k = Number(raw.menu_item?.id ?? raw.id);
+           summariesByMenuId[k] = raw.menu_item?.description || "";
+          });
+
+          const mode =
+           (beitNahlaDeliveryInfo?.mode as "ORDER_NOW" | "WEEKLY") ||
+           "ORDER_NOW";
+
+          const payload = {
+           mode,
+           customer_name: beitNahlaDeliveryInfo?.name || "",
+           customer_phone:
+            beitNahlaDeliveryInfo?.phone ||
+            sweetsDeliveryInfo?.phone ||
+            "",
+           building: beitNahlaDeliveryInfo?.building || "",
+           street: beitNahlaDeliveryInfo?.street || "",
+           appt: beitNahlaDeliveryInfo?.appt || "",
+           delivery_address: beitNahlaDeliveryInfo?.address || "",
+           latitude: beitNahlaDeliveryInfo?.latitude ?? null,
+           longitude: beitNahlaDeliveryInfo?.longitude ?? null,
+           distance_km: beitNahlaDeliveryInfo?.distance_km ?? null,
+           tier_label: beitNahlaDeliveryInfo?.tier_label || "",
+           subtotal: summary.subtotal,
+           vat: summary.vat,
+           discount: summary.discount,
+           service_charge: summary.serviceCharge,
+           delivery_charge: summary.deliveryCharge,
+           total_amount: summary.total,
+           items: bnItems.map((it) => ({
+            meal_box_id: it.menuItemId,
+            box_name: it.name,
+            unit_price: it.price,
+            quantity: it.quantity,
+            selections_summary: summariesByMenuId[it.menuItemId] || "",
+           })),
+          };
+
+          try {
+           setIsCheckingOut(true);
+           await axios.post(
+            `${baseUrl}/api/catering/beit-nahla/orders/create/`,
+            payload,
+            { headers: { Authorization: `Token ${token}` } },
+           );
+           // Wipe Beit Nahla cart locally
+           localStorage.removeItem("beitNahlaCart");
+           localStorage.removeItem("beitNahlaDeliveryInfo");
+           toast.success("Beit Nahla order placed! The kitchen will start preparing it shortly.");
+           dispatch(syncLocalCart([]));
+           setItems((prev) => prev.filter((i) => i.planType !== "BEIT_NAHLA"));
+           setBeitNahlaDeliveryInfo(null);
+          } catch (err: any) {
+           toast.error(
+            err?.response?.data?.error ||
+             "Failed to place Beit Nahla order. Please try again.",
+           );
+          } finally {
+           setIsCheckingOut(false);
+          }
+          return;
+         }
+
+         if (!cartData) return;
          setPaymentError(null);
          setShowPaymentModal(true);
         }}

@@ -7,6 +7,7 @@ interface OrderSummaryProps {
  vat: number;
  discount: number;
  deliveryCharge?: number;
+ serviceCharge?: number;
  city?: string;
  total: number;
 
@@ -24,6 +25,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
  vat,
  discount,
  deliveryCharge = 0,
+ serviceCharge = 0,
  city,
  total,
  coupon = "",
@@ -80,10 +82,27 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
      <span className="font-medium">AED{vat.toFixed(2)}</span>
     </div>
  
+    {/* Sweets-only line: free in Dubai, +40 outside */}
     {city && (
      <div className="flex justify-between text-indigo-600 font-bold text-sm">
       <span>Delivery Charge ({city})</span>
       <span>{city === "Dubai" ? "FREE" : `+ AED${deliveryCharge.toFixed(2)}`}</span>
+     </div>
+    )}
+
+    {/* Beit Nahla / non-Sweets delivery: only render when the charge is
+        actually being applied (don't show 'FREE' for everything else). */}
+    {!city && deliveryCharge > 0 && (
+     <div className="flex justify-between text-[#054A86] font-bold text-sm">
+      <span>Delivery Charge</span>
+      <span>+ AED{deliveryCharge.toFixed(2)}</span>
+     </div>
+    )}
+
+    {serviceCharge > 0 && (
+     <div className="flex justify-between text-[#054A86] font-bold text-sm">
+      <span>Service Charge</span>
+      <span>+ AED{serviceCharge.toFixed(2)}</span>
      </div>
     )}
 

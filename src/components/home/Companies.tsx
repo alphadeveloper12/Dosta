@@ -2,18 +2,17 @@ import React, { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 
 const images = [
- { img: "/images/company/c1.svg", alt: "company logo" },
- { img: "/images/company/c2.svg", alt: "company logo" },
- { img: "/images/company/c3.svg", alt: "company logo" },
- { img: "/images/company/c4.svg", alt: "company logo" },
- { img: "/images/company/c5.svg", alt: "company logo" },
- { img: "/images/company/c6.svg", alt: "company logo" },
- { img: "/images/company/c7.svg", alt: "company logo" },
- { img: "/images/company/c8.svg", alt: "company logo" },
- { img: "/images/company/c9.svg", alt: "company logo" },
- { img: "/images/company/c10.svg", alt: "company logo" },
- { img: "/images/company/c11.svg", alt: "company logo" },
- { img: "/images/company/c12.svg", alt: "company logo" },
+ { img: "/images/company/1.jpg", alt: "company logo" },
+ { img: "/images/company/2.jpg", alt: "company logo" },
+ { img: "/images/company/3.jpg", alt: "company logo" },
+ { img: "/images/company/4.jpg", alt: "company logo" },
+ { img: "/images/company/5.jpg", alt: "company logo" },
+ { img: "/images/company/6.jpg", alt: "company logo" },
+ { img: "/images/company/7.jpg", alt: "company logo" },
+ { img: "/images/company/8.jpg", alt: "company logo" },
+ { img: "/images/company/9.jpg", alt: "company logo" },
+ { img: "/images/company/10.jpg", alt: "company logo" },
+ { img: "/images/company/11.jpg", alt: "company logo" },
 ];
 
 const Companies = () => {

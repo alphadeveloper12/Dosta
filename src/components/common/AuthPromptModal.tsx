@@ -72,6 +72,9 @@ const AuthPromptModal = ({
                 }
 
                 onClose();
+                // Google login on the current page — just reload to pick up
+                // the new auth token. The user stays on whatever page they
+                // were on (e.g. the cart) so no further redirect is needed.
                 window.location.reload();
             } catch (err) {
                 console.error("Google Login Error:", err);
@@ -81,14 +84,20 @@ const AuthPromptModal = ({
         onError: () => toast.error("Google Login Failed"),
     });
 
+    // Remember where the user came from so we can return them here after
+    // they finish signing in / signing up.
+    const nextParam = encodeURIComponent(
+        window.location.pathname + window.location.search,
+    );
+
     const handleSignIn = () => {
         onClose();
-        navigate("/signin");
+        navigate(`/signin?next=${nextParam}`);
     };
 
     const handleSignUp = () => {
         onClose();
-        navigate("/signup");
+        navigate(`/signup?next=${nextParam}`);
     };
 
     return (

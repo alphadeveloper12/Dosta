@@ -54,7 +54,7 @@ const SliderData = [
  },
 ];
 
-const HeroSection = () => {
+const HeroSection = ({ onDownloadClick }: { onDownloadClick?: () => void }) => {
  const navigate = useNavigate();
  const [slideKey, setSlideKey] = useState(0);
 
@@ -99,11 +99,22 @@ const HeroSection = () => {
          initial={{ opacity: 0, y: 15 }}
          animate={{ opacity: 1, y: 0 }}
          transition={{ duration: 0.5, delay: 0.35 }}>
-         <Link
-          to={item.buttonLink}
-          className="bg-[#FF5C60] rounded-[8px] border-none text-[14px] font-[700] text-white py-[12px] px-[16px]">
-          {item.buttonText}
-         </Link>
+         {item.buttonText === "Download App" ? (
+          <button
+           onClick={(e) => {
+            e.preventDefault();
+            onDownloadClick?.();
+           }}
+           className="bg-[#FF5C60] rounded-[8px] border-none text-[14px] font-[700] text-white py-[12px] px-[16px] cursor-pointer">
+           {item.buttonText}
+          </button>
+         ) : (
+          <Link
+           to={item.buttonLink}
+           className="bg-[#FF5C60] rounded-[8px] border-none text-[14px] font-[700] text-white py-[12px] px-[16px]">
+           {item.buttonText}
+          </Link>
+         )}
         </motion.div>
        </motion.div>
 

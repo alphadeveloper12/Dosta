@@ -212,8 +212,11 @@ const SignInForm = ({ onBack }) => {
      }
     }
 
-    // ✅ Redirect to home page after successful login
-    navigate("/");
+    // Honor ?next=<path> if it was passed by AuthPromptModal so the user
+    // returns to the page they came from (e.g. /vending-home/cart) instead
+    // of always landing on home.
+    const nextParam = new URLSearchParams(window.location.search).get("next");
+    navigate(nextParam ? decodeURIComponent(nextParam) : "/");
    }
   } catch (error) {
    console.error("Login Error:", error);

@@ -115,7 +115,11 @@ const RightBar = () => {
     }
    }
 
-   navigate("/");
+   {
+    // Honor ?next=<path> for post-signup redirect (e.g. back to cart).
+    const nextParam = new URLSearchParams(window.location.search).get("next");
+    navigate(nextParam ? decodeURIComponent(nextParam) : "/");
+   }
   } catch (error: any) {
    console.error("Signup failed details:", error);
    let errorMsg = "Signup failed. Please try again.";
@@ -183,7 +187,11 @@ const RightBar = () => {
      }
     }
 
-    navigate("/");
+    {
+    // Honor ?next=<path> for post-signup redirect (e.g. back to cart).
+    const nextParam = new URLSearchParams(window.location.search).get("next");
+    navigate(nextParam ? decodeURIComponent(nextParam) : "/");
+   }
    } else {
     setApiError("Invalid OTP. Please try again.");
    }

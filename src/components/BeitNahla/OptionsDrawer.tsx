@@ -42,13 +42,13 @@ const OptionsDrawer: React.FC<OptionsDrawerProps> = ({
 
  // Default: every item in every category is selected. Users can toggle off
  // individuals, but each category must keep at least one.
- const buildDefaults = (): Record<number, number[]> => {
-  const map: Record<number, number[]> = {};
-  categories.forEach((c) => {
-   map[c.id] = c.items.map((i) => i.id);
-  });
-  return map;
- };
+  const buildDefaults = (): Record<number, number[]> => {
+   const map: Record<number, number[]> = {};
+   categories.forEach((c) => {
+    map[c.id] = [];
+   });
+   return map;
+  };
 
  React.useEffect(() => {
   if (open) {
@@ -78,29 +78,29 @@ const OptionsDrawer: React.FC<OptionsDrawerProps> = ({
   [categories, selections],
  );
 
- // Names of categories that have at least one item but zero selections —
- // user must pick at least one per category to confirm.
- const emptyCategories = useMemo(
-  () =>
-   categories
-    .filter(
-     (c) => c.items.length > 0 && (selections[c.id] || []).length === 0,
-    )
-    .map((c) => c.name),
-  [categories, selections],
- );
+  // Names of categories that have at least one item but do not have exactly one selection —
+  // user must pick exactly one per category to confirm.
+  const emptyCategories = useMemo(
+   () =>
+    categories
+     .filter(
+      (c) => c.items.length > 0 && (selections[c.id] || []).length !== 1,
+     )
+     .map((c) => c.name),
+   [categories, selections],
+  );
 
- const toggleItem = (categoryId: number, itemId: number) => {
-  setSelections((prev) => {
-   const current = prev[categoryId] || [];
-   const next = current.includes(itemId)
-    ? current.filter((i) => i !== itemId)
-    : [...current, itemId];
-   return { ...prev, [categoryId]: next };
-  });
- };
+  const toggleItem = (categoryId: number, itemId: number) => {
+   setSelections((prev) => {
+    const current = prev[categoryId] || [];
+    const next = current.includes(itemId)
+     ? []
+     : [itemId];
+    return { ...prev, [categoryId]: next };
+   });
+  };
 
- const canConfirm = emptyCategories.length === 0 && totalSelected > 0;
+  const canConfirm = emptyCategories.length === 0 && (categories.length === 0 || totalSelected > 0);
 
  if (!mealBox) return null;
 
@@ -137,8 +137,8 @@ const OptionsDrawer: React.FC<OptionsDrawerProps> = ({
          </h2>
          <p className="text-[12px] text-[#83859C] truncate">
           {activeCategory
-           ? "Pick at least one"
-           : `${categoriesWithSelections}/${categories.length} categories chosen`}
+            ? "Select exactly one option"
+            : `${categoriesWithSelections}/${categories.length} categories chosen`}
          </p>
         </div>
        </div>
@@ -153,41 +153,41 @@ const OptionsDrawer: React.FC<OptionsDrawerProps> = ({
       <div className="flex-1 overflow-y-auto pr-1">
        {activeCategory === null ? (
         <div className="flex flex-col gap-3">
-         {categories.map((cat) => {
-          const count = (selections[cat.id] || []).length;
-          const isEmpty = cat.items.length > 0 && count === 0;
-          return (
-           <button
-            key={cat.id}
-            onClick={() => setActiveCategoryId(cat.id)}
-            className={`w-full flex items-center justify-between px-4 py-4 rounded-[14px] border transition-all group ${
-             isEmpty
-              ? "border-red-300 bg-red-50/40 hover:border-red-400"
-              : "border-[#EDEEF2] hover:border-[#054A86] hover:bg-[#054A86]/5"
-            }`}>
-            <div className="flex flex-col items-start gap-0.5 text-left flex-1 min-w-0">
-             <span className="text-[15px] md:text-[16px] font-[700] text-[#2B2B43]">
-              {cat.name}
-             </span>
-             {cat.description && (
-              <span className="text-[11px] text-[#83859C] line-clamp-1">
-               {cat.description}
+          {categories.map((cat) => {
+           const count = (selections[cat.id] || []).length;
+           const isSelected = count === 1;
+           return (
+            <button
+             key={cat.id}
+             onClick={() => setActiveCategoryId(cat.id)}
+             className={`w-full flex items-center justify-between px-4 py-4 rounded-[14px] border transition-all group ${
+              isSelected
+               ? "border-[#054A86]/30 bg-[#054A86]/5 hover:border-[#054A86]"
+               : "border-[#EDEEF2] hover:border-[#054A86] hover:bg-[#054A86]/5"
+             }`}>
+             <div className="flex flex-col items-start gap-0.5 text-left flex-1 min-w-0">
+              <span className="text-[15px] md:text-[16px] font-[700] text-[#2B2B43]">
+               {cat.name}
               </span>
-             )}
-             {isEmpty ? (
-              <span className="text-[11px] font-bold text-red-500 mt-1 flex items-center gap-1">
-               <AlertCircle className="w-3 h-3" /> Pick at least one
-              </span>
-             ) : (
-              <span className="text-[11px] font-bold text-[#054A86] mt-1">
-               {count} of {cat.items.length} selected
-              </span>
-             )}
-            </div>
-            <ChevronRight className="w-5 h-5 text-[#83859C] group-hover:text-[#054A86] flex-shrink-0" />
-           </button>
-          );
-         })}
+              {cat.description && (
+               <span className="text-[11px] text-[#83859C] line-clamp-1">
+                {cat.description}
+               </span>
+              )}
+              {isSelected ? (
+               <span className="text-[11px] font-bold text-[#054A86] mt-1">
+                Selected
+               </span>
+              ) : (
+               <span className="text-[11px] font-medium text-[#83859C] mt-1 flex items-center gap-1">
+                Select 1 option
+               </span>
+              )}
+             </div>
+             <ChevronRight className="w-5 h-5 text-[#83859C] group-hover:text-[#054A86] flex-shrink-0" />
+            </button>
+           );
+          })}
          {categories.length === 0 && (
           <div className="text-center py-12 text-[#83859C]">
            No option categories available.
@@ -196,14 +196,14 @@ const OptionsDrawer: React.FC<OptionsDrawerProps> = ({
         </div>
        ) : (
         <div className="flex flex-col gap-2">
-         {(selections[activeCategory.id] || []).length === 0 && (
-          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50 border border-red-200 mb-1">
-           <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
-           <span className="text-[12px] text-red-600 font-bold">
-            Pick at least one {activeCategory.name.toLowerCase()} item.
-           </span>
-          </div>
-         )}
+          {(selections[activeCategory.id] || []).length === 0 && (
+           <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-50 border border-amber-200 mb-1">
+            <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0" />
+            <span className="text-[12px] text-amber-700 font-bold">
+             Please select an option for {activeCategory.name.toLowerCase()}.
+            </span>
+           </div>
+          )}
          {activeCategory.items.map((item) => {
           const isSelected = (
            selections[activeCategory.id] || []
@@ -262,23 +262,23 @@ const OptionsDrawer: React.FC<OptionsDrawerProps> = ({
         className="w-full sm:w-1/3 border-2 border-[#EBEBEB] text-[#545563] hover:border-[#054A86] hover:text-[#054A86] rounded-xl py-3 font-bold transition-colors">
         Cancel
        </button>
-       <button
-        onClick={() => canConfirm && onConfirm(selections)}
-        disabled={!canConfirm}
-        title={
-         emptyCategories.length > 0
-          ? `Pick at least one item in: ${emptyCategories.join(", ")}`
-          : ""
-        }
-        className={`w-full sm:flex-1 rounded-xl py-3 font-bold shadow-lg transition-transform active:scale-95 ${
-         canConfirm
-          ? "bg-[#054A86] text-white hover:bg-[#054A86]/90 shadow-[#054A86]/20"
-          : "bg-[#C7C8D2] text-white cursor-not-allowed shadow-none"
-        }`}>
-        {emptyCategories.length > 0
-         ? `Need ${emptyCategories.length} more — ${emptyCategories.join(", ")}`
-         : `Confirm (${totalSelected} item${totalSelected === 1 ? "" : "s"})`}
-       </button>
+        <button
+         onClick={() => canConfirm && onConfirm(selections)}
+         disabled={!canConfirm}
+         title={
+          emptyCategories.length > 0
+           ? `Pick exactly one item in: ${emptyCategories.join(", ")}`
+           : ""
+         }
+         className={`w-full sm:flex-1 rounded-xl py-3 font-bold shadow-lg transition-transform active:scale-95 ${
+          canConfirm
+           ? "bg-[#054A86] text-white hover:bg-[#054A86]/90 shadow-[#054A86]/20"
+           : "bg-[#C7C8D2] text-white cursor-not-allowed shadow-none"
+         }`}>
+         {emptyCategories.length > 0
+          ? `Need ${emptyCategories.length} more `
+          : `Confirm (${totalSelected} item${totalSelected === 1 ? "" : "s"})`}
+        </button>
       </div>
      </motion.div>
     </motion.div>

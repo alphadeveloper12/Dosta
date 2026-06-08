@@ -347,7 +347,7 @@ const BeitNahlaMenu: React.FC = () => {
       }`}>
       Order Now · {orderNowPriceLabel}
      </button>
-     <button
+     {/* <button
       onClick={() => setMode("WEEKLY")}
       className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
        mode === "WEEKLY"
@@ -355,7 +355,7 @@ const BeitNahlaMenu: React.FC = () => {
         : "text-[#545563]"
       }`}>
       Weekly · {weeklyPriceLabel}
-     </button>
+     </button> */}
     </div>
 
     {loading ? (

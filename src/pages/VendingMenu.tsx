@@ -27,6 +27,7 @@ interface FoodItem {
  image2_url?: string; // Detail/sidebar image (falls back to image_url)
  vendingGoodUuid?: string; // Optional for matching
  locked?: boolean; // Track locked status
+ categories?: { id: number; name: string }[]; // Categories from linked master item
 }
 
 const MenuItemCard = ({
@@ -94,6 +95,7 @@ const VendingMenu = () => {
  const [isSheetOpen, setIsSheetOpen] = useState(false);
  const [lightboxOpen, setLightboxOpen] = useState(false);
  const [tab, setTab] = useState<number>(0);
+ const [selectedCategory, setSelectedCategory] = useState<string>("all");
  const [weeklyMenu, setWeeklyMenu] = useState<any>(null);
  const [loading, setLoading] = useState(true);
  const [machineGoods, setMachineGoods] = useState<any[] | null>(null);
@@ -208,13 +210,35 @@ const VendingMenu = () => {
  const normalizeName = (name: string) =>
   (name || "").replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
 
+ // Switch day and reset the category filter (categories differ per day)
+ const changeTab = (index: number) => {
+  setTab(index);
+  setSelectedCategory("all");
+ };
+
+ // Distinct categories present among the selected day's items
+ const dayCategories = useMemo(() => {
+  if (!weeklyMenu || !days[tab]) return [] as { id: string; name: string }[];
+  const items = weeklyMenu[days[tab].day]?.items || [];
+  const map = new Map<string, string>();
+  items.forEach((it: any) =>
+   (it.categories || []).forEach((c: any) => map.set(String(c.id), c.name)),
+  );
+  return Array.from(map, ([id, name]) => ({ id, name }));
+ }, [weeklyMenu, tab]);
+
+ // True when an item belongs to the currently selected category
+ const itemMatchesCategory = (item: any) =>
+  selectedCategory === "all" ||
+  (item.categories || []).some((c: any) => String(c.id) === selectedCategory);
+
  // Get items for the selected day with filtering logic
  const { currentDayItems, shelfData, totalAvailableCount } = useMemo(() => {
   if (!weeklyMenu || !days[tab]) return { currentDayItems: [], shelfData: [] };
 
   const selectedDayName = days[tab].day; // e.g., "Monday"
   const dayData = weeklyMenu[selectedDayName];
-  const items = dayData?.items || [];
+  const items = (dayData?.items || []).filter(itemMatchesCategory);
 
   // Determine current day
   const today = new Date().toLocaleDateString("en-US", { weekday: "long" });
@@ -276,7 +300,7 @@ const VendingMenu = () => {
    shelfData: [],
    totalAvailableCount: items.length,
   };
- }, [weeklyMenu, tab, machineGoods, machineShelves]);
+ }, [weeklyMenu, tab, machineGoods, machineShelves, selectedCategory]);
 
  // Function to handle card click and open the item details in the sidebar
  const handleCardClick = (item: FoodItem) => {
@@ -484,7 +508,7 @@ const VendingMenu = () => {
          // Uses the existing 'tab' state for the current selection
          value={tab}
          // Uses the existing 'setTab' function to update state
-         onChange={(e) => setTab(parseInt(e.target.value, 10))}
+         onChange={(e) => changeTab(parseInt(e.target.value, 10))}
          className="w-1/2 h-[40px] p-0 px-2 text-[12px] leading-[18px] 
                     border border-neutral-gray-light text-neutral-gray-dark bg-neutral-white rounded-[8px] 
                     focus:ring-[#054A86]  focus:border-[#054A86] font-medium appearance-none"
@@ -511,7 +535,7 @@ const VendingMenu = () => {
          return (
           <div
            key={index}
-           onClick={() => setTab(index)}
+           onClick={() => changeTab(index)}
            className={`md:h-[56px] h-[26px] ${
             tab === index
              ? // Active state
@@ -527,6 +551,36 @@ const VendingMenu = () => {
         })}
        </div>
       </div>
+
+      {/* Category filter — shows categories available for the selected day */}
+      {dayCategories.length > 0 && (
+       <div className="flex gap-2 flex-wrap pt-4 w-full items-center">
+        <span className="text-[13px] text-[#83859C] font-medium mr-1">
+         Categories:
+        </span>
+        <button
+         onClick={() => setSelectedCategory("all")}
+         className={`px-4 py-1.5 rounded-full text-[13px] font-semibold transition-colors ${
+          selectedCategory === "all"
+           ? "bg-[#054A86] text-white"
+           : "bg-neutral-white text-[#054A86] border border-[#C7C8D2] hover:bg-[#EAF5FF]"
+         }`}>
+         All
+        </button>
+        {dayCategories.map((cat) => (
+         <button
+          key={cat.id}
+          onClick={() => setSelectedCategory(cat.id)}
+          className={`px-4 py-1.5 rounded-full text-[13px] font-semibold transition-colors ${
+           selectedCategory === cat.id
+            ? "bg-[#054A86] text-white"
+            : "bg-neutral-white text-[#054A86] border border-[#C7C8D2] hover:bg-[#EAF5FF]"
+          }`}>
+          {cat.name}
+         </button>
+        ))}
+       </div>
+      )}
      </div>
     </div>
 

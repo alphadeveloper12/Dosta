@@ -19,6 +19,7 @@ interface FoodItem {
  offer?: string; // Optional offer text
  terms?: string; // Optional terms link/text
  vendingGoodUuid?: string; // NEW: Vending machine good UUID (e.g., 1069950)
+ categories?: { id: number; name: string }[]; // Categories from linked master item
 }
 
 // --- NEW: Interface for items in our cart, now with quantity ---
@@ -67,17 +68,34 @@ const Menu: React.FC<MenuProps> = ({
  const normalizeName = (name: string) =>
   (name || "").replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
 
+ // --- Category filter ---
+ const [selectedCategory, setSelectedCategory] = useState<string>("all");
+
+ // Distinct categories across the fetched menu items (stable — not affected by the filter)
+ const categories = React.useMemo(() => {
+  const map = new Map<string, string>();
+  foodData.forEach((item) =>
+   (item.categories || []).forEach((c) => map.set(String(c.id), c.name)),
+  );
+  return Array.from(map, ([id, name]) => ({ id, name }));
+ }, [foodData]);
+
+ // True when an item belongs to the currently selected category
+ const matchesCategory = (item: any) =>
+  selectedCategory === "all" ||
+  (item?.categories || []).some((c: any) => String(c.id) === selectedCategory);
+
  // --- NEW: Split items into Available and Others ---
  const { availableItems, otherItems, shelfData, totalAvailableCount } =
   React.useMemo(() => {
    // If machineGoods is null (still loading), show everything in 'others' for now
    if (machineGoods === null) {
-    return { availableItems: [], otherItems: foodData, shelfData: [] };
+    return { availableItems: [], otherItems: foodData.filter(matchesCategory), shelfData: [] };
    }
 
    // If machineGoods is empty array (loaded but no items), show everything in 'others'
    if (machineGoods && machineGoods.length === 0) {
-    return { availableItems: [], otherItems: foodData, shelfData: [] };
+    return { availableItems: [], otherItems: foodData.filter(matchesCategory), shelfData: [] };
    }
 
    const available: FoodItem[] = [];
@@ -122,13 +140,20 @@ const Menu: React.FC<MenuProps> = ({
       };
      }),
     }))
+    // Apply the category filter: drop spots whose item isn't in the chosen category
+    .map((shelf) => ({
+     ...shelf,
+     spots: shelf.spots.filter(
+      (spot: any) => spot.enrichedItem === null || matchesCategory(spot.enrichedItem),
+     ),
+    }))
     .filter((shelf) =>
      shelf.spots.some(
       (spot: any) => spot.enrichedItem !== null && spot.presentNumber > 0,
      ),
     );
 
-   foodData.forEach((item) => {
+   foodData.filter(matchesCategory).forEach((item) => {
     const normalizedItemName = normalizeName(item.heading);
 
     let matchedUuid: string | undefined;
@@ -194,7 +219,7 @@ const Menu: React.FC<MenuProps> = ({
     shelfData: processedShelves,
     totalAvailableCount,
    };
-  }, [foodData, machineGoods, machineShelves]);
+  }, [foodData, machineGoods, machineShelves, selectedCategory]);
 
  const handleCardClick = (item: FoodItem) => {
   trackViewContent(item.heading, parseItemPrice(item.price), "AED");
@@ -264,6 +289,7 @@ const Menu: React.FC<MenuProps> = ({
        description: it.description,
        price: `AED ${parseFloat(it.price).toFixed(2)}`,
        id: it.id,
+       categories: it.categories || [],
       });
      });
     });
@@ -484,6 +510,36 @@ const Menu: React.FC<MenuProps> = ({
 
      {!loading && !error && (
       <>
+       {/* Category filter chips */}
+       {categories.length > 0 && (
+        <div className="flex gap-2 flex-wrap items-center mb-6">
+         <span className="text-[13px] text-[#83859C] font-medium mr-1">
+          Categories:
+         </span>
+         <button
+          onClick={() => setSelectedCategory("all")}
+          className={`px-4 py-1.5 rounded-full text-[13px] font-semibold transition-colors ${
+           selectedCategory === "all"
+            ? "bg-[#054A86] text-white"
+            : "bg-white text-[#054A86] border border-[#C7C8D2] hover:bg-[#EAF5FF]"
+          }`}>
+          All
+         </button>
+         {categories.map((cat) => (
+          <button
+           key={cat.id}
+           onClick={() => setSelectedCategory(cat.id)}
+           className={`px-4 py-1.5 rounded-full text-[13px] font-semibold transition-colors ${
+            selectedCategory === cat.id
+             ? "bg-[#054A86] text-white"
+             : "bg-white text-[#054A86] border border-[#C7C8D2] hover:bg-[#EAF5FF]"
+           }`}>
+           {cat.name}
+          </button>
+         ))}
+        </div>
+       )}
+
        {/* Shelf-wise Menu Section */}
        {shelfData.length > 0 ? (
         <div className="space-y-12">

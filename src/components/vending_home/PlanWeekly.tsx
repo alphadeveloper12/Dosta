@@ -18,6 +18,7 @@ interface FoodItem {
  id: number; // ⭐ REQUIRED
  day_of_week?: string; // optional
  week_number?: number; // optional
+ categories?: { id: number; name: string }[]; // Categories from linked master item
 }
 interface SelectedFoodItem extends FoodItem {
  quantity: number;
@@ -95,6 +96,7 @@ const PlanWeekly: React.FC<MenuProps> = ({
  const [toaster, setToaster] = useState(false);
  const [tab, setTab] = useState(0);
  const [tab1, setTab1] = useState<number | null>(null);
+ const [selectedCategory, setSelectedCategory] = useState<string>("all");
  const [savedPlans, setSavedPlans] = useState(false);
  const [selectedPlan, setSelectedPlan] = useState<SavedPlan | null>(null);
  const [menuByDay, setMenuByDay] = useState<Record<string, FoodItem[]>>({});
@@ -155,6 +157,7 @@ const PlanWeekly: React.FC<MenuProps> = ({
       id: it.id, // ⭐ add this
       day_of_week: day,
       week_number: apiMenuData.week_no ?? 1,
+      categories: it.categories || [],
      }));
     } else {
      parsed[day] = [];
@@ -173,6 +176,9 @@ const PlanWeekly: React.FC<MenuProps> = ({
       imgAlt: `food-${it.id}`,
       description: it.description,
       price: `AED ${parseFloat(it.price).toFixed(2)}`,
+      id: it.id,
+      day_of_week: day,
+      categories: it.categories || [],
      }));
     } else {
      parsed[day] = [];
@@ -207,6 +213,27 @@ const PlanWeekly: React.FC<MenuProps> = ({
  const currentDayItems = Array.isArray(weeklyPlan?.[currentDay])
   ? weeklyPlan[currentDay]
   : [];
+
+ // Switch day and reset the category filter (categories differ per day)
+ const changeTab = (index: number) => {
+  setTab(index);
+  setSelectedCategory("all");
+ };
+
+ // Distinct categories present among the current day's items
+ const dayCategories = React.useMemo(() => {
+  const items = menuByDay[currentDay] || [];
+  const map = new Map<string, string>();
+  items.forEach((it) =>
+   (it.categories || []).forEach((c) => map.set(String(c.id), c.name)),
+  );
+  return Array.from(map, ([id, name]) => ({ id, name }));
+ }, [menuByDay, currentDay]);
+
+ // True when an item belongs to the currently selected category
+ const matchesCategory = (item: any) =>
+  selectedCategory === "all" ||
+  (item?.categories || []).some((c: any) => String(c.id) === selectedCategory);
 
  const totalMealsForDay = currentDayItems.reduce(
   (acc, item) => acc + (item?.quantity || 0),
@@ -378,8 +405,8 @@ const PlanWeekly: React.FC<MenuProps> = ({
        <div className="flex md:hidden w-full max-w-[250px]">
         <select
          value={tab}
-         onChange={(e) => setTab(parseInt(e.target.value, 10))}
-         className="w-full h-[30px] p-0 px-2  text-[12px] leading-[18px] 
+         onChange={(e) => changeTab(parseInt(e.target.value, 10))}
+         className="w-full h-[30px] p-0 px-2  text-[12px] leading-[18px]
                                   border-2 border-[#054A86] text-[#054A86] bg-[#EAF5FF] rounded-[8px] 
                                   focus:ring-[#054A86] focus:border-[#054A86] font-medium appearance-none"
          style={{
@@ -403,7 +430,7 @@ const PlanWeekly: React.FC<MenuProps> = ({
          return (
           <div
            key={index}
-           onClick={() => setTab(index)}
+           onClick={() => changeTab(index)}
            className={` ${
             tab === index
              ? "bg-[#EAF5FF] border-[#054A86]"
@@ -490,10 +517,40 @@ const PlanWeekly: React.FC<MenuProps> = ({
       </div>
      </div>
 
+     {/* Category filter chips — categories available for the selected day */}
+     {dayCategories.length > 0 && (
+      <div className="md:px-[30px] flex gap-2 flex-wrap items-center pt-2 pb-1">
+       <span className="text-[13px] text-[#83859C] font-medium mr-1">
+        Categories:
+       </span>
+       <button
+        onClick={() => setSelectedCategory("all")}
+        className={`px-4 py-1.5 rounded-full text-[13px] font-semibold transition-colors ${
+         selectedCategory === "all"
+          ? "bg-[#054A86] text-white"
+          : "bg-white text-[#054A86] border border-[#C7C8D2] hover:bg-[#EAF5FF]"
+        }`}>
+        All
+       </button>
+       {dayCategories.map((cat) => (
+        <button
+         key={cat.id}
+         onClick={() => setSelectedCategory(cat.id)}
+         className={`px-4 py-1.5 rounded-full text-[13px] font-semibold transition-colors ${
+          selectedCategory === cat.id
+           ? "bg-[#054A86] text-white"
+           : "bg-white text-[#054A86] border border-[#C7C8D2] hover:bg-[#EAF5FF]"
+         }`}>
+         {cat.name}
+        </button>
+       ))}
+      </div>
+     )}
+
      {/* ... (Unchanged JSX for food grid) ... */}
      <div className="w-full h-full pb-4">
       <div className="md:px-[30px] grid grid-cols-2 md:flex md:gap-[24px] gap-[12px] flex-wrap">
-       {(menuByDay[currentDay] || []).map((data, index) => {
+       {(menuByDay[currentDay] || []).filter(matchesCategory).map((data, index) => {
         const selectedItemData = currentDayItems.find(
          (item) => item.imgAlt === data.imgAlt,
         );
